@@ -1,1 +1,1 @@
-# azure-devops-stars
+# AzureDevOps.Stars
