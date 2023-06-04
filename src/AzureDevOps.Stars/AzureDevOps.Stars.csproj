@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>AzureDevOps.Stars</RootNamespace>
+    <UserSecretsId>45537586-1974-4900-be93-d10c8fde6b12</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

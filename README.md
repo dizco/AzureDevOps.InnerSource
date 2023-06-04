@@ -60,6 +60,10 @@ No guidance is provided on how and where to host this .NET service.
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
 
+## Known issues
+- The code coverage is 0% right now
+- There is a lot of boilerplate code for MVC that could be removed
+
 ## Contibuting
 - Star this GitHub repo :star: (ironic, isn't it :wink:)
 - Create pull requests, submit bugs, suggest new features or documentation updates :wrench:. See [contributing doc](CONTRIBUTING.md).

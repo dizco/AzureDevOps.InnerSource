@@ -11,6 +11,7 @@ var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIR
 IConfiguration configuration = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
 	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", optional: true)
+	.AddUserSecrets<Program>()
 	.AddEnvironmentVariables()
 	.Build();
 
@@ -45,3 +46,5 @@ app.MapControllerRoute(
 	"{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+public partial class Program { }
