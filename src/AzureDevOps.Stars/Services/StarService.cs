@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using AzureDevOps.Stars.Configuration;
+using AzureDevOps.Stars.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace AzureDevOps.Stars.Services;
@@ -31,8 +32,8 @@ public class StarService : IStarService
 	{
 		if (!IsAllowedRepository(repository))
 		{
-			_logger.LogInformation("Repository {repository} is not allowed.", repository);
-			return Task.CompletedTask;
+			_logger.LogInformation("Repository {repository} does not match any allowed repository", repository);
+			throw new RepositoryNotAllowedException();
 		}
 
 		// TODO: This probably doesn't perform very well in concurrent scenarios, but its fine for proof of concept
@@ -52,8 +53,8 @@ public class StarService : IStarService
 		var emptyResult = new HashSet<Principal>(0);
 		if (!IsAllowedRepository(repository))
 		{
-			_logger.LogInformation("Repository {repository} is not allowed.", repository);
-			return Task.FromResult(emptyResult);
+			_logger.LogInformation("Repository {repository} does not match any allowed repository.", repository);
+			throw new RepositoryNotAllowedException();
 		}
 
 		if (_stars.TryGetValue(repository, out var users)) return Task.FromResult(users);

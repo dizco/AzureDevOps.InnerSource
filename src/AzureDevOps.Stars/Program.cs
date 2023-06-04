@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using AzureDevOps.Stars.Exceptions;
 using AzureDevOps.Stars.Extensions;
 using Microsoft.IdentityModel.Logging;
 
@@ -9,14 +10,17 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 IConfiguration configuration = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
-	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json")
+	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", optional: true)
 	.AddEnvironmentVariables()
 	.Build();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+	options.Filters.Add<ExceptionFilter>();
+});
 builder.Services.ConfigureAuthentication(configuration);
 builder.Services.AddStars(configuration);
 var app = builder.Build();

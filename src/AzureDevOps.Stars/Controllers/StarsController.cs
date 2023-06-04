@@ -50,6 +50,9 @@ public class StarsController : Controller
 	[HttpGet("stars/{project}/{repositoryName}")]
 	public async Task<IActionResult> GetStars(string project, string repositoryName)
 	{
+		if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repositoryName))
+			throw new ValidationException("Required parameters were not provided");
+
 		var repository = new Repository
 		{
 			Organization = Options.Organization,
@@ -58,8 +61,7 @@ public class StarsController : Controller
 		};
 		var users = await _starService.GetStarsAsync(repository);
 
-		var shieldsIoUrl =
-			$"https://img.shields.io/static/v1?label=Stars&message={users.Count}&color=informational&logo=azuredevops";
+		var shieldsIoUrl = $"https://img.shields.io/static/v1?label=Stars&message={users.Count}&color=informational&logo=azuredevops";
 		var badge = await _httpClient.GetAsync(shieldsIoUrl);
 		var stream = await badge.Content.ReadAsStreamAsync();
 		return File(stream, badge.Content.Headers.ContentType?.ToString() ?? "image/svg+xml;charset=utf-8");
