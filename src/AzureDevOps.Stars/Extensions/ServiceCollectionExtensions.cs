@@ -50,9 +50,6 @@ public static class ServiceCollectionExtensions
 
 	public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
 	{
-		// User: test@gabrielbourgaultkiosoft.onmicrosoft.com
-		// Pass: Gabi1234
-
 		services.AddAuthentication(options =>
 		{
 			options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -68,12 +65,11 @@ public static class ServiceCollectionExtensions
 				options.ClientSecret = settings.ClientSecret;
 				options.ResponseType = "code";
 				options.SaveTokens = true; // Specifies whether access_tokens and refresh_tokens should be stored. Required when the app calls APIs
-				options.GetClaimsFromUserInfoEndpoint = false;
+				options.GetClaimsFromUserInfoEndpoint = true;
 				options.ClaimActions.MapAll();
 
 				options.Scope.Clear();
-				// "https://app.vssps.visualstudio.com/user_impersonation"
-				foreach (var scope in new List<string> { "openid", "profile", "email", "499b84ac-1321-427f-aa17-267ca6975798/.default" })
+				foreach (var scope in new List<string> { "openid", "profile", "email", "offline_access" })
 				{
 					options.Scope.Add(scope);
 				}
