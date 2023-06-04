@@ -64,35 +64,15 @@ public static class ServiceCollectionExtensions
 				options.ClientId = settings.ClientId;
 				options.ClientSecret = settings.ClientSecret;
 				options.ResponseType = "code";
-				options.SaveTokens = true; // Specifies whether access_tokens and refresh_tokens should be stored. Required when the app calls APIs
+				options.SaveTokens = true;
 				options.GetClaimsFromUserInfoEndpoint = true;
 				options.ClaimActions.MapAll();
 
 				options.Scope.Clear();
-				foreach (var scope in new List<string> { "openid", "profile", "email", "offline_access" })
+				foreach (var scope in new List<string> { "openid", "email", "offline_access" })
 				{
 					options.Scope.Add(scope);
 				}
-
-				// Specifies which claim type to use for the `User.Identity.Name` and `User.IsInRole()`.
-				options.TokenValidationParameters = new TokenValidationParameters
-				{
-					NameClaimType = "name",
-					RoleClaimType = "role"
-				};
-
-				options.Events.OnTokenValidated = context =>
-				{
-					// Issue a token with a fixed expiration
-					context.Properties.IsPersistent = true;
-
-					// Set the expiration of the cookie for the same expiration as the access_token
-					var accessToken = new JwtSecurityToken(context.TokenEndpointResponse.AccessToken);
-					context.Properties.ExpiresUtc = accessToken.ValidTo;
-					context.Properties.IssuedUtc = accessToken.ValidFrom;
-
-					return Task.CompletedTask;
-				};
 			});
 
 		return services;
