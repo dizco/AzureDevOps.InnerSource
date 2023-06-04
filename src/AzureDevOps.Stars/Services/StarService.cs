@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using AzureDevOps.Stars.Configuration;
 using AzureDevOps.Stars.Exceptions;
+using AzureDevOps.Stars.Storage;
 using Microsoft.Extensions.Options;
 
 namespace AzureDevOps.Stars.Services;
@@ -10,25 +11,27 @@ public interface IStarService
 {
 	Task StarAsync(Principal principal, Repository repository);
 
-	Task<HashSet<Principal>> GetStarsAsync(Repository repository);
+	Task<int> GetStarCountAsync(Repository repository);
 }
 
 public class StarService : IStarService
 {
 	private readonly ILogger<StarService> _logger;
-	private readonly ConcurrentDictionary<Repository, HashSet<Principal>> _stars = new();
+	
+	private readonly IStarRepository _repository;
 
 	private readonly IOptionsMonitor<DevOpsOptions> _options;
 
 	private DevOpsOptions Options => _options.CurrentValue;
 
-	public StarService(IOptionsMonitor<DevOpsOptions> options, ILogger<StarService> logger)
+	public StarService(IStarRepository repository, IOptionsMonitor<DevOpsOptions> options, ILogger<StarService> logger)
 	{
+		_repository = repository;
 		_options = options;
 		_logger = logger;
 	}
 
-	public Task StarAsync(Principal principal, Repository repository)
+	public async Task StarAsync(Principal principal, Repository repository)
 	{
 		if (!IsAllowedRepository(repository))
 		{
@@ -36,30 +39,18 @@ public class StarService : IStarService
 			throw new RepositoryNotAllowedException();
 		}
 
-		// TODO: This probably doesn't perform very well in concurrent scenarios, but its fine for proof of concept
-		_stars.AddOrUpdate(repository,
-			new HashSet<Principal> { principal },
-			(key, set) =>
-			{
-				set.Add(principal);
-				return set;
-			});
-
-		return Task.CompletedTask;
+		await _repository.SetStarAsync(repository, principal);
 	}
 
-	public Task<HashSet<Principal>> GetStarsAsync(Repository repository)
+	public async Task<int> GetStarCountAsync(Repository repository)
 	{
-		var emptyResult = new HashSet<Principal>(0);
 		if (!IsAllowedRepository(repository))
 		{
 			_logger.LogInformation("Repository {repository} does not match any allowed repository.", repository);
 			throw new RepositoryNotAllowedException();
 		}
 
-		if (_stars.TryGetValue(repository, out var users)) return Task.FromResult(users);
-
-		return Task.FromResult(emptyResult);
+		return await _repository.GetStarCountAsync(repository);
 	}
 
 	private bool IsAllowedRepository(Repository repository)

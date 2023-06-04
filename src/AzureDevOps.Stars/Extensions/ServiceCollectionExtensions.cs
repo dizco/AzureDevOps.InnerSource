@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Azure.Data.Tables;
 using AzureDevOps.Stars.Configuration;
 using AzureDevOps.Stars.Configuration.Settings;
 using AzureDevOps.Stars.Services;
+using AzureDevOps.Stars.Storage;
 
 namespace AzureDevOps.Stars.Extensions;
 
@@ -27,6 +29,21 @@ public static class ServiceCollectionExtensions
 			})
 			.ValidateDataAnnotations();
 		services.AddSingleton<IStarService, StarService>();
+
+		var storage = configuration.GetSection(StorageSettings.SectionName).Get<StorageSettings>();
+		switch (storage.Mode)
+		{
+			case "TableStorage":
+				services.AddSingleton<IStarRepository, StarTableRepository>();
+				services.AddSingleton(_ => new TableServiceClient(storage.TableStorageConnectionString).GetTableClient(storage.TableName));
+				break;
+			case "InMemory":
+				services.AddSingleton<IStarRepository, StarInMemoryRepository>();
+				break;
+			default:
+				throw new Exception($"Storage mode {storage.Mode} not supported.");
+		}
+		
 
 		return services;
 	}

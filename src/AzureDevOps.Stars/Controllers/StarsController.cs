@@ -33,7 +33,8 @@ public class StarsController : Controller
 
 		var principal = new Principal
 		{
-			Id = User.FindFirstValue("oid") ?? throw new Exception("Expected to find an oid claim")
+			Id = User.FindFirstValue("oid") ?? throw new Exception("Expected to find an oid claim"),
+			Email = User.FindFirstValue("email")
 		};
 
 		await _starService.StarAsync(principal, new Repository
@@ -59,9 +60,9 @@ public class StarsController : Controller
 			Project = project,
 			Name = repositoryName
 		};
-		var users = await _starService.GetStarsAsync(repository);
+		var stars = await _starService.GetStarCountAsync(repository);
 
-		var shieldsIoUrl = $"https://img.shields.io/static/v1?label=Stars&message={users.Count}&color=informational&logo=azuredevops";
+		var shieldsIoUrl = $"https://img.shields.io/static/v1?label=Stars&message={stars}&color=informational&logo=azuredevops";
 		var badge = await _httpClient.GetAsync(shieldsIoUrl);
 		var stream = await badge.Content.ReadAsStreamAsync();
 		return File(stream, badge.Content.Headers.ContentType?.ToString() ?? "image/svg+xml;charset=utf-8");
