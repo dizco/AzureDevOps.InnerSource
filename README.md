@@ -41,7 +41,7 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
    | `IdentityProvider:ClientSecret` | `<your client secret>` |
    | `Storage:TableStorageConnectionString` | `<your azure storage connection string>` |
    | `DevOps:Organization` | `<your Azure DevOps organization name>` |
-   | `DevOps:StarsAllowedRepositories` | <code>[<br>&nbsp;{<br>&nbsp;&nbsp;"RegexProject": "\<your project name or regex>",<br>&nbsp;&nbsp;"RegexRepository": "\<your repository name or regex>"<br>&nbsp;}<br>]</code> |
+   | `DevOps:StarsAllowedRepositories` | <code>[<br/>&nbsp;{<br/>&nbsp;&nbsp;"RegexProject": "\<your project name or regex>",<br/>&nbsp;&nbsp;"RegexRepository": "\<your repository name or regex>"<br/>&nbsp;}<br/>]</code> |
    
 1. Press F5
 1. Edit the readme of the desired repository with:
@@ -53,6 +53,9 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
    ```md
    [![Repository stars](https://localhost:44400/stars/<project name>/<repository name>)](https://localhost:44400/star?project=<project name>&repository=<repository name>)
    ```
+
+## Deploying
+No guidance is provided on how and where to host this .NET service.
 
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
