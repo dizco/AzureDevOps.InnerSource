@@ -63,6 +63,7 @@ At this time, there is no guarantee on the stability of this template. Breaking 
 ## Known issues
 - The code coverage is 0% right now
 - There is a lot of boilerplate code for MVC that could be removed
+- Security has not been given a proper assessment
 
 ## Contibuting
 - Star this GitHub repo :star: (ironic, isn't it :wink:)
