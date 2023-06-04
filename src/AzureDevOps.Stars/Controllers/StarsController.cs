@@ -1,24 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AzureDevOps.Stars.Models;
+using System.Security.Claims;
+using AzureDevOps.Stars.Configuration;
 using AzureDevOps.Stars.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace AzureDevOps.Stars.Controllers;
 
 public class StarsController : Controller
 {
+	private readonly HttpClient _httpClient;
+	private readonly IOptionsMonitor<DevOpsOptions> _options;
 	private readonly IStarService _starService;
 
-	private readonly HttpClient _httpClient;
-
-	public StarsController(IStarService starService, HttpClient httpClient)
+	public StarsController(IStarService starService, IOptionsMonitor<DevOpsOptions> options, HttpClient httpClient)
 	{
 		_starService = starService;
+		_options = options;
 		_httpClient = httpClient;
 	}
+
+	private DevOpsOptions Options => _options.CurrentValue;
 
 	// NOTE: This endpoint is a GET because it is not possible to make POST requests from a markdown file
 	[Authorize]
@@ -26,25 +29,22 @@ public class StarsController : Controller
 	public async Task<IActionResult> Star(string project, string repository)
 	{
 		if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repository))
-		{
 			throw new ValidationException("Required parameters were not provided");
-		}
 
-		var accessToken = await HttpContext.GetTokenAsync(OpenIdConnectDefaults.AuthenticationScheme, "access_token");
-		if (!string.IsNullOrEmpty(accessToken))
+		var principal = new Principal
 		{
-			var t = accessToken;
-		}
+			Id = User.FindFirstValue("oid") ?? throw new Exception("Expected to find an oid claim")
+		};
 
-		await _starService.Star(User, new Repository
+		await _starService.StarAsync(principal, new Repository
 		{
-			Organization = "gabrielbourgault",
+			Organization = Options.Organization,
 			Project = project,
 			Name = repository
 		});
 
 		// Redirect back to the original repository
-		return Redirect($"https://dev.azure.com/gabrielbourgault/{project}/_git/{repository}");
+		return Redirect($"https://dev.azure.com/{Options.Organization}/{project}/_git/{repository}");
 	}
 
 	[HttpGet("stars/{project}/{repositoryName}")]
@@ -52,13 +52,14 @@ public class StarsController : Controller
 	{
 		var repository = new Repository
 		{
-			Organization = "gabrielbourgault",
+			Organization = Options.Organization,
 			Project = project,
 			Name = repositoryName
 		};
-		var users = await _starService.GetStars(repository);
+		var users = await _starService.GetStarsAsync(repository);
 
-		var shieldsIoUrl = $"https://img.shields.io/static/v1?label=Stars&message={users.Count}&color=informational&logo=azuredevops";
+		var shieldsIoUrl =
+			$"https://img.shields.io/static/v1?label=Stars&message={users.Count}&color=informational&logo=azuredevops";
 		var badge = await _httpClient.GetAsync(shieldsIoUrl);
 		var stream = await badge.Content.ReadAsStreamAsync();
 		return File(stream, badge.Content.Headers.ContentType?.ToString() ?? "image/svg+xml;charset=utf-8");
