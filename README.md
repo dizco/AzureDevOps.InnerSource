@@ -64,6 +64,7 @@ At this time, there is no guarantee on the stability of this template. Breaking 
 - The code coverage is 0% right now
 - There is a lot of boilerplate code for MVC that could be removed
 - Security has not been given a proper assessment
+- Concurrent requests are not properly handled, the total star count could be wrong if 2 requests are made in parallel
 
 ## Contibuting
 - Star this GitHub repo :star: (ironic, isn't it :wink:)
