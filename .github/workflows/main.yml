@@ -52,6 +52,6 @@ jobs:
       with:
         file: ./Dockerfile
         push: true
-        #github-token: ${{ github.token }}
+        github-token: ${{ github.token }}
         #tags: dizco/AzureDevOps.Stars:latest
         tags: ${{ steps.meta.outputs.tags }}
