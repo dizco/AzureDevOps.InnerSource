@@ -5,6 +5,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
 
@@ -23,18 +27,27 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-  dockerBuild:
+  docker-build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v4
       with:
-        # list of Docker images to use as base name for tags
-        images: |
-          dizco/AzureDevOps.Stars
-          ghcr.io/dizco/AzureDevOps.Stars
-        # generate Docker tags based on the following events/attributes
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
           type=schedule
           type=ref,event=branch
@@ -52,6 +65,6 @@ jobs:
       with:
         file: ./Dockerfile
         push: true
-        github-token: ${{ github.token }}
-        #tags: dizco/AzureDevOps.Stars:latest
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
