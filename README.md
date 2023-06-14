@@ -55,7 +55,7 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
    ```
 
 ## Deploying
-No guidance is provided on how and where to host this .NET service.
+A working dockerfile is provided. No further guidance is provided on how and where to host this .NET service.
 
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
