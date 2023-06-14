@@ -1,5 +1,5 @@
 [//]: # (TODO: Add pipeline badge)
- [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.Stars/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.Stars/actions/workflows/main.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.Stars) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 
