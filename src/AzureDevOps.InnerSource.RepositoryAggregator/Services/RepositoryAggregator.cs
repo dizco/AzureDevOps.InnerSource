@@ -30,7 +30,8 @@ public class RepositoryAggregator
 		foreach (var project in projects)
 		{
 			var response = await gitClient.GetRepositoriesAsync(project.Id);
-			repositories.AddRange(response.Where(x=> !(x.IsDisabled ?? false)).Where(IsAllowedRepository));
+			repositories.AddRange(response.Where(x=> !(x.IsDisabled ?? false) && !string.IsNullOrWhiteSpace(x.DefaultBranch))
+				.Where(IsAllowedRepository));
 		}
 
 		var t = repositories.ToList();
