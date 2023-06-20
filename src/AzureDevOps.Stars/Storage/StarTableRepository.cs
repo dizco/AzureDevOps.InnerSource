@@ -2,6 +2,7 @@
 using System.Text;
 using Azure;
 using Azure.Data.Tables;
+using AzureDevOps.InnerSource.Common;
 using AzureDevOps.Stars.Services;
 
 namespace AzureDevOps.Stars.Storage;

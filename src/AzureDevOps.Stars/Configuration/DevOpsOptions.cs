@@ -8,8 +8,5 @@ public class DevOpsOptions
 	public string Organization { get; set; } = null!;
 
 	[Required]
-	public string PersonalAccessToken { get; set; } = null!;
-
-	[Required]
 	public List<(string RegexProject, string RegexRepository)> StarsAllowedRepositories { get; set; } = null!;
 }

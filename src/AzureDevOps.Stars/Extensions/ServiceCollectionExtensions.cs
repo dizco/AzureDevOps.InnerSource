@@ -22,7 +22,6 @@ public static class ServiceCollectionExtensions
 			.Configure(o =>
 			{
 				o.Organization = devOpsSettings.Organization;
-				o.PersonalAccessToken = devOpsSettings.PersonalAccessToken;
 				o.StarsAllowedRepositories = (devOpsSettings.StarsAllowedRepositories ?? new List<DevOpsSettings.StarsAllowedRepositoriesSettings>())
 					.Select(x => (Project: x.RegexProject, Repository: x.RegexRepository))
 					.ToList();

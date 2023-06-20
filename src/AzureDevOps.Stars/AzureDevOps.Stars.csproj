@@ -22,4 +22,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AzureDevOps.InnerSource.Common\AzureDevOps.InnerSource.Common.csproj" />
+  </ItemGroup>
+
 </Project>

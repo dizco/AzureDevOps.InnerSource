@@ -6,8 +6,6 @@ internal struct DevOpsSettings
 
 	public string Organization { get; init; }
 
-	public string PersonalAccessToken { get; init; }
-
 	public readonly struct StarsAllowedRepositoriesSettings
 	{
 		public string RegexProject { get; init; }
