@@ -20,4 +20,4 @@ services.AddRepositoryAggregation(configuration);
 await using var provider = services.BuildServiceProvider();
 
 var aggregator = provider.GetRequiredService<RepositoryAggregator>();
-await aggregator.AggregateAsync();
+await aggregator.AggregateAsync(CancellationToken.None);
