@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.Rep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.Common", "src\AzureDevOps.InnerSource.Common\AzureDevOps.InnerSource.Common.csproj", "{0ADE049D-9045-4D7E-88A1-7E17181CD362}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CCDCB7CC-6650-40E1-9FF6-2E9E1E9BBCDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.RepositoryAggregator.UnitTests", "tests\AzureDevOps.InnerSource.RepositoryAggregator.UnitTests\AzureDevOps.InnerSource.RepositoryAggregator.UnitTests.csproj", "{58116E45-3FE6-444A-B1FC-3078766E022F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,10 @@ Global
 		{0ADE049D-9045-4D7E-88A1-7E17181CD362}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0ADE049D-9045-4D7E-88A1-7E17181CD362}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0ADE049D-9045-4D7E-88A1-7E17181CD362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58116E45-3FE6-444A-B1FC-3078766E022F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58116E45-3FE6-444A-B1FC-3078766E022F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58116E45-3FE6-444A-B1FC-3078766E022F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58116E45-3FE6-444A-B1FC-3078766E022F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +54,7 @@ Global
 		{741BA6ED-DB09-4E16-B2A3-A48CB3B0B127} = {3D82799A-C26F-481E-B1FB-9D47F74D03A0}
 		{3FAC9A1B-0E2C-4622-9146-64D367454DF9} = {3D82799A-C26F-481E-B1FB-9D47F74D03A0}
 		{0ADE049D-9045-4D7E-88A1-7E17181CD362} = {3D82799A-C26F-481E-B1FB-9D47F74D03A0}
+		{58116E45-3FE6-444A-B1FC-3078766E022F} = {CCDCB7CC-6650-40E1-9FF6-2E9E1E9BBCDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B78A441-20C8-450C-BA52-100B4E88D213}
