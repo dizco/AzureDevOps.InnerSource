@@ -1,7 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.Common;
-using AzureDevOps.Stars.Configuration;
+using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
 using AzureDevOps.Stars.Exceptions;
 using AzureDevOps.Stars.Storage;
 using Microsoft.Extensions.Options;
@@ -18,12 +17,10 @@ public interface IStarService
 public class StarService : IStarService
 {
 	private readonly ILogger<StarService> _logger;
-	
-	private readonly IStarRepository _repository;
 
 	private readonly IOptionsMonitor<DevOpsOptions> _options;
 
-	private DevOpsOptions Options => _options.CurrentValue;
+	private readonly IStarRepository _repository;
 
 	public StarService(IStarRepository repository, IOptionsMonitor<DevOpsOptions> options, ILogger<StarService> logger)
 	{
@@ -31,6 +28,8 @@ public class StarService : IStarService
 		_options = options;
 		_logger = logger;
 	}
+
+	private DevOpsOptions Options => _options.CurrentValue;
 
 	public async Task StarAsync(Principal principal, Repository repository)
 	{
@@ -57,7 +56,7 @@ public class StarService : IStarService
 	private bool IsAllowedRepository(Repository repository)
 	{
 		return string.Equals(Options.Organization, repository.Organization, StringComparison.OrdinalIgnoreCase)
-		       && Options.StarsAllowedRepositories.Any(x =>
+		       && Options.AllowedRepositories.Any(x =>
 			       new Regex(x.RegexProject).IsMatch(repository.Project) &&
 			       new Regex(x.RegexRepository).IsMatch(repository.Name));
 	}

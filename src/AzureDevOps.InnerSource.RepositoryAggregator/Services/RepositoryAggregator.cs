@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
@@ -12,23 +11,28 @@ public class RepositoryAggregator
 {
 	// We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
 	private readonly VssConnection _connection;
-	private readonly IOptionsMonitor<DevOpsOptions> _options;
+	private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
+	private readonly IOptionsMonitor<RepositoryAggregationOptions> _options;
 
-	public RepositoryAggregator(VssConnection connection, IOptionsMonitor<DevOpsOptions> options)
+	public RepositoryAggregator(VssConnection connection, IOptionsMonitor<RepositoryAggregationOptions> options, IOptionsMonitor<DevOpsOptions> devOpsOptions)
 	{
 		_connection = connection;
 		_options = options;
+		_devOpsOptions = devOpsOptions;
 	}
 
-	private DevOpsOptions Options => _options.CurrentValue;
+	private DevOpsOptions DevOpsOptions => _devOpsOptions.CurrentValue;
+	private RepositoryAggregationOptions Options => _options.CurrentValue;
 
 	public async Task AggregateAsync(CancellationToken ct)
 	{
 		var projects = await GetProjectsAsync(ct);
 		var repositories = await GetRepositoriesAsync(projects, ct);
 
+		var filePath = Options.OutputFolder + "/result.md";
+		Directory.CreateDirectory(Options.OutputFolder);
 		var md = BuildMarkdown(repositories);
-		await File.WriteAllTextAsync("result.md", md, ct);
+		await File.WriteAllTextAsync(filePath, md, ct);
 	}
 
 	private static string BuildMarkdown(List<Repository> repositories)
@@ -104,18 +108,20 @@ npm install --save package
 	private async Task<int> GetLastCommitDaysAsync(Guid repositoryId, CancellationToken ct)
 	{
 		var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
-		var commits = await gitClient.GetCommitsAsync(repositoryId, new GitQueryCommitsCriteria() { Top = 5 }, cancellationToken: ct);
+		var commits = await gitClient.GetCommitsAsync(repositoryId, new GitQueryCommitsCriteria { Top = 5 }, cancellationToken: ct);
 		var lastCommit = commits.FirstOrDefault();
-		if (lastCommit != null)
-		{
-			return (DateTime.Now - lastCommit.Committer.Date).Days;
-		}
+		if (lastCommit != null) return (DateTime.Now - lastCommit.Committer.Date).Days;
 
 		// TODO: Color scale and call shields.io with appropriate color depending on number of days 
 		// https://github.com/badges/shields/blob/master/services/color-formatters.js#L183
 
+		// Get this out of a API endpoint?
+		// Or run this frequently enough?
+
+		// Add ability to add overrides via appsettings for description, packages, etc
+
 		return -1;
-	} 
+	}
 
 	private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
 	{
@@ -145,7 +151,7 @@ npm install --save package
 		}
 
 		return string.Empty;
-	} 
+	}
 
 	/// <remarks>
 	///     Metrics are calculated with linguist. There are some ways to override this:
@@ -198,13 +204,13 @@ npm install --save package
 
 	private bool IsAllowedProject(TeamProjectReference project)
 	{
-		return Options.AllowedRepositories.Any(x => new Regex(x.RegexProject).IsMatch(project.Name));
+		return DevOpsOptions.AllowedRepositories.Any(x => new Regex(x.RegexProject).IsMatch(project.Name));
 	}
 
 	private bool IsAllowedRepository(GitRepository repository)
 	{
-		return Options.AllowedRepositories.Any(x => new Regex(x.RegexProject).IsMatch(repository.ProjectReference.Name)
-		                                            && new Regex(x.RegexRepository).IsMatch(repository.Name));
+		return DevOpsOptions.AllowedRepositories.Any(x => new Regex(x.RegexProject).IsMatch(repository.ProjectReference.Name)
+		                                                  && new Regex(x.RegexRepository).IsMatch(repository.Name));
 	}
 }
 

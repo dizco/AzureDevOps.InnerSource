@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using AzureDevOps.InnerSource.RepositoryAggregator.Extensions;
+using AzureDevOps.InnerSource.RepositoryAggregator.Services;
 using AzureDevOps.Stars.Exceptions;
 using AzureDevOps.Stars.Extensions;
+using CommandLine;
 using Microsoft.IdentityModel.Logging;
 
 IdentityModelEventSource.ShowPII = Debugger.IsAttached;
@@ -10,41 +13,71 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 IConfiguration configuration = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
-	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", optional: true)
+	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", true)
 	.AddUserSecrets<Program>()
 	.AddEnvironmentVariables()
 	.Build();
 
-var builder = WebApplication.CreateBuilder(args);
+var command = Parser.Default.ParseArguments<CommandLineOptions>(args);
+if (string.Equals(command.Value.Command, "aggregate", StringComparison.OrdinalIgnoreCase))
+	await RunAggregationAsync();
+else
+	RunWebMvc();
 
-// Add services to the container.
-builder.Services.AddControllersWithViews(options =>
+async Task RunAggregationAsync()
 {
-	options.Filters.Add<ExceptionFilter>();
-});
-builder.Services.ConfigureAuthentication(configuration);
-builder.Services.AddStars(configuration);
-var app = builder.Build();
+	var services = new ServiceCollection();
+	services.AddAzureDevOpsConnection(configuration);
+	services.AddRepositoryAggregation(options => { options.OutputFolder = command.Value.OutputFolder; });
+#pragma warning disable ASP0000
+	await using var provider = services.BuildServiceProvider();
+#pragma warning restore ASP0000
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-	app.UseExceptionHandler("/Home/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	app.UseHsts();
+	var aggregator = provider.GetRequiredService<RepositoryAggregator>();
+	await aggregator.AggregateAsync(CancellationToken.None);
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+void RunWebMvc()
+{
+	var builder = WebApplication.CreateBuilder(args);
 
-app.UseRouting();
+	// Add services to the container.
+	builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); });
+	builder.Services.ConfigureAuthentication(configuration);
+	builder.Services.AddAzureDevOpsConnection(configuration);
+	builder.Services.AddStars(configuration);
+	var app = builder.Build();
 
-app.UseAuthorization();
+	// Configure the HTTP request pipeline.
+	if (!app.Environment.IsDevelopment())
+	{
+		app.UseExceptionHandler("/Home/Error");
+		// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+		app.UseHsts();
+	}
 
-app.MapControllerRoute(
-	"default",
-	"{controller=Home}/{action=Index}/{id?}");
+	app.UseHttpsRedirection();
+	app.UseStaticFiles();
 
-app.Run();
+	app.UseRouting();
 
-public partial class Program { }
+	app.UseAuthorization();
+
+	app.MapControllerRoute(
+		"default",
+		"{controller=Home}/{action=Index}/{id?}");
+
+	app.Run();
+}
+
+public partial class Program
+{
+}
+
+internal class CommandLineOptions
+{
+	[Value(0)] public string Command { get; set; } = "";
+
+	[Option('o', "output-folder", Default = "./")]
+	public string OutputFolder { get; set; } = "./";
+}

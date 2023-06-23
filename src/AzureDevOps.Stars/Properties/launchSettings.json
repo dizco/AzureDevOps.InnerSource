@@ -8,6 +8,14 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Local"
       }
+    },
+    "AzureDevOps.InnerSource.RepositoryAggregator": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "commandLineArgs": "aggregate --output-folder=./",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Local"
+      }
     }
   }
 }
