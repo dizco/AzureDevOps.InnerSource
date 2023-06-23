@@ -10,6 +10,9 @@ namespace AzureDevOps.InnerSource.ADO.Services;
 
 public class RepositoryAggregator
 {
+	// TODO: Make this configurable? Or use current url?
+    private const string BadgesServerUrl = "https://localhost:44400";
+
 	// We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
 	private readonly VssConnection _connection;
 	private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
@@ -46,7 +49,8 @@ public class RepositoryAggregator
 
 		const string repositoryTemplate = @"
 <td style=""width: 550px"">
-<h2 style=""margin: 0; margin-bottom: 5px;"">{{title}} {{language}}</h2>
+<h2 style=""margin: 0; margin-bottom: 5px; border-bottom: 1px;"">{{title}}</h2>
+<p style=""margin-bottom: 5px;"">{{language}} <img src=""{{badgesServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""></p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
 
 <a href=""{{link}}"">Go to project</a>
@@ -62,9 +66,11 @@ npm install --save package
 			if (i % 2 == 0) repositoriesMarkdown += "<tr>";
 
 			repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
+                .Replace("{{repositoryId}}", repositories[i].Id.ToString())
 				.Replace("{{description}}", repositories[i].Description)
 				.Replace("{{link}}", repositories[i].WebUrl)
-				.Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "");
+				.Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "")
+                .Replace("{{badgesServerUrl}}", BadgesServerUrl);
 
 			if (i % 2 == 1) repositoriesMarkdown += "</tr>";
 		}
@@ -88,11 +94,12 @@ npm install --save package
 				.SelectAwaitWithCancellation(async (x, token) =>
 				{
 					var description = await GetDescriptionAsync(x.Id, token);
-					var lastCommitDays = await GetLastCommitDaysAsync(x.Id, token);
 					projectMetrics.TryGetValue(x.Name, out var language);
 					return new Repository
 					{
+						Project = project.Name,
 						Name = x.Name,
+						Id = x.Id,
 						Description = description,
 						Language = language,
 						WebUrl = x.WebUrl
@@ -106,25 +113,7 @@ npm install --save package
 		return repositories;
 	}
 
-	private async Task<int> GetLastCommitDaysAsync(Guid repositoryId, CancellationToken ct)
-	{
-		var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
-		var commits = await gitClient.GetCommitsAsync(repositoryId, new GitQueryCommitsCriteria { Top = 5 }, cancellationToken: ct);
-		var lastCommit = commits.FirstOrDefault();
-		if (lastCommit != null) return (DateTime.Now - lastCommit.Committer.Date).Days;
-
-		// TODO: Color scale and call shields.io with appropriate color depending on number of days 
-		// https://github.com/badges/shields/blob/master/services/color-formatters.js#L183
-
-		// Get this out of a API endpoint?
-		// Or run this frequently enough?
-
-		// Add ability to add overrides via appsettings for description, packages, etc
-
-		return -1;
-	}
-
-	private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
+    private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
 	{
 		var readme = await GetReadmeAsync(repositoryId, ct);
 		var descriptionRegex = new Regex("<p id=\"description\">(.*)<\\/p>");
@@ -245,6 +234,10 @@ internal class ProgrammingLanguage
 
 internal record Repository
 {
+	public required string Project { get; init; }
+
+	public required Guid Id { get; init; }
+
 	public required string Name { get; init; }
 
 	public required string? Description { get; init; }

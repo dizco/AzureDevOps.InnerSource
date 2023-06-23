@@ -14,10 +14,12 @@ public class StarsController : Controller
     private readonly HttpClient _httpClient;
     private readonly IOptionsMonitor<DevOpsOptions> _options;
     private readonly IStarService _starService;
+    private readonly BadgeService _badgeService;
 
-    public StarsController(IStarService starService, IOptionsMonitor<DevOpsOptions> options, HttpClient httpClient)
+    public StarsController(IStarService starService, BadgeService badgeService, IOptionsMonitor<DevOpsOptions> options, HttpClient httpClient)
     {
         _starService = starService;
+        _badgeService = badgeService;
         _options = options;
         _httpClient = httpClient;
     }
@@ -63,9 +65,6 @@ public class StarsController : Controller
         };
         var stars = await _starService.GetStarCountAsync(repository);
 
-        var shieldsIoUrl = $"https://img.shields.io/static/v1?label=Stars&message={stars}&color=informational&logo=azuredevops";
-        var badge = await _httpClient.GetAsync(shieldsIoUrl);
-        var stream = await badge.Content.ReadAsStreamAsync();
-        return File(stream, badge.Content.Headers.ContentType?.ToString() ?? "image/svg+xml;charset=utf-8");
+        return await _badgeService.Create("Stars", stars.ToString(), "informational", "azuredevops");
     }
 }

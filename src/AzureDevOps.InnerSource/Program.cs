@@ -46,7 +46,8 @@ void RunWebMvc()
     builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); });
     builder.Services.ConfigureAuthentication(configuration);
     builder.Services.AddAzureDevOpsConnection(configuration);
-    builder.Services.AddStars(configuration);
+    builder.Services.AddApplicationServices(configuration);
+    builder.Services.AddRepositoryHealth();
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
