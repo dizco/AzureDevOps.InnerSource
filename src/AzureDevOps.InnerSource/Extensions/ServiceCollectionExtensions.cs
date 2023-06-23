@@ -82,7 +82,7 @@ public static class ServiceCollectionExtensions
 				options.ClaimActions.MapAll();
 
                 options.Scope.Clear();
-				foreach (var scope in new List<string> { "openid", "email", "offline_access" }) options.Scope.Add(scope);
+				foreach (var scope in new List<string> { "openid", "profile", "email", "offline_access" }) options.Scope.Add(scope);
 			});
 
         return services;
