@@ -34,6 +34,7 @@ public class ProjectAnalysisHttpClientTests
 		var response = await http.GetProjectLanguageAnalyticsAsync(projectGuid, CancellationToken.None);
 
 		// Assert
-		response.Should().Be(HttpStatusCode.OK);
+		response.Should().NotBeNull()
+            .And.Subject.Should().BeOfType<ProjectLanguageAnalytics>();
 	}
 }
