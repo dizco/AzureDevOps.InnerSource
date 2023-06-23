@@ -3,7 +3,7 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.Stars) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 
-# AzureDevOps.Stars :star2:
+# AzureDevOps.InnerSource :star2:
 
 Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to assess how mature and easy to use a repository is. This template provides the ability to star any Azure DevOps repository within an organization and display the number of stars with a badge.
 

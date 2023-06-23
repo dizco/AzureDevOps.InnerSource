@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3D82799A-C26F-481E-B1FB-9D47F74D03A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureDevOps.Stars", "src\AzureDevOps.Stars\AzureDevOps.Stars.csproj", "{741BA6ED-DB09-4E16-B2A3-A48CB3B0B127}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureDevOps.InnerSource", "src\AzureDevOps.InnerSource\AzureDevOps.InnerSource.csproj", "{741BA6ED-DB09-4E16-B2A3-A48CB3B0B127}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0ADE049D-9045-4D7E-88A1-7E17181CD362} = {0ADE049D-9045-4D7E-88A1-7E17181CD362}
 	EndProjectSection
