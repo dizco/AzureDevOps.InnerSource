@@ -83,6 +83,7 @@ npm install --save package
 				.SelectAwaitWithCancellation(async (x, token) =>
 				{
 					var description = await GetDescriptionAsync(x.Id, token);
+					var lastCommitDays = await GetLastCommitDaysAsync(x.Id, token);
 					projectMetrics.TryGetValue(x.Name, out var language);
 					return new Repository
 					{
@@ -99,6 +100,22 @@ npm install --save package
 
 		return repositories;
 	}
+
+	private async Task<int> GetLastCommitDaysAsync(Guid repositoryId, CancellationToken ct)
+	{
+		var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
+		var commits = await gitClient.GetCommitsAsync(repositoryId, new GitQueryCommitsCriteria() { Top = 5 }, cancellationToken: ct);
+		var lastCommit = commits.FirstOrDefault();
+		if (lastCommit != null)
+		{
+			return (DateTime.Now - lastCommit.Committer.Date).Days;
+		}
+
+		// TODO: Color scale and call shields.io with appropriate color depending on number of days 
+		// https://github.com/badges/shields/blob/master/services/color-formatters.js#L183
+
+		return -1;
+	} 
 
 	private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
 	{
