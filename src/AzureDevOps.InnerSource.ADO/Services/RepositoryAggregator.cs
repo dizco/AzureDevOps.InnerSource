@@ -93,7 +93,16 @@ npm install --save package
 				.ToAsyncEnumerable()
 				.SelectAwaitWithCancellation(async (x, token) =>
 				{
-					var description = await GetDescriptionAsync(x.Id, token);
+                    string description;
+                    if (Options.Overrides.TryGetValue($"{project.Name}/{x.Name}", out var o))
+                    {
+						description = o.Description;
+                    }
+					else
+                    {
+                        description = await GetDescriptionAsync(x.Id, token);
+                    }
+					
 					projectMetrics.TryGetValue(x.Name, out var language);
 					return new Repository
 					{

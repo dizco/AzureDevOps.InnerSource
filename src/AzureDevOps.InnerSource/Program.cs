@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using AzureDevOps.InnerSource;
+using AzureDevOps.InnerSource.ADO.Configuration;
 using AzureDevOps.InnerSource.ADO.Extensions;
 using AzureDevOps.InnerSource.ADO.Services;
+using AzureDevOps.InnerSource.Configuration.Settings;
 using AzureDevOps.InnerSource.Exceptions;
 using AzureDevOps.InnerSource.Extensions;
 using CommandLine;
@@ -29,7 +31,16 @@ async Task RunAggregationAsync()
 {
     var services = new ServiceCollection();
     services.AddAzureDevOpsConnection(configuration);
-    services.AddRepositoryAggregation(options => { options.OutputFolder = command.Value.OutputFolder; });
+    services.AddRepositoryAggregation(options =>
+    {
+        var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
+        options.OutputFolder = command.Value.OutputFolder;
+        options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
+            x => new RepositoryAggregationOptions.RepositoryAggregationOverride()
+            {
+                Description = x.Value.Description
+            }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
+    });
 #pragma warning disable ASP0000
     await using var provider = services.BuildServiceProvider();
 #pragma warning restore ASP0000
