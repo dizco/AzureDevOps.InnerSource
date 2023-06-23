@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AzureDevOps.InnerSource.RepositoryAggregator.Services;
+using FluentAssertions;
 using RichardSzalay.MockHttp;
 using Xunit;
 

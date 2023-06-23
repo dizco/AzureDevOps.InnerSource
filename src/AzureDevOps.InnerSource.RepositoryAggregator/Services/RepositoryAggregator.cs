@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
@@ -33,23 +34,22 @@ public class RepositoryAggregator
 	private static string BuildMarkdown(List<Repository> repositories)
 	{
 		const string template = @"
-<table class=""repositories"" width=""1000px"">
+<table class=""repositories"" width=""1100px"">
 {{repositories}}
 </table>
 ";
 
 		const string repositoryTemplate = @"
-<td style=""width: 500px"">
+<td style=""width: 550px"">
 <h2 style=""margin: 0; margin-bottom: 5px;"">{{title}} {{language}}</h2>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
-
-```shell
-npm install --save package
-```
 
 <a href=""{{link}}"">Go to project</a>
 </td>
 ";
+		/*```shell
+npm install --save package
+```*/
 
 		var repositoriesMarkdown = string.Empty;
 		for (var i = 0; i < repositories.Count; i++)
@@ -57,6 +57,7 @@ npm install --save package
 			if (i % 2 == 0) repositoriesMarkdown += "<tr>";
 
 			repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
+				.Replace("{{description}}", repositories[i].Description)
 				.Replace("{{link}}", repositories[i].WebUrl)
 				.Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "");
 
@@ -75,24 +76,59 @@ npm install --save package
 		{
 			var projectMetrics = await GetProjectMetricsAsync(project, ct);
 			var response = await gitClient.GetRepositoriesAsync(project.Id, includeHidden: false, cancellationToken: ct);
-			repositories.AddRange(response
+			var allowedRepositories = await response
 				.Where(x => !(x.IsDisabled ?? false) && !string.IsNullOrWhiteSpace(x.DefaultBranch))
 				.Where(IsAllowedRepository)
-				.Select(x =>
+				.ToAsyncEnumerable()
+				.SelectAwaitWithCancellation(async (x, token) =>
 				{
+					var description = await GetDescriptionAsync(x.Id, token);
 					projectMetrics.TryGetValue(x.Name, out var language);
 					return new Repository
 					{
 						Name = x.Name,
-						Description = "",
+						Description = description,
 						Language = language,
 						WebUrl = x.WebUrl
 					};
-				}));
+				})
+				.ToListAsync(ct);
+
+			repositories.AddRange(allowedRepositories);
 		}
 
 		return repositories;
 	}
+
+	private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
+	{
+		var readme = await GetReadmeAsync(repositoryId, ct);
+		var descriptionRegex = new Regex("<p id=\"description\">(.*)<\\/p>");
+		var match = descriptionRegex.Match(readme);
+
+		if (match.Success)
+		{
+			var description = match.Groups[1].Value;
+			// Take first 200 characters of description
+			return description.Substring(0, Math.Min(description.Length, 200));
+		}
+
+		return "";
+	}
+
+	private async Task<string> GetReadmeAsync(Guid repositoryId, CancellationToken ct)
+	{
+		var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
+		var items = await gitClient.GetItemsAsync(repositoryId, recursionLevel: VersionControlRecursionType.OneLevel, cancellationToken: ct);
+		if (items.Any(x => string.Equals(x.Path, "/readme.md", StringComparison.OrdinalIgnoreCase)))
+		{
+			var content = await gitClient.GetItemContentAsync(repositoryId, "readme.md", cancellationToken: ct);
+			var reader = new StreamReader(content);
+			return await reader.ReadToEndAsync(ct);
+		}
+
+		return string.Empty;
+	} 
 
 	/// <remarks>
 	///     Metrics are calculated with linguist. There are some ways to override this:
@@ -103,9 +139,20 @@ npm install --save package
 		var analysisClient = await _connection.GetClientAsync<ProjectAnalysisHttpClient>(ct);
 		var analytics = await analysisClient.GetProjectLanguageAnalyticsAsync(project.Id, ct);
 
-		return analytics.RepositoryLanguageAnalytics.Select(x => new { x.Name, TopLanguage = x.LanguageBreakdown.FirstOrDefault()?.Name ?? "" })
-			.Where(x => !string.IsNullOrWhiteSpace(x.TopLanguage))
-			.ToDictionary(x => x.Name, x => new ProgrammingLanguage(x.TopLanguage));
+		var repositoriesAnalytics = new Dictionary<string, ProgrammingLanguage>();
+		foreach (var repository in analytics.RepositoryLanguageAnalytics)
+		{
+			if (!repository.LanguageBreakdown.Any())
+				continue;
+
+			var topLanguage = repository.LanguageBreakdown.MaxBy(x => x.LanguagePercentage);
+			if (string.IsNullOrWhiteSpace(topLanguage?.Name))
+				continue;
+
+			repositoriesAnalytics.Add(repository.Name, new ProgrammingLanguage(topLanguage.Name));
+		}
+
+		return repositoriesAnalytics;
 	}
 
 	private async Task<List<Project>> GetProjectsAsync(CancellationToken ct)
@@ -163,7 +210,7 @@ internal class ProgrammingLanguage
 	{
 		return Name switch
 		{
-			"C#" => "<img src=\"https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/\" alt=\".NET\">",
+			"C#" => "<img src=\"https://img.shields.io/badge/-512BD4?logo=.net\" alt=\".NET\">",
 			"TypeScript" => "<img src=\"https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white\" alt=\"TypeScript\">",
 			"JavaScript" => "<img src=\"https://img.shields.io/badge/javascript-%23323330.svg?logo=javascript&logoColor=%23F7DF1E\" alt=\"JavaScript\">",
 			"C++" => "<img src=\"https://img.shields.io/badge/c++-%2300599C.svg?logo=c%2B%2B&logoColor=white\" alt=\"C++\">",
