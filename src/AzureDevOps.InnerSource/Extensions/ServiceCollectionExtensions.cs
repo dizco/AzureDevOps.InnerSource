@@ -1,8 +1,8 @@
 ﻿using Azure.Data.Tables;
 using AzureDevOps.InnerSource.Common.Configuration;
-using AzureDevOps.Stars.Configuration.Settings;
-using AzureDevOps.Stars.Services;
-using AzureDevOps.Stars.Storage;
+using AzureDevOps.InnerSource.Configuration.Settings;
+using AzureDevOps.InnerSource.Services;
+using AzureDevOps.InnerSource.Storage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 
-namespace AzureDevOps.Stars.Extensions;
+namespace AzureDevOps.InnerSource.Extensions;
 
 public static class ServiceCollectionExtensions
 {

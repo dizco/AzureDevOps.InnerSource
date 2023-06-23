@@ -1,8 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using AzureDevOps.InnerSource.Common;
-using AzureDevOps.Stars.Services;
+using AzureDevOps.InnerSource.Services;
 
-namespace AzureDevOps.Stars.Storage;
+namespace AzureDevOps.InnerSource.Storage;
 
 public class StarInMemoryRepository : IStarRepository
 {

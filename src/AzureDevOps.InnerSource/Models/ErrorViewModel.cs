@@ -1,4 +1,4 @@
-namespace AzureDevOps.Stars.Models;
+namespace AzureDevOps.InnerSource.Models;
 
 public class ErrorViewModel
 {

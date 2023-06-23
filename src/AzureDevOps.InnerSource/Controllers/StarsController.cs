@@ -2,12 +2,12 @@
 using System.Security.Claims;
 using AzureDevOps.InnerSource.Common;
 using AzureDevOps.InnerSource.Common.Configuration;
-using AzureDevOps.Stars.Services;
+using AzureDevOps.InnerSource.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace AzureDevOps.Stars.Controllers;
+namespace AzureDevOps.InnerSource.Controllers;
 
 public class StarsController : Controller
 {

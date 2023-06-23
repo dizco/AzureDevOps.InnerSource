@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
-using AzureDevOps.Stars.Models;
+using AzureDevOps.InnerSource.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AzureDevOps.Stars.Controllers;
+namespace AzureDevOps.InnerSource.Controllers;
 
 public class HomeController : Controller
 {

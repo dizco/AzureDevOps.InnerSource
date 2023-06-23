@@ -1,4 +1,4 @@
-﻿namespace AzureDevOps.Stars.Services;
+﻿namespace AzureDevOps.InnerSource.Services;
 
 public sealed record Principal
 {

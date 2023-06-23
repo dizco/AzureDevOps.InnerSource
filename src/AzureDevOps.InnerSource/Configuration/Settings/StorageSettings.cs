@@ -1,4 +1,4 @@
-﻿namespace AzureDevOps.Stars.Configuration.Settings;
+﻿namespace AzureDevOps.InnerSource.Configuration.Settings;
 
 internal struct StorageSettings
 {

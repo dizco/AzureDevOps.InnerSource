@@ -1,7 +1,7 @@
 [//]: # (TODO: Add pipeline badge)
-[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.Stars/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.Stars/actions/workflows/main.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
-![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.Stars) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
+![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.InnerSource) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 
 # AzureDevOps.InnerSource :star2:
 
@@ -17,7 +17,7 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
 1. [Install .NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), if not already installed.
 1. Clone this repository
    ```
-   git clone https://github.com/dizco/AzureDevOps.Stars.git
+   git clone https://github.com/dizco/AzureDevOps.InnerSource.git
    ```
 1. In Azure AD, create a new `App registration`
    1. Set redirect URI `https://localhost:44400/signin-oidc`
@@ -31,7 +31,7 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
 1. Create a new Azure Storage Account
    1. Create a new Table `azuredevopsstars`
 
-1. With Visual Studio, open the `AzureDevOps.Stars.sln`
+1. With Visual Studio, open the `AzureDevOps.InnerSource.sln`
 1. Update the `appsettings.json` and `appsettings.Local.json` files
    
    | Config | Value |

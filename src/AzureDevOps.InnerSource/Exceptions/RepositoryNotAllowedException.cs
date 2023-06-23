@@ -1,3 +1,3 @@
-﻿namespace AzureDevOps.Stars.Exceptions;
+﻿namespace AzureDevOps.InnerSource.Exceptions;
 
 public class RepositoryNotAllowedException : Exception { }

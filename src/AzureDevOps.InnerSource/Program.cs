@@ -2,9 +2,9 @@ using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using AzureDevOps.InnerSource.ADO.Extensions;
 using AzureDevOps.InnerSource.ADO.Services;
-using AzureDevOps.Stars;
-using AzureDevOps.Stars.Exceptions;
-using AzureDevOps.Stars.Extensions;
+using AzureDevOps.InnerSource;
+using AzureDevOps.InnerSource.Exceptions;
+using AzureDevOps.InnerSource.Extensions;
 using CommandLine;
 using Microsoft.IdentityModel.Logging;
 
@@ -15,7 +15,7 @@ var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIR
 IConfiguration configuration = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
 	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", true)
-	.AddUserSecrets<AzureDevOps.Stars.Program>()
+	.AddUserSecrets<AzureDevOps.InnerSource.Program>()
 	.AddEnvironmentVariables()
 	.Build();
 
@@ -71,7 +71,7 @@ void RunWebMvc()
 	app.Run();
 }
 
-namespace AzureDevOps.Stars
+namespace AzureDevOps.InnerSource
 {
 	public partial class Program
 	{

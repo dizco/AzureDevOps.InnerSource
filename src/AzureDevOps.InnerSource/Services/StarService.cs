@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.Common;
 using AzureDevOps.InnerSource.Common.Configuration;
-using AzureDevOps.Stars.Exceptions;
-using AzureDevOps.Stars.Storage;
+using AzureDevOps.InnerSource.Exceptions;
+using AzureDevOps.InnerSource.Storage;
 using Microsoft.Extensions.Options;
 
-namespace AzureDevOps.Stars.Services;
+namespace AzureDevOps.InnerSource.Services;
 
 public interface IStarService
 {
