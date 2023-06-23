@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
+namespace AzureDevOps.InnerSource.Common.Configuration;
 
 public class DevOpsOptions
 {

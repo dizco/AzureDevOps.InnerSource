@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AzureDevOps.InnerSource.RepositoryAggregator\AzureDevOps.InnerSource.RepositoryAggregator.csproj" />
+    <ProjectReference Include="..\..\src\AzureDevOps.InnerSource.ADO\AzureDevOps.InnerSource.ADO.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
 
-namespace AzureDevOps.InnerSource.RepositoryAggregator.Services;
+namespace AzureDevOps.InnerSource.ADO.Services;
 
 /// <summary>
 ///     <see cref="ProjectHttpClient" />

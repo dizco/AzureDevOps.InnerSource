@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.Common;
-using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
+using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.Stars.Exceptions;
 using AzureDevOps.Stars.Storage;
 using Microsoft.Extensions.Options;

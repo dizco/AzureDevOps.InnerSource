@@ -16,13 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.RepositoryAggregator", "src\AzureDevOps.InnerSource.RepositoryAggregator\AzureDevOps.InnerSource.RepositoryAggregator.csproj", "{3FAC9A1B-0E2C-4622-9146-64D367454DF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.ADO", "src\AzureDevOps.InnerSource.ADO\AzureDevOps.InnerSource.ADO.csproj", "{3FAC9A1B-0E2C-4622-9146-64D367454DF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.Common", "src\AzureDevOps.InnerSource.Common\AzureDevOps.InnerSource.Common.csproj", "{0ADE049D-9045-4D7E-88A1-7E17181CD362}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CCDCB7CC-6650-40E1-9FF6-2E9E1E9BBCDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.RepositoryAggregator.UnitTests", "tests\AzureDevOps.InnerSource.RepositoryAggregator.UnitTests\AzureDevOps.InnerSource.RepositoryAggregator.UnitTests.csproj", "{58116E45-3FE6-444A-B1FC-3078766E022F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.InnerSource.ADO.UnitTests", "tests\AzureDevOps.InnerSource.ADO.UnitTests\AzureDevOps.InnerSource.ADO.UnitTests.csproj", "{58116E45-3FE6-444A-B1FC-3078766E022F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

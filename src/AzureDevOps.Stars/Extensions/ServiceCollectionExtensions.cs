@@ -1,5 +1,5 @@
 ﻿using Azure.Data.Tables;
-using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
+using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.Stars.Configuration.Settings;
 using AzureDevOps.Stars.Services;
 using AzureDevOps.Stars.Storage;

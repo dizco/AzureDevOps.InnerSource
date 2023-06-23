@@ -1,7 +1,7 @@
-﻿using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
+﻿using AzureDevOps.InnerSource.ADO.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureDevOps.InnerSource.RepositoryAggregator.Extensions;
+namespace AzureDevOps.InnerSource.ADO.Extensions;
 
 public static class ServiceCollectionExtensions
 {

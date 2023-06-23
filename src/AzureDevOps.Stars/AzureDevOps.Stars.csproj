@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AzureDevOps.InnerSource.Common\AzureDevOps.InnerSource.Common.csproj" />
-    <ProjectReference Include="..\AzureDevOps.InnerSource.RepositoryAggregator\AzureDevOps.InnerSource.RepositoryAggregator.csproj" />
+    <ProjectReference Include="..\AzureDevOps.InnerSource.ADO\AzureDevOps.InnerSource.ADO.csproj" />
   </ItemGroup>
 
 </Project>

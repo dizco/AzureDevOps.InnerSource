@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
-using AzureDevOps.InnerSource.RepositoryAggregator.Configuration;
+using AzureDevOps.InnerSource.ADO.Configuration;
+using AzureDevOps.InnerSource.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 
-namespace AzureDevOps.InnerSource.RepositoryAggregator.Services;
+namespace AzureDevOps.InnerSource.ADO.Services;
 
 public class RepositoryAggregator
 {

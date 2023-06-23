@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
-using AzureDevOps.InnerSource.RepositoryAggregator.Extensions;
-using AzureDevOps.InnerSource.RepositoryAggregator.Services;
+using AzureDevOps.InnerSource.ADO.Extensions;
+using AzureDevOps.InnerSource.ADO.Services;
+using AzureDevOps.Stars;
 using AzureDevOps.Stars.Exceptions;
 using AzureDevOps.Stars.Extensions;
 using CommandLine;
@@ -14,7 +15,7 @@ var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIR
 IConfiguration configuration = new ConfigurationBuilder()
 	.AddJsonFile("appsettings.json")
 	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", true)
-	.AddUserSecrets<Program>()
+	.AddUserSecrets<AzureDevOps.Stars.Program>()
 	.AddEnvironmentVariables()
 	.Build();
 
@@ -70,14 +71,17 @@ void RunWebMvc()
 	app.Run();
 }
 
-public partial class Program
+namespace AzureDevOps.Stars
 {
-}
+	public partial class Program
+	{
+	}
 
-internal class CommandLineOptions
-{
-	[Value(0)] public string Command { get; set; } = "";
+	internal class CommandLineOptions
+	{
+		[Value(0)] public string Command { get; set; } = "";
 
-	[Option('o', "output-folder", Default = "./")]
-	public string OutputFolder { get; set; } = "./";
+		[Option('o', "output-folder", Default = "./")]
+		public string OutputFolder { get; set; } = "./";
+	}
 }
