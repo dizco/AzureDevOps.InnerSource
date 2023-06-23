@@ -81,10 +81,10 @@ public static class ServiceCollectionExtensions
 				options.GetClaimsFromUserInfoEndpoint = true;
 				options.ClaimActions.MapAll();
 
-				options.Scope.Clear();
+                options.Scope.Clear();
 				foreach (var scope in new List<string> { "openid", "email", "offline_access" }) options.Scope.Add(scope);
 			});
 
-		return services;
+        return services;
 	}
 }
