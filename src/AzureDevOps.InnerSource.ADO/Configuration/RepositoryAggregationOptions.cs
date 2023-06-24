@@ -7,6 +7,9 @@ public class RepositoryAggregationOptions
     [Required]
     public string OutputFolder { get; set; } = "./";
 
+    [Required, Url]
+    public string BadgeServerUrl { get; set; } = null!;
+
     [Required]
     public Dictionary<string, RepositoryAggregationOverride> Overrides { get; set; } = new();
 

@@ -10,10 +10,7 @@ namespace AzureDevOps.InnerSource.ADO.Services;
 
 public class RepositoryAggregator
 {
-	// TODO: Make this configurable? Or use current url?
-    private const string BadgesServerUrl = "https://localhost:44400";
-
-	// We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
+    // We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
 	private readonly VssConnection _connection;
 	private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
 	private readonly IOptionsMonitor<RepositoryAggregationOptions> _options;
@@ -39,18 +36,18 @@ public class RepositoryAggregator
 		await File.WriteAllTextAsync(filePath, md, ct);
 	}
 
-	private static string BuildMarkdown(List<Repository> repositories)
+	private string BuildMarkdown(List<Repository> repositories)
 	{
 		const string template = @"
-<table class=""repositories"" width=""1100px"">
+<table class=""repositories"" width=""900px"">
 {{repositories}}
 </table>
 ";
 
 		const string repositoryTemplate = @"
-<td style=""width: 550px"">
+<td style=""width: 450px"">
 <h2 style=""margin: 0; margin-bottom: 5px;"">{{title}}</h2>
-<p style=""margin-bottom: 5px;""><img src=""{{badgesServerUrl}}/stars/{{project}}/{{repository}}"" alt=""Stars""> <img src=""{{badgesServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
+<p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/stars/{{project}}/{{repository}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
 {{installation}}
 <a href=""{{link}}"">Go to project</a>
@@ -73,7 +70,7 @@ npm install --save package
                 .Replace("{{installation}}", repositories[i].Installation)
 				.Replace("{{link}}", repositories[i].WebUrl)
 				.Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "")
-                .Replace("{{badgesServerUrl}}", BadgesServerUrl);
+                .Replace("{{badgeServerUrl}}", Options.BadgeServerUrl);
 
 			if (i % 2 == 1) repositoriesMarkdown += "</tr>";
 		}

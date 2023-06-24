@@ -12,4 +12,6 @@ internal struct RepositoryAggregationSettings
     }
 
     public Dictionary<string, RepositoryAggregationOverride>? Overrides { get; init; }
+
+    public string BadgeServerUrl { get; init; }
 }
