@@ -7,6 +7,8 @@ internal struct RepositoryAggregationSettings
     public readonly struct RepositoryAggregationOverride
     {
         public string Description { get; init; }
+
+        public string Installation { get; init; }
     }
 
     public Dictionary<string, RepositoryAggregationOverride>? Overrides { get; init; }

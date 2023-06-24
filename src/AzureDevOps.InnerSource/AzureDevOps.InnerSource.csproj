@@ -28,4 +28,10 @@
     <ProjectReference Include="..\AzureDevOps.InnerSource.ADO\AzureDevOps.InnerSource.ADO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Assets\segoe-star.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

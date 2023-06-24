@@ -13,5 +13,7 @@ public class RepositoryAggregationOptions
     public readonly struct RepositoryAggregationOverride
     {
         public string Description { get; init; }
+
+        public string Installation { get; init; }
     }
 }
