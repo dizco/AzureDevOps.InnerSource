@@ -11,17 +11,15 @@ namespace AzureDevOps.InnerSource.Controllers;
 
 public class StarsController : Controller
 {
-    private readonly HttpClient _httpClient;
     private readonly IOptionsMonitor<DevOpsOptions> _options;
     private readonly IStarService _starService;
     private readonly BadgeService _badgeService;
 
-    public StarsController(IStarService starService, BadgeService badgeService, IOptionsMonitor<DevOpsOptions> options, HttpClient httpClient)
+    public StarsController(IStarService starService, BadgeService badgeService, IOptionsMonitor<DevOpsOptions> options)
     {
         _starService = starService;
         _badgeService = badgeService;
         _options = options;
-        _httpClient = httpClient;
     }
 
     private DevOpsOptions Options => _options.CurrentValue;
@@ -51,8 +49,9 @@ public class StarsController : Controller
         return Redirect($"https://dev.azure.com/{Options.Organization}/{project}/_git/{repository}");
     }
 
+    // TODO: Think about how to authenticate this
     [HttpGet("stars/{project}/{repositoryName}")]
-    public async Task<IActionResult> GetStars(string project, string repositoryName)
+    public async Task<IActionResult> GetStars(string project, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repositoryName))
             throw new ValidationException("Required parameters were not provided");
@@ -65,6 +64,13 @@ public class StarsController : Controller
         };
         var stars = await _starService.GetStarCountAsync(repository);
 
-        return await _badgeService.Create("Stars", stars.ToString(), "informational", "azuredevops");
+        // TODO: Read this once and cache it to avoid unecessary IO operations
+        byte[] imageArray = await System.IO.File.ReadAllBytesAsync(@"Assets/segoe-star.png", ct);
+        string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+
+        return await _badgeService.CreateAsync("stars", stars.ToString(), "informational",
+            logo: $"data:image/png;base64,{base64ImageRepresentation}",
+            logoColor: "yellow",
+            ct: ct);
     }
 }

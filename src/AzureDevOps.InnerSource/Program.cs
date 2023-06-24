@@ -36,9 +36,10 @@ async Task RunAggregationAsync()
         var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
         options.OutputFolder = command.Value.OutputFolder;
         options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
-            x => new RepositoryAggregationOptions.RepositoryAggregationOverride()
+            x => new RepositoryAggregationOptions.RepositoryAggregationOverride
             {
-                Description = x.Value.Description
+                Description = x.Value.Description,
+                Installation = x.Value.Installation
             }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
     });
 #pragma warning disable ASP0000

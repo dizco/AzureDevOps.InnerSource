@@ -1,19 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AzureDevOps.InnerSource.ADO.Services;
-using AzureDevOps.InnerSource.Common;
-using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.InnerSource.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
 [Route("badges")]
 public class BadgesController : Controller
 {
-    private readonly RepositoryHealthService _repositoryHealthService;
     private readonly BadgeService _badgeService;
+    private readonly RepositoryHealthService _repositoryHealthService;
 
     public BadgesController(BadgeService badgeService, RepositoryHealthService repositoryHealthService)
     {
@@ -32,7 +28,7 @@ public class BadgesController : Controller
         var humanReadableDate = "never";
         if (lastCommitDate.HasValue)
         {
-            int daysElapsed = (DateTime.UtcNow - lastCommitDate.Value).Days;
+            var daysElapsed = (DateTime.UtcNow - lastCommitDate.Value).Days;
             humanReadableDate = daysElapsed switch
             {
                 <= 0 => "today",
@@ -44,6 +40,6 @@ public class BadgesController : Controller
         }
 
         var color = _badgeService.GetColorByAge(lastCommitDate);
-        return await _badgeService.Create("last commit", humanReadableDate, color);
+        return await _badgeService.CreateAsync("last commit", humanReadableDate, color, ct: ct);
     }
 }

@@ -11,12 +11,13 @@ public class BadgeService
         _httpClient = httpClient;
     }
 
-    public async Task<FileStreamResult> Create(string label, string message, string? color = "informational", string? logo = null)
+    public async Task<FileStreamResult> CreateAsync(string label, string message, string? color = "informational", string? logo = null, string? logoColor = null, CancellationToken ct = default)
     {
         var shieldsIoUrl = $"https://img.shields.io/static/v1?label={label}&message={message}&color={color}";
         if (logo is not null) shieldsIoUrl += $"&logo={logo}";
-        var badge = await _httpClient.GetAsync(shieldsIoUrl);
-        var stream = await badge.Content.ReadAsStreamAsync();
+        if (logoColor is not null) shieldsIoUrl += $"&logoColor={logoColor}";
+        var badge = await _httpClient.GetAsync(shieldsIoUrl, ct);
+        var stream = await badge.Content.ReadAsStreamAsync(ct);
         return new FileStreamResult(stream, badge.Content.Headers.ContentType?.ToString() ?? "image/svg+xml;charset=utf-8");
     }
 

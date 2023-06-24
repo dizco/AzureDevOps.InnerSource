@@ -49,10 +49,10 @@ public class RepositoryAggregator
 
 		const string repositoryTemplate = @"
 <td style=""width: 550px"">
-<h2 style=""margin: 0; margin-bottom: 5px; border-bottom: 1px;"">{{title}}</h2>
-<p style=""margin-bottom: 5px;"">{{language}} <img src=""{{badgesServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""></p>
+<h2 style=""margin: 0; margin-bottom: 5px;"">{{title}}</h2>
+<p style=""margin-bottom: 5px;""><img src=""{{badgesServerUrl}}/stars/{{project}}/{{repository}}"" alt=""Stars""> <img src=""{{badgesServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
-
+{{installation}}
 <a href=""{{link}}"">Go to project</a>
 </td>
 ";
@@ -67,7 +67,10 @@ npm install --save package
 
 			repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
                 .Replace("{{repositoryId}}", repositories[i].Id.ToString())
+                .Replace("{{repository}}", repositories[i].Name)
+                .Replace("{{project}}", repositories[i].Project)
 				.Replace("{{description}}", repositories[i].Description)
+                .Replace("{{installation}}", repositories[i].Installation)
 				.Replace("{{link}}", repositories[i].WebUrl)
 				.Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "")
                 .Replace("{{badgesServerUrl}}", BadgesServerUrl);
@@ -93,23 +96,28 @@ npm install --save package
 				.ToAsyncEnumerable()
 				.SelectAwaitWithCancellation(async (x, token) =>
 				{
+                    var readme = await GetReadmeAsync(x.Id, ct);
                     string description;
+                    string installation;
                     if (Options.Overrides.TryGetValue($"{project.Name}/{x.Name}", out var o))
                     {
 						description = o.Description;
+                        installation = o.Installation;
                     }
 					else
                     {
-                        description = await GetDescriptionAsync(x.Id, token);
+                        description = GetDescription(readme);
+						installation = GetInstallation(readme);
                     }
-					
-					projectMetrics.TryGetValue(x.Name, out var language);
+
+                    projectMetrics.TryGetValue(x.Name, out var language);
 					return new Repository
 					{
 						Project = project.Name,
 						Name = x.Name,
 						Id = x.Id,
 						Description = description,
+						Installation = installation,
 						Language = language,
 						WebUrl = x.WebUrl
 					};
@@ -119,13 +127,15 @@ npm install --save package
 			repositories.AddRange(allowedRepositories);
 		}
 
+		// TODO: Query number of stars for each repo
+		// TODO: Sort repositories by number of stars or by last commit
+
 		return repositories;
 	}
 
-    private async Task<string> GetDescriptionAsync(Guid repositoryId, CancellationToken ct)
+    private static string GetDescription(string readme)
 	{
-		var readme = await GetReadmeAsync(repositoryId, ct);
-		var descriptionRegex = new Regex("<p id=\"description\">(.*)<\\/p>");
+        var descriptionRegex = new Regex("<p id=\"description\">(.*)<\\/p>");
 		var match = descriptionRegex.Match(readme);
 
 		if (match.Success)
@@ -138,7 +148,22 @@ npm install --save package
 		return "";
 	}
 
-	private async Task<string> GetReadmeAsync(Guid repositoryId, CancellationToken ct)
+    private static string GetInstallation(string readme)
+    {
+        var installationRegex = new Regex("<pre id=\"packageInstallation\">(.*)<\\/pre>");
+        var match = installationRegex.Match(readme);
+
+        if (match.Success)
+        {
+            var installation = match.Groups[1].Value;
+            // Take first 400 characters of installation
+            return "<pre>" + installation.Substring(0, Math.Min(installation.Length, 400)) + "</pre>";
+        }
+
+        return "";
+    }
+
+    private async Task<string> GetReadmeAsync(Guid repositoryId, CancellationToken ct)
 	{
 		var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
 		var items = await gitClient.GetItemsAsync(repositoryId, recursionLevel: VersionControlRecursionType.OneLevel, cancellationToken: ct);
@@ -250,6 +275,8 @@ internal record Repository
 	public required string Name { get; init; }
 
 	public required string? Description { get; init; }
+
+	public required string? Installation { get; init; }
 
 	public required string WebUrl { get; init; }
 
