@@ -12,4 +12,6 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /app/out .
+EXPOSE 44400/tcp
+ENV ASPNETCORE_ENVIRONMENT Production
 ENTRYPOINT ["dotnet", "AzureDevOps.InnerSource.dll"]
