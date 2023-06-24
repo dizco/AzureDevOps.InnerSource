@@ -39,7 +39,7 @@ public class RepositoryAggregator
 	private string BuildMarkdown(List<Repository> repositories)
 	{
 		const string template = @"
-<table class=""repositories"" width=""900px"">
+<table id=""repositoriesAggregation"" width=""900px"">
 {{repositories}}
 </table>
 ";
