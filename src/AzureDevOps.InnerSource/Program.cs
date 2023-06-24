@@ -35,6 +35,7 @@ async Task RunAggregationAsync()
     {
         var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
         options.OutputFolder = command.Value.OutputFolder;
+        options.BadgeServerUrl = settings.BadgeServerUrl;
         options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
             x => new RepositoryAggregationOptions.RepositoryAggregationOverride
             {
