@@ -9,25 +9,23 @@ namespace AzureDevOps.InnerSource.Storage;
 
 public class StarEntity : ITableEntity
 {
+	public required string Repository { get; set; }
+	public required string Oid { get; set; }
+	public string? Email { get; set; }
 	public required string PartitionKey { get; set; } = null!;
 	public required string RowKey { get; set; } = null!;
 	public DateTimeOffset? Timestamp { get; set; }
 	public ETag ETag { get; set; }
-	public required string Repository { get; set; }
-
-	public required string Oid { get; set; }
-
-	public string? Email { get; set; }
 }
 
 public class StarCountEntity : ITableEntity
 {
 	public required int StarCount { get; set; }
+	public required string Repository { get; set; }
 	public required string PartitionKey { get; set; } = null!;
 	public required string RowKey { get; set; } = null!;
 	public DateTimeOffset? Timestamp { get; set; }
 	public ETag ETag { get; set; }
-	public required string Repository { get; set; }
 }
 
 public class StarTableRepository : IStarRepository
@@ -49,10 +47,7 @@ public class StarTableRepository : IStarRepository
 	public async Task SetStarAsync(Repository repository, Principal principal)
 	{
 		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id);
-		if (entity.HasValue)
-		{
-			return;
-		}
+		if (entity.HasValue) return;
 
 		await _table.UpsertEntityAsync(new StarEntity
 		{
@@ -62,9 +57,10 @@ public class StarTableRepository : IStarRepository
 			Oid = principal.Id,
 			Email = principal.Email
 		});
-		
-			var count = await GetStarCountAsync(repository);
-			await SetStarCountAsync(repository, ++count);
+
+		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
+		var count = await GetStarCountAsync(repository);
+		await SetStarCountAsync(repository, ++count);
 	}
 
 	public async Task SetStarCountAsync(Repository repository, int count)
