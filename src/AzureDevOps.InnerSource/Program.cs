@@ -23,18 +23,18 @@ IConfiguration configuration = new ConfigurationBuilder()
 
 var command = Parser.Default.ParseArguments<CommandLineOptions>(args);
 if (string.Equals(command.Value.Command, "aggregate", StringComparison.OrdinalIgnoreCase))
-    await RunAggregationAsync();
+    await RunAggregationAsync(command.Value);
 else
     RunWebMvc();
 
-async Task RunAggregationAsync()
+async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
 {
     var services = new ServiceCollection();
     services.AddAzureDevOpsConnection(configuration);
     services.AddRepositoryAggregation(options =>
     {
         var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
-        options.OutputFolder = command.Value.OutputFolder;
+        options.OutputFolder = commandLineOptions.OutputFolder;
         options.BadgeServerUrl = settings.BadgeServerUrl;
         options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
             x => new RepositoryAggregationOptions.RepositoryAggregationOverride

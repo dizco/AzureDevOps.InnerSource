@@ -5,16 +5,16 @@
 
 # AzureDevOps.InnerSource :star2:
 
-Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to assess how mature and easy to use a repository is. This template provides the following features:
-- Ability to star any Azure DevOps repository within an organization and display the number of stars with a badge
+Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to find and to assess how mature a repository is. This template provides the following features:
 - Ability to generate an aggregation of all repositories
+- Badge to display the last commit date in a repository
+- Ability to star any Azure DevOps repository within an organization and display the number of stars with a badge
 
 ## Demo
-![Demo screenshot](./docs/demo-stars.jpg)
-![Demo screenshot](./docs/demo-aggregation.jpg)
+![Demo screenshot](./docs/demo.jpg)
 
 ## How this works
-The server exposes an endpoint `/stars?project=<project name>&repository=<repository name>`. Within the readme of the desired repository, add a button that links to that endpoint. Upon clicking the button, the user gets redirected to Azure AD for authentication, after which his _star_ is recorded in the database.
+This works in 2 parts. First, an automated pipeline generates a table in the readme by scraping and aggregating all the available repositories periodically. Secondly, the server exposes API endpoints to interact with stars and badges. Upon clicking the star button, the user gets redirected to Azure AD for authentication, after which his _star_ is recorded in the database.
 
 ## Getting started
 1. [Install .NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), if not already installed.
@@ -35,17 +35,7 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
    1. Create a new Table `azuredevopsstars`
 
 1. With Visual Studio, open the `AzureDevOps.InnerSource.sln`
-1. Update the `appsettings.json` and `appsettings.Local.json` files
-   
-   | Config | Value |
-   |---|---|
-   | `IdentityProvider:Authority` | `https://login.microsoftonline.com/<your tenant id>/v2.0/` |
-   | `IdentityProvider:ClientId` | `<your client id>` |
-   | `IdentityProvider:ClientSecret` | `<your client secret>` |
-   | `Storage:TableStorageConnectionString` | `<your azure storage connection string>` |
-   | `DevOps:Organization` | `<your Azure DevOps organization name>` |
-   | `DevOps:AllowedRepositories` | <code>[<br/>&nbsp;{<br/>&nbsp;&nbsp;"RegexProject": "\<your project name or regex>",<br/>&nbsp;&nbsp;"RegexRepository": "\<your repository name or regex>"<br/>&nbsp;}<br/>]</code> |
-   
+1. Update the `appsettings.json` and `appsettings.Local.json` files according to your needs.
 1. Run with Visual Studio by pressing F5 or with command line with:
    ```shell
    dotnet run --project ./src/AzureDevOps.InnerSource/
@@ -61,14 +51,25 @@ The server exposes an endpoint `/stars?project=<project name>&repository=<reposi
    ```
 
 ### Repository aggregation
-1.
+1. Edit readmes of all repositories you wish to aggregate with:
+   ```html
+   <p id="description">TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project.</p>
+   ```
+   ```html
+   <pre id="packageInstallation"><code>npm install --save potato</code></pre>
+   ```
+1. Run aggregation
    ```shell
    dotnet run --project .\src\AzureDevOps.InnerSource\ aggregate --output-folder ./
    ```
 
-
 ## Deploying
-A working dockerfile is provided. No further guidance is provided on how and where to host this .NET service.
+A working dockerfile is provided:
+```
+docker pull ghcr.io/dizco/azuredevops.innersource:latest
+```
+
+For further guidance on how to deploy this service, see [deployment guide](docs/deploy.md).
 
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
@@ -77,6 +78,7 @@ At this time, there is no guarantee on the stability of this template. Breaking 
 - The code coverage is 0% right now
 - There is a lot of boilerplate code for MVC that could be removed
 - Security has not been given a proper assessment
+   - Especially, there are risks of leaking private repositories existence and last commit date. This risk could potentially be mitigated by the use of unique api tokens per repository, which could be added in the link to the badge and validated by the server
 - Concurrent requests are not properly handled, the total star count could be wrong if 2 requests are made in parallel
 
 ## Contibuting
@@ -85,4 +87,6 @@ At this time, there is no guarantee on the stability of this template. Breaking 
 
 ## License
 
-© [Gabriel Bourgault](https://github.com/dizco)
+BSD 3-Clause © [Gabriel Bourgault](https://github.com/dizco)
+
+See [license](LICENSE).
