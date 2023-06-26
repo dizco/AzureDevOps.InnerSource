@@ -76,6 +76,7 @@ public static class ServiceCollectionExtensions
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie()
+            // TODO: Configure data protection with a persisted key ring
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
                 var settings = configuration.GetSection(IdentityProviderSettings.SectionName).Get<IdentityProviderSettings>();
