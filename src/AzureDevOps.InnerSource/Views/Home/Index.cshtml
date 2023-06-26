@@ -3,23 +3,20 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+	<h1 class="display-4">Hello @User.Claims.FirstOrDefault(x => string.Equals(x.Type, "name", StringComparison.OrdinalIgnoreCase))?.Value</h1>
+    
+    <form method="post">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <button type="submit" asp-controller="Home" asp-action="Logout" class="btn btn-primary w-auto">
+                Sign out
+            </button>
+        }
+        else
+        {
+            <button type="submit" asp-controller="Home" asp-action="Login" class="btn btn-primary w-auto">
+                Sign in
+            </button>
+        }
+    </form>
 </div>
-
-
-<form method="post">
-	@if (User.Identity?.IsAuthenticated == true)
-	{
-		<p>Hello, @User.Identity?.Name!</p>
-		<button type="submit" asp-controller="Home" asp-action="Logout" class="btn btn-primary w-auto">
-			Sign out
-		</button>
-	}
-	else
-	{
-		<button type="submit" asp-controller="Home" asp-action="Login" class="btn btn-primary w-auto">
-			Sign in
-		</button>
-	}
-</form>

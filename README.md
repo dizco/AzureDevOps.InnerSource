@@ -1,7 +1,4 @@
-[//]: # (TODO: Add pipeline badge)
-[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
-
-![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.InnerSource) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
+[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml) ![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.InnerSource) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 # AzureDevOps.InnerSource :star2:
 
