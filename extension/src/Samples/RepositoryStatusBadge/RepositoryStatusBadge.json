@@ -1,0 +1,25 @@
+{
+    "contributions": [
+        {
+            "id": "repository-badge",
+            "type": "ms.vss-web.action",
+            "description": "Custom button in the code",
+            "targets": [
+                "ms.vss-code-web.source-item-menu"
+            ],
+            "includes": [
+                "ms.vss-features.host-dialog-service"
+            ],
+            "properties": {
+                "text": "Status badge",
+                "title": "ms.vss-code-web.source-item-menu",
+                "group": "actions",
+                "uri": "dist/RepositoryStatusBadge/RepositoryStatusBadge.html",
+                "registeredObjectId": "repository-menu-badge"
+            }
+        }
+    ],
+    "scopes": [
+        "vso.code"
+    ]
+}

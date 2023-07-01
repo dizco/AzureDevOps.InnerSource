@@ -13,6 +13,8 @@ import { IListBoxItem } from 'azure-devops-ui/ListBox';
 import { ListSelection } from 'azure-devops-ui/List';
 import { IMenuButtonProps } from 'azure-devops-ui/Menu';
 import { Button, IButtonProps } from 'azure-devops-ui/Button';
+import { CommonServiceIds, IExtensionDataManager, IExtensionDataService } from 'azure-devops-extension-api';
+import { ProjectAnalysisRestClient } from 'azure-devops-extension-api/ProjectAnalysis';
 
 enum RepositoriesSort {
     Alphabetical = 0,
@@ -26,6 +28,8 @@ interface IAllRepositoriesHubContent {
 }
 
 class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubContent> {
+    private _dataManager?: IExtensionDataManager;
+
     constructor(props: {}) {
         super(props);
 
@@ -53,6 +57,19 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
         /*this.setState({
             repository
         });*/
+    }
+
+    public async componentDidMount() {
+        await SDK.ready();
+        const accessToken = await SDK.getAccessToken();
+        const extDataService = await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
+        this._dataManager = await extDataService.getExtensionDataManager(SDK.getExtensionContext().id, accessToken);
+
+        this._dataManager.getValue<string>("test-id").then((data) => {
+            console.log("Set ext data", data);
+        }, () => {
+            console.error("Couldnt set ext data");
+        });
     }
 
     public render(): JSX.Element {
@@ -123,6 +140,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
             {
                 id: "sort",
                 renderButton: (props: IButtonProps | IMenuButtonProps): JSX.Element => {
+                    // TODO: https://developer.microsoft.com/en-us/azure-devops/components/menu
                     return (
                         <Dropdown<RepositoriesSort>
                             key="something"

@@ -1,0 +1,23 @@
+{
+    "contributions": [
+        {
+            "id": "repository-star",
+            "type": "ms.vss-web.action",
+            "description": "Custom button in the code",
+            "targets": [
+                "ms.vss-code-web.source-item-menu"
+            ],
+            "properties": {
+                "text": "Star this repo",
+                "title": "ms.vss-code-web.source-item-menu",
+                "iconName": "FavoriteStar",
+                "group": "actions",
+                "uri": "dist/RepositoryStar/RepositoryStar.html",
+                "registeredObjectId": "repository-menu-star"
+            }
+        }
+    ],
+    "scopes": [
+        "vso.code"
+    ]
+}

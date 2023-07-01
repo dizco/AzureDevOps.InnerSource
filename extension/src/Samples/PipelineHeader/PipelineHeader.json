@@ -1,0 +1,26 @@
+{
+    "contributions": [
+        {
+            "id": "pipelinesHeaderTestButton",
+            "type": "ms.vss-web.action",
+            "description": "Custom button in the pipeline header",
+            "targets": [
+                "ms.vss-build-web.pipelines-header-menu"
+            ],
+            "includes": [
+                "ms.vss-features.host-dialog-service"
+            ],
+            "properties": {
+                "text": "Test item",
+                "title": "ms.vss-code-web.source-item-menu",
+                "group": "actions",
+                "uri": "dist/RepositoryStar/RepositoryStar.html",
+                "registeredObjectId": "showProperties"
+            }
+        }
+    ],
+    "scopes": [
+        "vso.code",
+        "vso.project"
+    ]
+}

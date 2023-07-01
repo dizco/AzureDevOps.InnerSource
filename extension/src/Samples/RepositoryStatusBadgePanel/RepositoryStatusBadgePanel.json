@@ -1,0 +1,11 @@
+{
+    "contributions": [
+        {
+            "id": "repository-status-badge-panel-content",
+            "type": "ms.vss-web.external-content",
+            "properties": {
+                "uri": "dist/RepositoryStatusBadgePanel/RepositoryStatusBadgePanel.html"
+            }
+        }
+    ]
+}

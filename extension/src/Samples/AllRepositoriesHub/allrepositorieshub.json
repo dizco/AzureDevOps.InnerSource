@@ -7,6 +7,10 @@
             "targets": [
                 "ms.vss-code-web.code-hub-group"
             ],
+            "includes": [
+                "ms.vss-features.host-navigation-service",
+                "ms.vss-features.extension-data-service"
+            ],
             "properties": {
                 "name": "All repositories",
                 "order": 100,
