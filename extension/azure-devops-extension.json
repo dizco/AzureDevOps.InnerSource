@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "azuredevops-innersource",
     "publisher": "gabrielbourgault",
-    "version": "1.0.2",
+    "version": "1.0.14",
     "name": "AzureDevOps InnerSource",
     "description": "Azure DevOps Extension",
     "categories": [

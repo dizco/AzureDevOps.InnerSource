@@ -1,16 +1,17 @@
 {
     "contributions": [
         {
-            "id": "repository-info-hub",
+            "id": "all-repositories-hub",
             "type": "ms.vss-web.hub",
             "description": "Custom hub in the Code hub group that displays information about the currently active Git repository.",
             "targets": [
                 "ms.vss-code-web.code-hub-group"
             ],
             "properties": {
-                "name": "Repository information",
+                "name": "All repositories",
                 "order": 100,
-                "uri": "dist/RepositoryServiceHub/context.html"
+                "iconName": "FavoriteList",
+                "uri": "dist/AllRepositoriesHub/context.html"
             }
         }
     ]

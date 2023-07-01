@@ -30,7 +30,7 @@ export class OverviewTab extends React.Component<{}, IOverviewTabState> {
     private async initializeState(): Promise<void> {
         await SDK.ready();
         
-        const userName = SDK.getUser().displayName;
+        const userName = SDK.getUser().displayName + " " + SDK.getUser().id + " " + SDK.getUser().name;
         this.setState({
             userName,
             extensionContext: SDK.getExtensionContext(),
