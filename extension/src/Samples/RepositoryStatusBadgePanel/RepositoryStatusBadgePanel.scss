@@ -1,9 +1,11 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 
-.sample-panel {
-    font-size: $fontSizeM;
+.status-badge-text-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-top: 16px;
 }
 
-.sample-panel-button-bar {
-    margin-bottom: 10px;
+.status-badge-text-wrapper .status-badge-url-textfield {
+    flex: 1 100%;
 }

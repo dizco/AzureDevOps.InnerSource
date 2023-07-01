@@ -9,7 +9,7 @@ SDK.register("view-all-repositories-action", () => {
             const host = SDK.getHost().name;
             const project = (await navigationService.getPageRoute()).routeValues.project;
             const extensionId = SDK.getExtensionContext().id;
-            navigationService.navigate(`https://dev.azure.com/${host}/${project}/_apps/hub/${extensionId}.repository-info-hub`);
+            navigationService.navigate(`https://dev.azure.com/${host}/${project}/_apps/hub/${extensionId}.all-repositories-hub`);
         }
     }
 });

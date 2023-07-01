@@ -7,6 +7,9 @@ import { Button } from "azure-devops-ui/Button";
 import { ButtonGroup } from "azure-devops-ui/ButtonGroup";
 import { showRootComponent } from "../../Common";
 import { GitRepository } from 'azure-devops-extension-api/Git/Git';
+import { FormItem } from 'azure-devops-ui/FormItem';
+import { TextField, TextFieldWidth } from 'azure-devops-ui/TextField';
+import { Image } from "azure-devops-ui/Image";
 
 interface IPanelContentState {
     repository?: GitRepository;
@@ -46,20 +49,30 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
     public render(): JSX.Element {
         const { repository, ready } = this.state;
 
+        const starBadgeSrc = `https://innersource.kiosoft.ca/stars/Kiosoft/${repository?.name}`;
+        const lastCommitBadgeSrc = `https://innersource.kiosoft.ca/badges/last-commit/${repository?.id}`;
+
         return (
-            <div className="sample-panel flex-column flex-grow">
+            <div className="flex-grow">
+                <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
+                <div className="status-badge-text-wrapper">
+                    <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
+                        <TextField
+                            value={repository?.name}
+                        />
+                    </FormItem>
+                </div>
+                <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />
+                <div className="status-badge-text-wrapper">
+                    <FormItem label="Last commit date badge">
+                        <TextField
+                            value={repository?.id}
+                        />
+                    </FormItem>
+                </div>
                 <div className="flex-grow flex-column flex-center justify-center" style={{ border: "1px solid #eee", margin: "10px 0" }}>
                     Additional content placeholder {repository?.name}
                 </div>
-                <ButtonGroup className="sample-panel-button-bar">
-                    <Button
-                        primary={true}
-                        text="OK"
-                    />
-                    <Button
-                        text="Cancel"
-                    />
-                </ButtonGroup>
             </div>
         );
     }
