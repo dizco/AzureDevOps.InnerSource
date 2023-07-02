@@ -54,6 +54,14 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
         const appToken = await SDK.getAppToken();
         console.log("SDK app token", appToken);
 
+        const response = await fetch("https://localhost:44400/testauth", {
+            headers: {
+                Authorization: 'Bearer ' + appToken,
+                "X-AzureDevOps-AccessToken": accessToken,
+            }
+        });
+        console.log("Fetched: ", response.status);
+
         /*this.setState({
             repository
         });*/

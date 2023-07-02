@@ -57,6 +57,14 @@ void RunWebMvc()
 
     // Add services to the container.
     builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); });
+    builder.Services.AddCors(options =>
+    {
+	    options.AddPolicy("AzureDevOpsExtension", policy =>
+	    {
+			// TODO: Could probably be a bit more restrictive
+			policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+	    });
+    });
     builder.Services.ConfigureAuthentication(configuration);
     builder.Services.AddAzureDevOpsConnection(configuration);
     builder.Services.AddApplicationServices(configuration);
@@ -72,10 +80,11 @@ void RunWebMvc()
     }
 
     app.UseHttpsRedirection();
-    app.UseAuthentication();
     app.UseStaticFiles();
     app.UseRouting();
-    app.UseAuthorization();
+    app.UseCors();
+    app.UseAuthentication();
+	app.UseAuthorization();
 
     app.MapControllerRoute(
         "default",

@@ -1,17 +1,26 @@
 ﻿using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using AzureDevOps.InnerSource.Models;
+using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Services.Common;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
 public class HomeController : Controller
 {
+	private readonly IFlurlClient _flurlClient;
 	private readonly ILogger<HomeController> _logger;
 
-	public HomeController(ILogger<HomeController> logger)
+	public HomeController(HttpClient httpClient, ILogger<HomeController> logger)
 	{
+		_flurlClient = new FlurlClient(httpClient);
 		_logger = logger;
 	}
 
@@ -28,6 +37,30 @@ public class HomeController : Controller
 		}
 
 		return View();
+	}
+
+	[Route("testauth2")]
+	public async Task<IActionResult> TestAuth2()
+	{
+		return View("Index");
+	}
+
+	[Route("testauth")]
+	[Authorize(AuthenticationSchemes = "AzureDevOpsExtension")]
+	[EnableCors("AzureDevOpsExtension")]
+	public async Task<IActionResult> TestAuth()
+	{
+		var result = await HttpContext.AuthenticateAsync("AzureDevOpsExtension");
+
+		if (HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out StringValues userAccessToken))
+		{
+			// We have a user access token
+			var connection = await _flurlClient.Request("https://dev.azure.com/gabrielbourgault/_apis/connectionData")
+				.WithOAuthBearerToken(userAccessToken.ToString())
+				.GetJsonAsync<dynamic>();
+		}
+
+		return View("Index");
 	}
 
 	public IActionResult Privacy()
