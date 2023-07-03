@@ -81,6 +81,7 @@ public static class ServiceCollectionExtensions
 			})
 			.AddCookie()
 			// TODO: Configure data protection with a persisted key ring
+			// TODO: Use cookie authentication to store the AzureDevOpsExtension jwt bearer? And remove OpenIdConnect
 			.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
 			{
 				var settings = configuration.GetSection(IdentityProviderSettings.SectionName).Get<IdentityProviderSettings>();

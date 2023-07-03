@@ -2,34 +2,35 @@ import "./RepositoryStatusBadgePanel.scss";
 
 import * as React from "react";
 import * as SDK from "azure-devops-extension-sdk";
-
-import { Button } from "azure-devops-ui/Button";
-import { ButtonGroup } from "azure-devops-ui/ButtonGroup";
 import { showRootComponent } from "../../Common";
 import { GitRepository } from 'azure-devops-extension-api/Git/Git';
 import { FormItem } from 'azure-devops-ui/FormItem';
-import { TextField, TextFieldWidth } from 'azure-devops-ui/TextField';
-import { Image } from "azure-devops-ui/Image";
+import { TextField } from 'azure-devops-ui/TextField';
+import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
 
 interface IPanelContentState {
     repository?: GitRepository;
-    ready?: boolean;
+    starBadgeSrc?: string;
+    lastCommitBadgeSrc?: string;
+    badgeJwt?: string;
 }
 
 class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState> {
-    
+    static contextType = ConfigurationContext;
+    context!: React.ContextType<typeof ConfigurationContext>;
+
     constructor(props: {}) {
         super(props);
         this.state = {};
     }
 
-    public componentDidMount() {
-        SDK.init();
+    public async componentDidMount() {
+        await SDK.init();
         
         SDK.ready().then(() => {
             const config = SDK.getConfiguration();
             const repository = config.repository;
-            this.setState({ repository, ready: true });
+            this.setState({ repository });
 
             if (config.dialog) {
                 // Give the host frame the size of our dialog content so that the dialog can be sized appropriately.
@@ -44,31 +45,45 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                 SDK.resize(400, 400);
             }
         });
+
+        const serverUrl = await this.context.getServerUrl();
+        if (!!this.state.repository?.id) {
+            const badgeJwt = await this.context.getBadgeJwtToken(this.state.repository?.id);
+            this.setState({
+                badgeJwt
+            });
+        }
+
+        this.setState((previousState, props) => ({
+            starBadgeSrc: serverUrl + `/stars/Kiosoft/${previousState.repository?.name}?token=${previousState.badgeJwt}`,
+            lastCommitBadgeSrc: serverUrl + `/badges/last-commit/${previousState.repository?.id}?token=${previousState.badgeJwt}`,
+        }));
     }
 
     public render(): JSX.Element {
-        const { repository, ready } = this.state;
-
-        const starBadgeSrc = `https://innersource.kiosoft.ca/stars/Kiosoft/${repository?.name}`;
-        const lastCommitBadgeSrc = `https://innersource.kiosoft.ca/badges/last-commit/${repository?.id}`;
+        const { repository, starBadgeSrc, lastCommitBadgeSrc } = this.state;
 
         return (
             <div className="flex-grow">
-                <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
-                <div className="status-badge-text-wrapper">
-                    <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
-                        <TextField
-                            value={repository?.name}
-                        />
-                    </FormItem>
+                <div>
+                    {starBadgeSrc && <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />}
+                    <div className="status-badge-text-wrapper">
+                        <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
+                            <TextField
+                                value={starBadgeSrc}
+                            />
+                        </FormItem>
+                    </div>
                 </div>
-                <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />
-                <div className="status-badge-text-wrapper">
-                    <FormItem label="Last commit date badge">
-                        <TextField
-                            value={repository?.id}
-                        />
-                    </FormItem>
+                <div className="separator-line-top">
+                    {lastCommitBadgeSrc && <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />}
+                    <div className="status-badge-text-wrapper">
+                        <FormItem label="Last commit date badge" className="status-badge-url-textfield flex-column">
+                            <TextField
+                                value={lastCommitBadgeSrc}
+                            />
+                        </FormItem>
+                    </div>
                 </div>
                 <div className="flex-grow flex-column flex-center justify-center" style={{ border: "1px solid #eee", margin: "10px 0" }}>
                     Additional content placeholder {repository?.name}
@@ -78,4 +93,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
     }
 }
 
-showRootComponent(<RepositoryStatusBadgePanel />);
+showRootComponent(
+    <ConfigurationContext.Provider value={new ConfigurationService()}>
+        <RepositoryStatusBadgePanel />
+    </ConfigurationContext.Provider>);

@@ -4,6 +4,7 @@ import { CommonServiceIds, IExtensionDataManager, IExtensionDataService } from "
 
 import { Button } from "azure-devops-ui/Button";
 import { TextField } from "azure-devops-ui/TextField";
+import { useContext, useEffect } from 'react';
 
 export interface IExtensionDataState {
     dataText?: string;

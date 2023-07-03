@@ -1,20 +1,16 @@
 import * as React from "react";
 import * as SDK from "azure-devops-extension-sdk";
-import { GitServiceIds, IVersionControlRepositoryService } from "azure-devops-extension-api/Git/GitServices";
-
 import { Header, TitleSize } from "azure-devops-ui/Header";
 import { Page } from "azure-devops-ui/Page";
-
 import { showRootComponent } from "../../Common";
-import { GitRepository } from "azure-devops-extension-api/Git/Git";
 import { Dropdown } from 'azure-devops-ui/Dropdown';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
 import { ListSelection } from 'azure-devops-ui/List';
 import { IMenuButtonProps } from 'azure-devops-ui/Menu';
-import { Button, IButtonProps } from 'azure-devops-ui/Button';
-import { CommonServiceIds, IExtensionDataManager, IExtensionDataService } from 'azure-devops-extension-api';
-import { ProjectAnalysisRestClient } from 'azure-devops-extension-api/ProjectAnalysis';
+import { IButtonProps } from 'azure-devops-ui/Button';
+import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
+import { Settings } from './Components/Settings';
 
 enum RepositoriesSort {
     Alphabetical = 0,
@@ -22,13 +18,13 @@ enum RepositoriesSort {
     LastCommitDate = 2,
 }
 interface IAllRepositoriesHubContent {
-    repository: GitRepository | null;
     sort: RepositoriesSort;
     sortSelection: ListSelection;
 }
 
 class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubContent> {
-    private _dataManager?: IExtensionDataManager;
+    static contextType = ConfigurationContext;
+    context!: React.ContextType<typeof ConfigurationContext>;
 
     constructor(props: {}) {
         super(props);
@@ -37,47 +33,18 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
         selection.select(0, 1);
 
         this.state = {
-            repository: null,
             sort: RepositoriesSort.Alphabetical,
             sortSelection: selection,
         };
     }
 
     public async componentWillMount() {
-        SDK.init();
-        //const repoSvc = await SDK.getService<IVersionControlRepositoryService>(GitServiceIds.VersionControlRepositoryService);
-        //const repository = await repoSvc.getCurrentGitRepository();
-
-        const accessToken = await SDK.getAccessToken();
-        console.log("SDK access token", accessToken);
-
-        const appToken = await SDK.getAppToken();
-        console.log("SDK app token", appToken);
-
-        const response = await fetch("https://localhost:44400/testauth", {
-            headers: {
-                Authorization: 'Bearer ' + appToken,
-                "X-AzureDevOps-AccessToken": accessToken,
-            }
-        });
-        console.log("Fetched: ", response.status);
-
-        /*this.setState({
-            repository
-        });*/
+        await SDK.init();
     }
 
     public async componentDidMount() {
         await SDK.ready();
-        const accessToken = await SDK.getAccessToken();
-        const extDataService = await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
-        this._dataManager = await extDataService.getExtensionDataManager(SDK.getExtensionContext().id, accessToken);
-
-        this._dataManager.getValue<string>("test-id").then((data) => {
-            console.log("Set ext data", data);
-        }, () => {
-            console.error("Couldnt set ext data");
-        });
+        await this.context.ensureAuthenticated();
     }
 
     public render(): JSX.Element {
@@ -90,7 +57,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
 
                 <div style={{marginLeft: 32}}>
                     <div className="flex-row flex-center">
-                        <label htmlFor="message-level-picker">Message level: </label>
+                        <label htmlFor="message-level-picker">Sorting: </label>
                         <Dropdown<RepositoriesSort>
                             className="margin-left-8"
                             items={[
@@ -102,23 +69,8 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                             selection={this.state.sortSelection}
                         />
                     </div>
-
-                    <h3>ID</h3>
-                    {
-                        this.state.repository &&
-                        <p>{this.state.repository.id}</p>
-                    }
-                    <h3>Name</h3>
-                    {
-                        this.state.repository &&
-                        <p>{this.state.repository.name}</p>
-                    }
-                    <h3>URL</h3>
-                    {
-                        this.state.repository &&
-                        <p>{this.state.repository.url}</p>
-                    }
                 </div>
+                <Settings/>
             </Page>
         );
     }
@@ -175,4 +127,8 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
     }
 }
 
-showRootComponent(<AllRepositoriesHubContent />);
+showRootComponent(
+    <ConfigurationContext.Provider value={new ConfigurationService()}>
+        <AllRepositoriesHubContent />
+    </ConfigurationContext.Provider>
+);

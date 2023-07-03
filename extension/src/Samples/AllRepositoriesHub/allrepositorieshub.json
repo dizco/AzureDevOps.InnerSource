@@ -3,7 +3,7 @@
         {
             "id": "all-repositories-hub",
             "type": "ms.vss-web.hub",
-            "description": "Custom hub in the Code hub group that displays information about the currently active Git repository.",
+            "description": "Custom hub in the Code hub group that displays information about all available repositories.",
             "targets": [
                 "ms.vss-code-web.code-hub-group"
             ],
@@ -15,7 +15,7 @@
                 "name": "All repositories",
                 "order": 100,
                 "iconName": "FavoriteList",
-                "uri": "dist/AllRepositoriesHub/context.html"
+                "uri": "dist/AllRepositoriesHub/AllRepositoriesHub.html"
             }
         }
     ]
