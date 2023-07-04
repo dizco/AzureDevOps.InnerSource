@@ -27,6 +27,7 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
 
     public render(): JSX.Element {
         const repositories = [];
+        // TODO: Use navigation service to go to the project repo, otherwise it loads the page within the iframe.
         for (let i = 0; i < this.state.repositories.length; i++) {
             repositories.push(
                 <div className="column subtle-border">
