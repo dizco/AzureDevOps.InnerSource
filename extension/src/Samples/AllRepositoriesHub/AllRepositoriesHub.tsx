@@ -11,6 +11,7 @@ import { IMenuButtonProps } from 'azure-devops-ui/Menu';
 import { IButtonProps } from 'azure-devops-ui/Button';
 import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
 import { Settings } from './Components/Settings';
+import { RepositoriesList } from './Components/RepositoriesList';
 
 enum RepositoriesSort {
     Alphabetical = 0,
@@ -70,6 +71,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                         />
                     </div>
                 </div>
+                <RepositoriesList/>
                 <Settings/>
             </Page>
         );

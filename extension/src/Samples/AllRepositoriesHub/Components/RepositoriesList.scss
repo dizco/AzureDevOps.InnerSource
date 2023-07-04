@@ -1,0 +1,26 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+  padding: 16px;
+}
+
+.repositories-list pre {
+  font-size: .75rem;
+  white-space: pre;
+  word-wrap: normal;
+  background-color: rgba(255, 255, 255, 0.08); /* var(--palette-black-alpha-6); */ /* $neutral-alpha-6 */
+  border-radius: 2px;
+  padding: 15px;
+  overflow-x: auto;
+}
