@@ -25,7 +25,7 @@
                 "overrideRules": [
                     {
                         "name": "Feature",
-                        "featureId": "ms-samples.samples.feature-abc",
+                        "featureId": "gabrielbourgault.azuredevops-innersource.feature-abc",
                         "when": "disabled"
                     }
                 ]
@@ -46,7 +46,7 @@
               {
                 "name": "Feature",
                 "properties": {
-                    "featureId": "ms-samples.samples.feature-abc"
+                    "featureId": "gabrielbourgault.azuredevops-innersource.feature-abc"
                 }
               }
             ]
@@ -66,7 +66,7 @@
               {
                 "name": "Feature",
                 "properties": {
-                    "featureId": "ms-samples.samples.feature-abc-v2"
+                    "featureId": "gabrielbourgault.azuredevops-innersource.feature-abc-v2"
                 }
               }
             ]
