@@ -1,0 +1,200 @@
+#name: '4.0$(rev:.r)'
+
+trigger:
+- master
+- feature/*
+
+pr:
+- master
+
+pool:
+  vmImage: 'windows-2022'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build'
+  jobs:
+  - job: 
+    displayName: 'Build on Windows'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+      displayName: 'Install Node dependencies'
+
+    #- powershell: |
+    #    $vswhereLatest = "https://github.com/Microsoft/vswhere/releases/latest/download/vswhere.exe"
+    #    $vswherePath = ".\BuildTasks\PublishVSExtension\v3\tools\vswhere.exe"
+    #    remove-item $vswherePath -ErrorAction SilentlyContinue
+    #    mkdir ".\BuildTasks\PublishVSExtension\v3\tools\" -force
+    #    invoke-webrequest $vswhereLatest -OutFile $vswherePath
+    #    test-path $vswherePath -PathType Leaf
+    #  displayName: 'Grab the latest version of vswhere.exe for v3'
+
+    #- powershell: |
+    #    $vswhereLatest = "https://github.com/Microsoft/vswhere/releases/latest/download/vswhere.exe"
+    #    $vswherePath = ".\BuildTasks\PublishVSExtension\v4\tools\vswhere.exe"
+    #    remove-item $vswherePath -ErrorAction SilentlyContinue
+    #    mkdir ".\BuildTasks\PublishVSExtension\v4\tools\" -force
+    #    invoke-webrequest $vswhereLatest -OutFile $vswherePath
+    #    test-path $vswherePath -PathType Leaf
+    #  displayName: 'Grab the latest version of vswhere.exe for v4'
+
+    - task: Npm@1
+      displayName: 'Build the extension'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'run build'
+
+    - task: TfxInstaller@4
+      displayName: 'Use Node CLI for Azure DevOps'
+      inputs:
+        version: '0.x'
+        checkLatest: true
+
+    - task: PackageAzureDevOpsExtension@4
+      displayName: 'Package Extension: $(Build.SourcesDirectory)'
+      name: 'packageStep'
+      inputs:
+        rootFolder: '$(Build.SourcesDirectory)'
+        outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+        publisherId: 'gabrielbourgault'
+        extensionId: 'azuredevops-innersource'
+        extensionTag: '-build'
+        extensionName: 'Azure DevOps Extension Tasks'
+        extensionVersion: '$(Build.BuildNumber)'
+        updateTasksVersion: true
+        updateTasksVersionType: patch
+        extensionVisibility: private
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish vsix'
+      inputs:
+        publishLocation: pipeline
+        targetPath: '$(packageStep.Extension.OutputPath)'
+        artifact: 'vsix'
+      condition: succeededOrFailed()
+
+- stage: PublishDev
+  displayName: 'Publish privately'
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: 'Build'
+  jobs:
+    - deployment: 
+      environment: AzureDevOps Extension GabrielBourgault Private
+      strategy: 
+        runOnce:
+         deploy:
+          steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Install Node.js'
+
+          - task: TfxInstaller@3
+            displayName: 'Use Node CLI for Azure DevOps'
+            inputs:
+              version: '0.x'
+              checkLatest: true
+
+          - task: PublishAzureDevOpsExtension@4
+            name: 'publishDev'
+            inputs:
+              connectTo: 'VsTeam'
+              connectedServiceName: 'gabrielbourgault-marketplace'
+              fileType: 'vsix'
+              vsixFile: '$(Pipeline.Workspace)/vsix/azuredevops-innersource.vsix'
+              publisherId: 'gabrielbourgault'
+              extensionId: 'azuredevops-innersource'
+              extensionTag: '-dev'
+              updateTasksVersion: false
+              extensionVisibility: 'privatepreview'
+              shareWith: 'gabrielbourgault-dev'
+              noWaitValidation: true
+
+          - task: IsAzureDevOpsExtensionValid@4
+            inputs:
+              connectTo: 'VsTeam'
+              connectedServiceName: 'gabrielbourgault-marketplace'
+              method: 'vsix'
+              vsixFile: '$(publishDev.Extension.OutputPath)'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish vsix'
+            inputs:
+              publishLocation: pipeline
+              targetPath: '$(publishDev.Extension.OutputPath)'
+              artifact: 'dev'
+            condition: succeededOrFailed()
+
+- stage: PublishProd
+  displayName: 'Publish publicly'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  dependsOn: 'PublishDev'
+  jobs:
+    - deployment: 
+      environment: AzureDevOps Extension GabrielBourgault Public
+      strategy: 
+        runOnce:
+         deploy:
+          steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '18.x'
+            displayName: 'Install Node.js'
+            
+          - task: TfxInstaller@3
+            displayName: 'Use Node CLI for Azure DevOps'
+            inputs:
+              version: '0.x'
+              checkLatest: true
+
+          - task: PublishAzureDevOpsExtension@4
+            name: 'publishProd'
+            inputs:
+              connectTo: 'VsTeam'
+              connectedServiceName: 'gabrielbourgault-marketplace'
+              fileType: 'vsix'
+              vsixFile: '$(Pipeline.Workspace)/vsix/azuredevops-innersource.vsix'
+              publisherId: 'gabrielbourgault'
+              extensionId: 'azuredevops-innersource'
+              updateTasksVersion: false
+              #extensionVisibility: 'public' # TODO: Set public
+              extensionVisibility: 'privatepreview'
+              shareWith: 'gabrielbourgault'
+              noWaitValidation:  true
+          
+          - task: IsAzureDevOpsExtensionValid@4
+            inputs:
+              connectTo: 'VsTeam'
+              connectedServiceName: 'gabrielbourgault-marketplace'
+              method: 'vsix'
+              vsixFile: '$(publishProd.Extension.OutputPath)'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish vsix'
+            inputs:
+              publishLocation: pipeline
+              targetPath: '$(publishProd.Extension.OutputPath)'
+              artifact: 'prod'
+            condition: succeededOrFailed()
+
+          #- task: GitHubRelease@1
+          #  inputs:
+          #    gitHubConnection: 'GitHub - jessehouwing'
+          #    repositoryName: '$(Build.Repository.Name)'
+          #    action: 'create'
+          #    target: '$(Build.SourceVersion)'
+          #    tagSource: 'userSpecifiedTag'
+          #    tag: 'v$(Build.BuildNumber)'
+          #    title: 'v$(Build.BuildNumber)'
+          #    releaseNotesSource: 'inline'
+          #    assets: '$(publishProd.Extension.OutputPath)*'
+          #    changeLogCompareToRelease: 'lastFullRelease'
+          #    changeLogType: 'issueBased'
+          #    changeLogLabels: '[{ "state" : "closed" }]'
