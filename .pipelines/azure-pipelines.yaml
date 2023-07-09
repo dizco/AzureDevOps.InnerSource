@@ -8,7 +8,7 @@ pr:
 - master
 
 pool:
-  vmImage: 'windows-2022'
+  vmImage: 'ubuntu-latest'
 
 variables:
 - name: WorkingDirectory
