@@ -84,14 +84,12 @@ stages:
               --share-with 'gabrielbourgault-dev'
               --json --no-color --no-prompt
             displayName: 'npm run publish-extension'
-            workingDirectory: $(WorkingDirectory)
 
           - script: >
               npx tfx extension isvalid
               --vsix '$(Build.ArtifactStagingDirectory)/azuredevops-innersource-dev.vsix'
               --json --no-color --no-prompt
             displayName: 'Is extension valid'
-            workingDirectory: $(WorkingDirectory)
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish vsix'
