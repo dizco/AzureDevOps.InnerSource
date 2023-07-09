@@ -46,7 +46,7 @@ stages:
       condition: succeededOrFailed()
 
     - script: |
-        npm run package-extension -- --rev-version --output-path '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+        npm run package-extension -- --rev-version --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
       displayName: 'npm run package-extension'
       workingDirectory: $(WorkingDirectory)
 
@@ -54,7 +54,7 @@ stages:
       displayName: 'Publish vsix'
       inputs:
         publishLocation: pipeline
-        targetPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+        targetPath: '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
         artifact: 'customvsix'
       condition: succeededOrFailed()
 
