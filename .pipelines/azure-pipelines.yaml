@@ -12,7 +12,7 @@ pool:
 
 variables:
 - name: WorkingDirectory
-  value: '$(Build.SourcesDirectory)\extension'
+  value: '$(Build.SourcesDirectory)/extension'
 
 stages:
 - stage: CustomBuild
