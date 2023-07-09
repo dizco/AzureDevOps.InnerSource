@@ -12,7 +12,7 @@ pool:
 
 variables:
 - name: WorkingDirectory
-  value: extension
+  value: '$(Build.SourcesDirectory)\extension'
 
 stages:
 - stage: 'Build'
@@ -64,10 +64,10 @@ stages:
         checkLatest: true
 
     - task: PackageAzureDevOpsExtension@4
-      displayName: 'Package Extension: $(Build.SourcesDirectory)'
+      displayName: 'Package Extension: $(WorkingDirectory)'
       name: 'packageStep'
       inputs:
-        rootFolder: '$(Build.SourcesDirectory)'\$(WorkingDirectory)
+        rootFolder: '$(WorkingDirectory)'
         outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
         publisherId: 'gabrielbourgault'
         extensionId: 'azuredevops-innersource'
