@@ -59,19 +59,25 @@ stages:
         artifact: 'customvsix'
       condition: succeededOrFailed()
 
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish build'
+      inputs:
+        publishLocation: pipeline
+        targetPath: '$(WorkingDirectory)'
+        artifact: 'build'
+      condition: succeededOrFailed()
+
 - stage: CustomPublishDev
   displayName: 'Publish privately'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   dependsOn: 'CustomBuild'
   jobs:
-    - deployment: 
+    - deployment:
       environment: AzureDevOps Extension GabrielBourgault Private
       strategy: 
         runOnce:
          deploy:
           steps:
-          - checkout: self
-
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
@@ -86,14 +92,14 @@ stages:
               --share-with 'gabrielbourgault-dev'
               --json --no-color --no-prompt
             displayName: 'npm run publish-extension'
-            workingDirectory: $(WorkingDirectory)
+            workingDirectory: $(Pipeline.Workspace)/build
 
           - script: >
               npx tfx extension isvalid
               --vsix '$(Build.ArtifactStagingDirectory)/azuredevops-innersource-dev.vsix'
               --json --no-color --no-prompt
             displayName: 'Is extension valid'
-            workingDirectory: $(WorkingDirectory)
+            workingDirectory: $(Pipeline.Workspace)/build
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish vsix'
