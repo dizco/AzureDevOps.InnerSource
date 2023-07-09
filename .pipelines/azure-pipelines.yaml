@@ -1,8 +1,7 @@
-#name: '1.0$(rev:.r)'
+name: '1.0$(rev:.r)'
 
 trigger:
 - master
-#- feature/*
 
 pr:
 - master
@@ -46,13 +45,27 @@ stages:
         testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
       condition: succeededOrFailed()
 
-    - script: >
-        npm run package-extension --
-        --rev-version
-        --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
-        --json --no-color --no-prompt
-      displayName: 'npm run package-extension'
-      workingDirectory: $(WorkingDirectory)
+    - task: PackageAzureDevOpsExtension@4
+      displayName: 'Package Extension: $(WorkingDirectory)'
+      name: 'packageStep'
+      inputs:
+        rootFolder: '$(WorkingDirectory)'
+        outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+        publisherId: 'gabrielbourgault'
+        extensionId: 'azuredevops-innersource'
+        extensionTag: '-build'
+        extensionName: 'AzureDevOps InnerSource'
+        extensionVersion: '$(Build.BuildNumber)'
+        updateTasksVersion: true
+        updateTasksVersionType: patch
+        extensionVisibility: private
+    #- script: >
+    #    npm run package-extension --
+    #    --rev-version
+    #    --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
+    #    --json --no-color --no-prompt
+    #  displayName: 'npm run package-extension'
+    #  workingDirectory: $(WorkingDirectory)
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish vsix'
