@@ -69,7 +69,8 @@ stages:
 
 - stage: CustomPublishDev
   displayName: 'Publish privately'
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: false
   dependsOn: 'CustomBuild'
   jobs:
     - deployment:
@@ -78,10 +79,17 @@ stages:
         runOnce:
          deploy:
           steps:
+          - checkout: self
+
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
             displayName: 'Install Node.js'
+
+          - script: |
+              npm install
+            displayName: 'npm install'
+            workingDirectory: $(WorkingDirectory)
 
           - script: >
               npm run publish-extension --
@@ -92,14 +100,14 @@ stages:
               --share-with 'gabrielbourgault-dev'
               --json --no-color --no-prompt
             displayName: 'npm run publish-extension'
-            workingDirectory: $(Pipeline.Workspace)/build
+            workingDirectory: $(WorkingDirectory)
 
           - script: >
               npx tfx extension isvalid
               --vsix '$(Build.ArtifactStagingDirectory)/azuredevops-innersource-dev.vsix'
               --json --no-color --no-prompt
             displayName: 'Is extension valid'
-            workingDirectory: $(Pipeline.Workspace)/build
+            workingDirectory: $(WorkingDirectory)
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish vsix'
@@ -111,6 +119,7 @@ stages:
 
 - stage: 'Build'
   displayName: 'Build'
+  condition: false
   jobs:
   - job: 
     displayName: 'Build on Windows'
@@ -183,7 +192,7 @@ stages:
 - stage: PublishDev
   displayName: 'Publish privately'
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-  dependsOn: 'Build'
+  dependsOn: 'CustomBuild'
   jobs:
     - deployment: 
       environment: AzureDevOps Extension GabrielBourgault Private
@@ -191,9 +200,6 @@ stages:
         runOnce:
          deploy:
           steps:
-          - script: cd extension
-            displayName: Set folder
-
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
@@ -211,7 +217,7 @@ stages:
               connectTo: 'VsTeam'
               connectedServiceName: 'gabrielbourgault-marketplace'
               fileType: 'vsix'
-              vsixFile: '$(Pipeline.Workspace)/vsix/azuredevops-innersource.vsix'
+              vsixFile: '$(Pipeline.Workspace)/customvsix/azuredevops-innersource.vsix'
               publisherId: 'gabrielbourgault'
               extensionId: 'azuredevops-innersource'
               extensionTag: '-dev'
