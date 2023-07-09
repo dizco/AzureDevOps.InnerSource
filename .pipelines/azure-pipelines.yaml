@@ -15,6 +15,49 @@ variables:
   value: '$(Build.SourcesDirectory)\extension'
 
 stages:
+- stage: CustomBuild
+  jobs:
+  - job: Build
+    steps: 
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+      displayName: 'npm install'
+      workingDirectory: $(WorkingDirectory)
+
+    - script: |
+        npm run build
+      displayName: 'npm run build'
+      workingDirectory: $(WorkingDirectory)
+
+    - script: |
+        npm run test
+      displayName: 'npm run test'
+      workingDirectory: $(WorkingDirectory)
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
+      condition: succeededOrFailed()
+
+    - script: |
+        npm run package-extension -- --rev-version --output-path '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+      displayName: 'npm run package-extension'
+      workingDirectory: $(WorkingDirectory)
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish vsix'
+      inputs:
+        publishLocation: pipeline
+        targetPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+        artifact: 'customvsix'
+      condition: succeededOrFailed()
+
 - stage: 'Build'
   displayName: 'Build'
   jobs:
@@ -72,7 +115,7 @@ stages:
         publisherId: 'gabrielbourgault'
         extensionId: 'azuredevops-innersource'
         extensionTag: '-build'
-        extensionName: 'Azure DevOps Extension Tasks'
+        extensionName: 'AzureDevOps InnerSource'
         extensionVersion: '$(Build.BuildNumber)'
         updateTasksVersion: true
         updateTasksVersionType: patch
