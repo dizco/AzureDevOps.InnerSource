@@ -81,6 +81,7 @@ stages:
               --extension-id 'azuredevops-innersource-dev'
               --token $(VisualStudioMarketplacePersonalAccessToken)
               --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource-dev.vsix'
+              --share-with 'gabrielbourgault-dev'
               --json --no-color --no-prompt
             displayName: 'npm run publish-extension'
             workingDirectory: $(WorkingDirectory)
