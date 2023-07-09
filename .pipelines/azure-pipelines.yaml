@@ -17,6 +17,9 @@ stages:
   - job: 
     displayName: 'Build on Windows'
     steps:
+    - script: cd extension
+      displayName: Set folder
+
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x'
@@ -91,6 +94,9 @@ stages:
         runOnce:
          deploy:
           steps:
+          - script: cd extension
+            displayName: Set folder
+
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
@@ -143,6 +149,9 @@ stages:
         runOnce:
          deploy:
           steps:
+          - script: cd extension
+            displayName: Set folder
+
           - task: NodeTool@0
             inputs:
               versionSpec: '18.x'
