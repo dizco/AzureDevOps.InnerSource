@@ -51,29 +51,29 @@ stages:
         version: '0.x'
         checkLatest: true
 
-    - task: PackageAzureDevOpsExtension@4
-      displayName: 'Package Extension: $(WorkingDirectory)'
-      name: 'packageStep'
-      inputs:
-        rootFolder: '$(WorkingDirectory)'
-        outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
-        publisherId: 'gabrielbourgault'
-        extensionId: 'azuredevops-innersource'
-        extensionTag: '-build'
-        extensionName: 'AzureDevOps InnerSource'
-        extensionVersion: '$(Build.BuildNumber)'
-        updateTasksVersion: true
-        updateTasksVersionType: patch
-        extensionVisibility: private
-        patternManifest: azure-devops-extension.json
-        
-    #- script: >
-    #    npm run package-extension --
-    #    --rev-version
-    #    --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
-    #    --json --no-color --no-prompt
-    #  displayName: 'npm run package-extension'
-    #  workingDirectory: $(WorkingDirectory)
+    #- task: PackageAzureDevOpsExtension@4
+    #  displayName: 'Package Extension: $(WorkingDirectory)'
+    #  name: 'packageStep'
+    #  inputs:
+    #    rootFolder: '$(WorkingDirectory)/src/Samples'
+    #    outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
+    #    publisherId: 'gabrielbourgault'
+    #    extensionId: 'azuredevops-innersource'
+    #    extensionTag: '-build'
+    #    extensionName: 'AzureDevOps InnerSource'
+    #    extensionVersion: '$(Build.BuildNumber)'
+    #    updateTasksVersion: true
+    #    updateTasksVersionType: patch
+    #    extensionVisibility: private
+    #    patternManifest: azure-devops-extension.json
+
+    - script: >
+        npm run package-extension --
+        --rev-version
+        --output-path '$(Build.ArtifactStagingDirectory)/azuredevops-innersource.vsix'
+        --json --no-color --no-prompt
+      displayName: 'npm run package-extension'
+      workingDirectory: $(WorkingDirectory)
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish vsix'
@@ -115,7 +115,10 @@ stages:
               publisherId: 'gabrielbourgault'
               extensionId: 'azuredevops-innersource'
               extensionTag: '-dev'
-              updateTasksVersion: false
+              #updateTasksVersion: false
+              extensionVersion: '$(Build.BuildNumber)'
+              updateTasksVersion: true
+              updateTasksVersionType: patch
               extensionVisibility: 'privatepreview'
               shareWith: 'gabrielbourgault-dev'
               noWaitValidation: true
