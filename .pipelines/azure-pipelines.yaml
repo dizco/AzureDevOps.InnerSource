@@ -10,6 +10,10 @@ pr:
 pool:
   vmImage: 'windows-2022'
 
+variables:
+- name: WorkingDirectory
+  value: extension
+
 stages:
 - stage: 'Build'
   displayName: 'Build'
@@ -17,9 +21,6 @@ stages:
   - job: 
     displayName: 'Build on Windows'
     steps:
-    - script: cd extension
-      displayName: Set folder
-
     - task: NodeTool@0
       inputs:
         versionSpec: '18.x'
@@ -28,6 +29,7 @@ stages:
     - script: |
         npm install
       displayName: 'Install Node dependencies'
+      workingDirectory: $(WorkingDirectory)
 
     #- powershell: |
     #    $vswhereLatest = "https://github.com/Microsoft/vswhere/releases/latest/download/vswhere.exe"
@@ -53,6 +55,7 @@ stages:
         command: custom
         verbose: false
         customCommand: 'run build'
+        workingDir: $(WorkingDirectory)
 
     - task: TfxInstaller@4
       displayName: 'Use Node CLI for Azure DevOps'
@@ -64,7 +67,7 @@ stages:
       displayName: 'Package Extension: $(Build.SourcesDirectory)'
       name: 'packageStep'
       inputs:
-        rootFolder: '$(Build.SourcesDirectory)'
+        rootFolder: '$(Build.SourcesDirectory)'\$(WorkingDirectory)
         outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
         publisherId: 'gabrielbourgault'
         extensionId: 'azuredevops-innersource'
