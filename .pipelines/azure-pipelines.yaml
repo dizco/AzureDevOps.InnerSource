@@ -1,8 +1,8 @@
-name: '1.0$(rev:.r)'
+#name: '1.0$(rev:.r)'
 
 trigger:
 - master
-- feature/*
+#- feature/*
 
 pr:
 - master
