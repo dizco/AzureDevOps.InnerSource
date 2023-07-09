@@ -59,14 +59,6 @@ stages:
         artifact: 'customvsix'
       condition: succeededOrFailed()
 
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish build'
-      inputs:
-        publishLocation: pipeline
-        targetPath: '$(WorkingDirectory)'
-        artifact: 'build'
-      condition: succeededOrFailed()
-
 - stage: CustomPublishDev
   displayName: 'Publish privately'
   #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
