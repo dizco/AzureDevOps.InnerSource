@@ -50,7 +50,7 @@ stages:
       inputs:
         version: '0.x'
         checkLatest: true
-        
+
     - task: PackageAzureDevOpsExtension@4
       displayName: 'Package Extension: $(WorkingDirectory)'
       name: 'packageStep'
@@ -65,6 +65,8 @@ stages:
         updateTasksVersion: true
         updateTasksVersionType: patch
         extensionVisibility: private
+        patternManifest: azure-devops-extension.json
+        
     #- script: >
     #    npm run package-extension --
     #    --rev-version
