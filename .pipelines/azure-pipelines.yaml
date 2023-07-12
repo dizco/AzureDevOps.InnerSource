@@ -1,4 +1,4 @@
-name: '1.0$(rev:.r)'
+name: '1.1$(rev:.r)'
 
 trigger:
 - master
@@ -45,11 +45,11 @@ stages:
         testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
       condition: succeededOrFailed()
 
-    - task: TfxInstaller@3
-      displayName: 'Use Node CLI for Azure DevOps'
-      inputs:
-        version: '0.x'
-        checkLatest: true
+    #- task: TfxInstaller@3
+    #  displayName: 'Use Node CLI for Azure DevOps'
+    #  inputs:
+    #    version: '0.x'
+    #    checkLatest: true
 
     #- task: PackageAzureDevOpsExtension@4
     #  displayName: 'Package Extension: $(WorkingDirectory)'
