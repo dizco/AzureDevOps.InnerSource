@@ -45,28 +45,6 @@ stages:
         testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
       condition: succeededOrFailed()
 
-    #- task: TfxInstaller@3
-    #  displayName: 'Use Node CLI for Azure DevOps'
-    #  inputs:
-    #    version: '0.x'
-    #    checkLatest: true
-
-    #- task: PackageAzureDevOpsExtension@4
-    #  displayName: 'Package Extension: $(WorkingDirectory)'
-    #  name: 'packageStep'
-    #  inputs:
-    #    rootFolder: '$(WorkingDirectory)/src/Samples'
-    #    outputPath: '$(Build.ArtifactStagingDirectory)\azuredevops-innersource.vsix'
-    #    publisherId: 'gabrielbourgault'
-    #    extensionId: 'azuredevops-innersource'
-    #    extensionTag: '-build'
-    #    extensionName: 'AzureDevOps InnerSource'
-    #    extensionVersion: '$(Build.BuildNumber)'
-    #    updateTasksVersion: true
-    #    updateTasksVersionType: patch
-    #    extensionVisibility: private
-    #    patternManifest: azure-devops-extension.json
-
     - script: >
         npm run package-extension --
         --rev-version
@@ -115,12 +93,11 @@ stages:
               publisherId: 'gabrielbourgault'
               extensionId: 'azuredevops-innersource'
               extensionTag: '-dev'
-              #updateTasksVersion: false
               extensionVersion: '$(Build.BuildNumber)'
               updateTasksVersion: true
               updateTasksVersionType: patch
               extensionVisibility: 'privatepreview'
-              shareWith: 'gabrielbourgault-dev'
+              shareWith: 'gabrielbourgault' # TODO: Set gabrielbourgault-dev?
               noWaitValidation: true
 
           - task: IsAzureDevOpsExtensionValid@4
@@ -189,18 +166,3 @@ stages:
               targetPath: '$(publishProd.Extension.OutputPath)'
               artifact: 'prod'
             condition: succeededOrFailed()
-
-          #- task: GitHubRelease@1
-          #  inputs:
-          #    gitHubConnection: 'GitHub - jessehouwing'
-          #    repositoryName: '$(Build.Repository.Name)'
-          #    action: 'create'
-          #    target: '$(Build.SourceVersion)'
-          #    tagSource: 'userSpecifiedTag'
-          #    tag: 'v$(Build.BuildNumber)'
-          #    title: 'v$(Build.BuildNumber)'
-          #    releaseNotesSource: 'inline'
-          #    assets: '$(publishProd.Extension.OutputPath)*'
-          #    changeLogCompareToRelease: 'lastFullRelease'
-          #    changeLogType: 'issueBased'
-          #    changeLogLabels: '[{ "state" : "closed" }]'
