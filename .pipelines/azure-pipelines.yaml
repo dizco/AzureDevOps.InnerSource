@@ -63,7 +63,7 @@ stages:
 
 - stage: PublishDev
   displayName: 'Publish privately'
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest')) # TODO: Set condition to not deploy on PRs
   dependsOn: 'Build'
   jobs:
     - deployment: 
