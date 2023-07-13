@@ -1,11 +1,12 @@
 trigger:
-  pr: none
   branches:
     include:
     - master
   tags:
     include:
     - 'v*.*.*'
+
+pr: none
 
 schedules:
 - cron: '0 0 * * *'
