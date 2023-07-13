@@ -100,6 +100,7 @@ stages:
               publisherId: 'gabrielbourgault'
               extensionId: 'azuredevops-innersource'
               extensionTag: '-dev'
+              extensionName: 'AzureDevOps InnerSource Dev'
               extensionVersion: '$(Build.BuildNumber)'
               updateTasksVersion: true
               updateTasksVersionType: patch
