@@ -77,32 +77,17 @@ public static class ServiceCollectionExtensions
 		services.AddAuthentication(options =>
 			{
 				options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = "AzureDevOpsExtension";
 			})
 			.AddCookie()
-			// TODO: Configure data protection with a persisted key ring
-			// TODO: Use cookie authentication to store the AzureDevOpsExtension jwt bearer? And remove OpenIdConnect
-			.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
-			{
-				var settings = configuration.GetSection(IdentityProviderSettings.SectionName).Get<IdentityProviderSettings>();
-
-				options.Authority = settings.Authority;
-				options.ClientId = settings.ClientId;
-				options.ClientSecret = settings.ClientSecret;
-				options.ResponseType = "code";
-				options.SaveTokens = true;
-				options.GetClaimsFromUserInfoEndpoint = true;
-				options.ClaimActions.MapAll();
-
-				options.Scope.Clear();
-				foreach (var scope in new List<string> { "openid", "profile", "email", "offline_access" }) options.Scope.Add(scope);
-			})
 			.AddJwtBearer("AzureDevOpsExtension", options =>
 			{
 				// See: https://learn.microsoft.com/en-us/azure/devops/extend/develop/auth?view=azure-devops#net-framework
 
+				//var secret =
+				//	"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJjaWQiOiIwMzZjMjViNy02MzlmLTQyOGEtOTlkYy0zMzUwYWJjNTE1ZGEiLCJjc2kiOiJhZDU1OTc2YS05OTgyLTRiNTMtYWMzMS01YjVmMjA4NjQ0YjUiLCJuYW1laWQiOiIwMDAwMDAyOS0wMDAwLTg4ODgtODAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTY4ODI0OTU3MSwiZXhwIjoxODQ2MTAyMzcxfQ.HYFSVshJhozP9t1fhDniSgN-AJT2dSuoeutJPex907xxZTZ1zK8sJq9rPOkZmMM1Q-3d0xoYorlw1rHKTE7LYJAAFhf7q2YvgWnFYpYovwNWFnxyquCWR5E_dEyLMxpq2RkjjOGxMRZbgXpOGxCBhUUp00-dBU4bYRVA7moIAx-iiK8xrh8BMgtjDj1czKPhRTnIrPsAGmu4GE6cV7acXoaSlM0V3bTHZRn_IllnwqOv3dEUFVsA3O0SWjCBwRR0nYPrYOitRj5GN5VMfIOPm8WfbZDzXSKU72PHMO2cA_O8CrlBk9HRcgBPtB1wYl6Tm4eq2Ps8DGMtmg9GD2g0xw";
 				var secret =
-					"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJjaWQiOiIwMzZjMjViNy02MzlmLTQyOGEtOTlkYy0zMzUwYWJjNTE1ZGEiLCJjc2kiOiJhZDU1OTc2YS05OTgyLTRiNTMtYWMzMS01YjVmMjA4NjQ0YjUiLCJuYW1laWQiOiIwMDAwMDAyOS0wMDAwLTg4ODgtODAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTY4ODI0OTU3MSwiZXhwIjoxODQ2MTAyMzcxfQ.HYFSVshJhozP9t1fhDniSgN-AJT2dSuoeutJPex907xxZTZ1zK8sJq9rPOkZmMM1Q-3d0xoYorlw1rHKTE7LYJAAFhf7q2YvgWnFYpYovwNWFnxyquCWR5E_dEyLMxpq2RkjjOGxMRZbgXpOGxCBhUUp00-dBU4bYRVA7moIAx-iiK8xrh8BMgtjDj1czKPhRTnIrPsAGmu4GE6cV7acXoaSlM0V3bTHZRn_IllnwqOv3dEUFVsA3O0SWjCBwRR0nYPrYOitRj5GN5VMfIOPm8WfbZDzXSKU72PHMO2cA_O8CrlBk9HRcgBPtB1wYl6Tm4eq2Ps8DGMtmg9GD2g0xw"; // Load your extension's secret
+					"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im9PdmN6NU1fN3AtSGpJS2xGWHo5M3VfVjBabyJ9.eyJjaWQiOiJjNWQzNmM0OC1kMTE4LTQ5ODItOTRlMS1kNzc2OTczNjYxOTEiLCJjc2kiOiJjYzBlODNjNC0yODZmLTRhMjUtODc5Ni05NmE2NGQwNmUzNDYiLCJuYW1laWQiOiIwMDAwMDAyOS0wMDAwLTg4ODgtODAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJhcHAudnN0b2tlbi52aXN1YWxzdHVkaW8uY29tIiwiYXVkIjoiYXBwLnZzdG9rZW4udmlzdWFsc3R1ZGlvLmNvbSIsIm5iZiI6MTY4ODkzNTUyMiwiZXhwIjoxODQ2Nzg4MzIyfQ.MlLAEE3yDsX0CDNtV0L0pXJS909Vd5PcHVuFXFShUMD9UAfiaZnAloKULeqahKAdvnx2bCc_wKzvkqEYIDPQy_vBgm87ANrgFhuKYkx2zWn-EwedMIl3oHDrQ4QKhL9nEjznP4vC8BSHHuIsG4-YUJtX0JPEjCVzWkUyJpw3JpD-33H3tjpBVg76dZyBdO4jCne-jc7JSLneYn4LW4lfhsL3j-7r9Lq6X7Puj7LypUSKPQHGV0Pt5jy95mQmG-p1DyLE9c4WzCpYOmueYZWTtaon32Mq-mAYSM-_AVHgR7XjU42r_frf5MFREAYIxbWoohrQFPIrwyWo-XNr064t-g";
 
 				options.TokenValidationParameters = new TokenValidationParameters
 				{
@@ -140,6 +125,7 @@ public static class ServiceCollectionExtensions
 					OnTokenValidated = ctx =>
 					{
 						var t = 4;
+						
 						return Task.CompletedTask;
 					}
 				};

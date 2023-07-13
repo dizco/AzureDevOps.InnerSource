@@ -48,6 +48,12 @@ export class ConfigurationService {
         }
     }
 
+    public async getRepositories(): Promise<{ name: string, description: string }[]> {
+        const serverUrl = await this.getServerUrl();
+        const response = await fetch(serverUrl + "/repositories");
+        return (await response.json()).repositories;
+    }
+
     public async isReady(): Promise<boolean> {
         return !!await this.getServerUrl();
     }

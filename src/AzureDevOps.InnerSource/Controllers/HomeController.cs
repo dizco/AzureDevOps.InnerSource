@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.InnerSource.Models;
-using Flurl.Http;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.OAuth;
 using Microsoft.VisualStudio.Services.WebApi;
@@ -19,19 +18,23 @@ namespace AzureDevOps.InnerSource.Controllers;
 
 public class HomeController : Controller
 {
-	private readonly IFlurlClient _flurlClient;
 	private readonly ILogger<HomeController> _logger;
 
-	public HomeController(HttpClient httpClient, ILogger<HomeController> logger)
+	private readonly IOptionsMonitor<DevOpsOptions> _options;
+
+	public HomeController(IOptionsMonitor<DevOpsOptions> options, ILogger<HomeController> logger)
 	{
-		_flurlClient = new FlurlClient(httpClient);
+		_options = options;
 		_logger = logger;
 	}
+
+	private DevOpsOptions Options => _options.CurrentValue;
 
 	public async Task<IActionResult> Index()
 	{
 		if (User.Identity?.IsAuthenticated == true)
 		{
+			var tt = await HttpContext.GetTokenAsync("AzureDevOpsExtension", "access_token");
 			var accessToken =
 				await HttpContext.GetTokenAsync(OpenIdConnectDefaults.AuthenticationScheme, "access_token");
 			if (!string.IsNullOrEmpty(accessToken))
@@ -55,21 +58,15 @@ public class HomeController : Controller
 	public async Task<IActionResult> Authenticate()
 	{
 		var nameid = HttpContext.User.FindFirstValue("nameid");
-		var result = await HttpContext.AuthenticateAsync("AzureDevOpsExtension");
+		// var result = await HttpContext.AuthenticateAsync("AzureDevOpsExtension");
 
-		if (HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out StringValues userAccessToken))
+		if (HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out var userAccessToken))
 		{
-			// TODO: Should we validate that the nameid in the userAccessToken == the nameid in the app token?
-			// We have a user access token
-			var connection = await _flurlClient.Request("https://dev.azure.com/gabrielbourgault/_apis/connectionData")
-				.WithOAuthBearerToken(userAccessToken.ToString())
-				.GetJsonAsync<dynamic>();
-
 			var credential = new VssOAuthAccessTokenCredential(userAccessToken.ToString());
-			var conn = new VssConnection(new Uri("https://dev.azure.com/gabrielbourgault"), credential);
-			await conn.ConnectAsync();
+			var connection = new VssConnection(new Uri($"https://dev.azure.com/{Options.Organization}"), credential);
+			await connection.ConnectAsync(); // This essentially calls https://dev.azure.com/{organization}/_apis/connectionData
 
-			if (string.Equals(conn.AuthenticatedIdentity.Descriptor.IdentityType, IdentityConstants.System_PublicAccess, StringComparison.Ordinal))
+			if (string.Equals(connection.AuthenticatedIdentity.Descriptor.IdentityType, IdentityConstants.System_PublicAccess, StringComparison.Ordinal))
 			{
 				_logger.LogError("Access token is invalid, public access is unauthorized");
 				return Unauthorized();
@@ -77,17 +74,24 @@ public class HomeController : Controller
 
 			// No need to actually validate any of the access token properties because this is done by the Vss Connection above
 			var tokenHandler = new JwtSecurityTokenHandler();
-			JwtSecurityToken token = tokenHandler.ReadJwtToken(userAccessToken.ToString());
+			var token = tokenHandler.ReadJwtToken(userAccessToken.ToString());
 			var accessTokenNameId = token.Claims.FirstOrDefault(x => x.Type == "nameid")?.Value;
 
 			if (!string.Equals(nameid, accessTokenNameId, StringComparison.Ordinal))
 			{
-				_logger.LogError("Bearer token identity {bearerIdentity} does not match access token identity {accessTokenIdentity}", nameid, accessTokenNameId);
+				_logger.LogError("Bearer token identity {bearerIdentity} does not match access token identity {accessTokenIdentity}", nameid,
+					accessTokenNameId);
 				return Unauthorized();
 			}
 
-			var userId = conn.AuthenticatedIdentity.Id;
+			var userId = connection.AuthenticatedIdentity.Id;
 			_logger.LogInformation("Authenticated with user id {userId}", userId);
+
+			HttpContext.User.AddIdentity(new ClaimsIdentity(new List<Claim>
+			{
+				new("ado-userid", userId.ToString())
+			}, "AuthenticationTypes.AzureDevOps"));
+			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, HttpContext.User);
 		}
 		else
 		{
