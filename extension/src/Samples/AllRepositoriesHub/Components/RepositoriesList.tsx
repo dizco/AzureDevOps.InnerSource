@@ -58,25 +58,6 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
             <div className="repositories-list">
                 <h2>Repositories</h2>
 
-                <div className="row">
-                    <div className="column">
-                        <Card className="flex-grow">
-                            <h2 style={{ margin: 0, marginBottom: "5px" }}>Kiosoft</h2>
-                            <p style={{ marginBottom: "5px" }}><img src="https://innersource.kiosoft.ca/stars/Kiosoft/Kiosoft" alt="Stars"/> <img src="https://innersource.kiosoft.ca/badges/last-commit/f4abd3dc-0616-4115-9148-4fc75090d17c" alt="Last commit"/> </p>
-                            <p style={{ marginBottom: "8px" }}></p>
-                            <p><a href="https://dev.azure.com/gabrielbourgault/Kiosoft/_git/Kiosoft">Go to project</a></p>
-                        </Card>
-                    </div>
-                    <div className="column">
-                        <Card className="flex-grow">
-                            <h2 style={{ margin: 0, marginBottom: "5px" }}>InnerSource</h2>
-                            <p style={{ marginBottom: "5px" }}><img src="https://innersource.kiosoft.ca/stars/Kiosoft/InnerSource" alt="Stars"/> <img src="https://innersource.kiosoft.ca/badges/last-commit/d14718b2-3f57-490a-bede-b648f02fc405" alt="Last commit"/> <img src="https://img.shields.io/badge/-512BD4?logo=.net" alt=".NET"/></p>
-                            <p style={{ marginBottom: "8px" }}></p>
-                            <p><a href="https://dev.azure.com/gabrielbourgault/Kiosoft/_git/InnerSource">Go to project</a></p>
-                        </Card>
-                    </div>
-                </div>
-
                 {rows}
 
                 <table id="repositoriesAggregation" style={{ width: "900px" }}>
