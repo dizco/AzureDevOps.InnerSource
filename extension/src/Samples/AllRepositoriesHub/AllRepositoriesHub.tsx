@@ -58,7 +58,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                         commandBarItems={this.getCommandBarItems()}
                     titleSize={TitleSize.Medium} />
 
-                <div style={{marginLeft: 32}}>
+                <div className="page-content">
                     <div className="flex-row flex-center">
                         <label htmlFor="message-level-picker">Sorting: </label>
                         <Dropdown<RepositoriesSort>
@@ -72,9 +72,9 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                             selection={this.state.sortSelection}
                         />
                     </div>
+                    <RepositoriesList/>
+                    <Settings/>
                 </div>
-                <RepositoriesList/>
-                <Settings/>
             </Page>
         );
     }
