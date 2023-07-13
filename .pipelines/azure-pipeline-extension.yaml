@@ -10,7 +10,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: innersource
 - name: WorkingDirectory
   value: '$(Build.SourcesDirectory)/extension'
 
