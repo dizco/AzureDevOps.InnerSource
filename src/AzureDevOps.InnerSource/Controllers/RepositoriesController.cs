@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AzureDevOps.InnerSource.Common.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -19,6 +21,7 @@ public class RepositoriesController : Controller
 	private DevOpsOptions Options => _options.CurrentValue;
 
 	[Authorize]
+	[EnableCors("AzureDevOpsExtension")]
 	[HttpGet]
 	public async Task<IActionResult> GetRepositories(string project)
 	{

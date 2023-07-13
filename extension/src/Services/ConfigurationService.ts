@@ -50,7 +50,9 @@ export class ConfigurationService {
 
     public async getRepositories(): Promise<{ name: string, description: string }[]> {
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + "/repositories");
+        const response = await fetch(serverUrl + "/repositories", {
+            credentials: "include"
+        });
         return (await response.json()).repositories;
     }
 

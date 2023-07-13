@@ -87,6 +87,7 @@ public class HomeController : Controller
 			var userId = connection.AuthenticatedIdentity.Id;
 			_logger.LogInformation("Authenticated with user id {userId}", userId);
 
+			// See: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-7.0#create-an-authentication-cookie
 			HttpContext.User.AddIdentity(new ClaimsIdentity(new List<Claim>
 			{
 				new("ado-userid", userId.ToString())
