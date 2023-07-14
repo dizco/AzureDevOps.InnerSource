@@ -36,7 +36,7 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
             repositories.push(
                 <div className="column subtle-border">
                     <h2 style={{ margin: 0, marginBottom: "5px" }}>{this.state.repositories[i].name}</h2>
-                    <p style={{ marginBottom: "5px" }}>{this.state.repositories[i].badges.map(badge => (<img key={badge.name} src={badge.url} alt={badge.name} /> ))}</p>
+                    <p style={{ marginBottom: "5px" }}>{this.state.repositories[i].badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
                     {this.state.repositories[i].description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
                     {this.state.repositories[i].installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
                     <a href={this.state.repositories[i].webUrl}>Go to project</a>
