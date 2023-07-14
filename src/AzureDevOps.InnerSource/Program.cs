@@ -69,7 +69,10 @@ void RunWebMvc()
 	    options.AddPolicy("AzureDevOpsExtension", policy =>
 	    {
 			// TODO: Could probably be a bit more restrictive
-			policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+			policy.AllowCredentials()
+				.WithOrigins("https://gabrielbourgault.gallerycdn.vsassets.io")
+				.AllowAnyHeader()
+				.AllowAnyMethod();
 	    });
     });
     builder.Services.ConfigureAuthentication(configuration);

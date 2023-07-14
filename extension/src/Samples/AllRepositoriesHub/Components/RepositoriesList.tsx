@@ -1,12 +1,9 @@
 import "./RepositoriesList.scss";
 
 import * as React from 'react';
-import { ConfigurationContext } from '../../../Services/ConfigurationService';
-import { Card } from 'azure-devops-ui/Card';
+import { ConfigurationContext, IRepository } from '../../../Services/ConfigurationService';
+import * as SDK from 'azure-devops-extension-sdk';
 
-export interface IRepository {
-    name: string;
-}
 export interface IRepositoriesListState {
     repositories:  IRepository[];
 }
@@ -18,12 +15,18 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
     constructor(props: {}) {
         super(props);
         this.state = {
-            repositories: [{ name: "potato" }, { name: "something" }, { name: "something else" }],
+            repositories: [],
         };
     }
 
     public async componentDidMount() {
-        const config = await this.context.getServerUrl();
+        await SDK.ready();
+        await this.context.ensureAuthenticated();
+        const repositories = await this.context.getRepositories();
+        console.log("Repositories:", repositories);
+        this.setState({
+            repositories: repositories
+        });
     }
 
     public render(): JSX.Element {
@@ -33,10 +36,10 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
             repositories.push(
                 <div className="column subtle-border">
                     <h2 style={{ margin: 0, marginBottom: "5px" }}>{this.state.repositories[i].name}</h2>
-                    <p style={{ marginBottom: "5px" }}><img src="https://innersource.kiosoft.ca/stars/Kiosoft/InnerSource" alt="Stars"/> <img src="https://innersource.kiosoft.ca/badges/last-commit/d14718b2-3f57-490a-bede-b648f02fc405" alt="Last commit"/> <img src="https://img.shields.io/badge/-512BD4?logo=.net" alt=".NET"/></p>
-                    <p style={{ marginBottom: "8px" }}>IdentityModel is a .NET standard helper library for claims-based identity, OAuth 2.0 and OpenID Connect.</p>
-                    <pre><code>dotnet add package IdentityModel --version 6.1.0</code></pre>
-                    <a href="https://dev.azure.com/gabrielbourgault/Kiosoft/_git/my-csharp-nuget">Go to project</a>
+                    <p style={{ marginBottom: "5px" }}>{this.state.repositories[i].badges.map(badge => (<img key={badge.name} src={badge.url} alt={badge.name} />))}</p>
+                    <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>
+                    <pre><code>{this.state.repositories[i].installation}</code></pre>
+                    <a href={this.state.repositories[i].webUrl}>Go to project</a>
                 </div>
             );
         }

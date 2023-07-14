@@ -26,7 +26,7 @@ public class RepositoriesController : Controller
 
 	//[Authorize]
 	[EnableCors("AzureDevOpsExtension")]
-	[HttpGet]
+	[HttpGet("{projectId}")]
 	public async Task<IActionResult> GetRepositories(string projectId, CancellationToken ct)
 	{
 		if (string.IsNullOrWhiteSpace(projectId))

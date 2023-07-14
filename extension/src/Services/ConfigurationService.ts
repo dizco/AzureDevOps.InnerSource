@@ -6,6 +6,20 @@ interface IConfiguration {
     serverUrl: string;
 }
 
+export interface IRepositoryBadge {
+    name: string;
+    url: string;
+}
+export interface IRepository {
+    project: string;
+    id: string;
+    name: string;
+    description: string;
+    installation: string;
+    webUrl: string;
+    badges: IRepositoryBadge[];
+}
+
 export class ConfigurationService {
     private static readonly ConfigurationKey = "configuration";
     // TODO: Could keep a local, cached copy of the configuration for a certain amount of time
@@ -48,7 +62,7 @@ export class ConfigurationService {
         }
     }
 
-    public async getRepositories(): Promise<{ name: string, description: string }[]> {
+    public async getRepositories(): Promise<IRepository[]> {
         const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
         const project = await projectService.getProject();
         if (!project) {

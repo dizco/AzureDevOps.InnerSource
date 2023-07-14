@@ -62,6 +62,12 @@ npm install --save package
         {
             if (i % 2 == 0) repositoriesMarkdown += "<tr>";
 
+            var languageBadge = repositories[i].Language?.GetBadgeUrl() ?? "";
+            if (!string.IsNullOrEmpty(languageBadge))
+            {
+	            languageBadge = $"<img src=\"{languageBadge}\" alt=\"{repositories[i].Language!.Name}\">";
+
+            }
             repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
                 .Replace("{{repositoryId}}", repositories[i].Id.ToString())
                 .Replace("{{repository}}", repositories[i].Name)
@@ -69,7 +75,7 @@ npm install --save package
                 .Replace("{{description}}", repositories[i].Description)
                 .Replace("{{installation}}", repositories[i].Installation)
                 .Replace("{{link}}", repositories[i].WebUrl)
-                .Replace("{{language}}", repositories[i].Language?.GetHtmlBadge() ?? "")
+                .Replace("{{language}}",  languageBadge)
                 .Replace("{{badgeServerUrl}}", Options.BadgeServerUrl);
 
             if (i % 2 == 1) repositoriesMarkdown += "</tr>";
@@ -108,7 +114,18 @@ npm install --save package
                     }
 
                     projectMetrics.TryGetValue(x.Name, out var language);
-                    return new Repository
+
+                    var badges = new List<Badge>()
+                    {
+	                    new("Stars", $"{Options.BadgeServerUrl}/stars/{project.Name}/{x.Name}"),
+	                    new("Last Commit", $"{Options.BadgeServerUrl}/badges/last-commit/{x.Id}"),
+                    };
+                    if (language is not null)
+                    {
+                        badges.Add(new Badge(language.Name, language.GetBadgeUrl()));
+                    }
+
+					return new Repository
                     {
                         Project = project.Name,
                         Name = x.Name,
@@ -116,7 +133,8 @@ npm install --save package
                         Description = description,
                         Installation = installation,
                         Language = language,
-                        WebUrl = x.WebUrl
+                        WebUrl = x.WebUrl,
+                        Badges = badges
                     };
                 })
                 .ToListAsync(ct);
