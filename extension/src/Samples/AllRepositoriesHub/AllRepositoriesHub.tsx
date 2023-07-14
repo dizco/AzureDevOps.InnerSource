@@ -45,9 +45,6 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
 
     public async componentDidMount() {
         await SDK.ready();
-        await this.context.ensureAuthenticated();
-        const repositories = await this.context.getRepositories();
-        console.log("Repositories:", repositories);
     }
 
     public render(): JSX.Element {
