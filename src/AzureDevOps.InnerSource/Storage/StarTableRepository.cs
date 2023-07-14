@@ -10,7 +10,7 @@ namespace AzureDevOps.InnerSource.Storage;
 public class StarEntity : ITableEntity
 {
 	public required string Repository { get; set; }
-	public required string Oid { get; set; }
+	public required string UserId { get; set; }
 	public string? Email { get; set; }
 	public required string PartitionKey { get; set; } = null!;
 	public required string RowKey { get; set; } = null!;
@@ -54,7 +54,7 @@ public class StarTableRepository : IStarRepository
 			PartitionKey = HashRepository(repository),
 			RowKey = principal.Id,
 			Repository = repository.ToString(),
-			Oid = principal.Id,
+			UserId = principal.Id,
 			Email = principal.Email
 		});
 
