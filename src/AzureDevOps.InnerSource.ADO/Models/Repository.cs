@@ -1,12 +1,5 @@
 ﻿namespace AzureDevOps.InnerSource.ADO.Models;
 
-public record Badge
-{
-	public required string Name { get; init; }
-
-	public required string Url { get; init; }
-}
-
 public record Repository
 {
 	public required string Project { get; init; }

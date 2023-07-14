@@ -115,7 +115,7 @@ npm install --save package
 
                     projectMetrics.TryGetValue(x.Name, out var language);
 
-                    var badges = new List<Badge>()
+                    var badges = new List<Badge>
                     {
 	                    new("Stars", $"{Options.BadgeServerUrl}/stars/{project.Name}/{x.Name}"),
 	                    new("Last Commit", $"{Options.BadgeServerUrl}/badges/last-commit/{x.Id}"),
