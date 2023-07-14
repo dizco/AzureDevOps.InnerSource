@@ -26,10 +26,10 @@ public class StarsController : Controller
     private DevOpsOptions Options => _options.CurrentValue;
 
     [Authorize]
-    [HttpPost("{project}/{repository}")]
-    public async Task<IActionResult> Star(string project, string repository)
+    [HttpPost("{projectName}/{repositoryName}")]
+    public async Task<IActionResult> Star(string projectName, string repositoryName)
     {
-        if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repository))
+        if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))
             throw new ValidationException("Required parameters were not provided");
 
         var principal = new Principal
@@ -41,16 +41,16 @@ public class StarsController : Controller
         await _starService.StarAsync(principal, new Repository
         {
             Organization = Options.Organization,
-            Project = project,
-            Name = repository
+            Project = projectName,
+            Name = repositoryName
         });
 
         // Redirect back to the original repository
-        return Redirect($"https://dev.azure.com/{Options.Organization}/{project}/_git/{repository}");
+        return Json(new {});
     }
 
     // TODO: Think about how to authenticate this
-    [HttpGet("stars/{project}/{repositoryName}")]
+    [HttpGet("{projectName}/{repositoryName}")]
     public async Task<IActionResult> GetStars(string project, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repositoryName))
