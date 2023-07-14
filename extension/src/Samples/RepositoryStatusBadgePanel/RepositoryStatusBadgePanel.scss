@@ -1,9 +1,14 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 
+.separator-line-top {
+    margin-top: 16px;
+    padding-top: 16px;
+}
+
 .status-badge-text-wrapper {
     display: flex;
     flex-direction: row;
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .status-badge-text-wrapper .status-badge-url-textfield {

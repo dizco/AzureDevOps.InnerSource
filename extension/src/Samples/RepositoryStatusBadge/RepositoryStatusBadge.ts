@@ -19,7 +19,7 @@ SDK.register("repository-menu-badge", () => {
 
             const panelService = await SDK.getService<IHostPageLayoutService>(CommonServiceIds.HostPageLayoutService);
             panelService.openPanel<boolean | undefined>(SDK.getExtensionContext().id + ".repository-status-badge-panel-content", {
-                title: "Status badge",
+                title: "Status badges",
                 configuration: {
                     repository,
                 }

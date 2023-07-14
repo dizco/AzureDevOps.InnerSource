@@ -85,8 +85,8 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         </FormItem>
                     </div>
                 </div>
-                <div className="flex-grow flex-column flex-center justify-center" style={{ border: "1px solid #eee", margin: "10px 0" }}>
-                    Additional content placeholder {repository?.name}
+                <div className="separator-line-top">
+                    <p>Status badges are private and secured with a token that expires in 1 year.</p>
                 </div>
             </div>
         );
