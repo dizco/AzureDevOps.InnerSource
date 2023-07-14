@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
+[Route("stars")]
 public class StarsController : Controller
 {
     private readonly IOptionsMonitor<DevOpsOptions> _options;
@@ -24,9 +25,8 @@ public class StarsController : Controller
 
     private DevOpsOptions Options => _options.CurrentValue;
 
-    // NOTE: This endpoint is a GET because it is not possible to make POST requests from a markdown file
     [Authorize]
-    [HttpGet("star")]
+    [HttpPost("{project}/{repository}")]
     public async Task<IActionResult> Star(string project, string repository)
     {
         if (string.IsNullOrWhiteSpace(project) || string.IsNullOrWhiteSpace(repository))
@@ -34,7 +34,7 @@ public class StarsController : Controller
 
         var principal = new Principal
         {
-            Id = User.FindFirstValue("oid") ?? throw new Exception("Expected to find an oid claim"),
+            Id = User.FindFirstValue("ado-userid") ?? throw new Exception("Expected to find an ado-userid claim"),
             Email = User.FindFirstValue("email")
         };
 

@@ -125,6 +125,17 @@ export class ConfigurationService {
         console.log('Jwt response', response.status);
         return (await response.json()).token;
     }
+
+    public async starRepository(projectName: string, repositoryName: string): Promise<void> {
+        const serverUrl = await this.getServerUrl();
+        const response = await fetch(`${serverUrl}/star/${projectName}/${repositoryName}`, {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+            }
+        });
+        console.log('Star response', response.status);
+    }
 }
 
 export const ConfigurationContext = React.createContext(new ConfigurationService());
