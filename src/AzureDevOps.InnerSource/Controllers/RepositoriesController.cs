@@ -24,7 +24,7 @@ public class RepositoriesController : Controller
 
 	private DevOpsOptions Options => _options.CurrentValue;
 
-	//[Authorize]
+	//[Authorize] // TODO: Set authorization
 	[EnableCors("AzureDevOpsExtension")]
 	[HttpGet("{projectId}")]
 	public async Task<IActionResult> GetRepositories(string projectId, CancellationToken ct)
