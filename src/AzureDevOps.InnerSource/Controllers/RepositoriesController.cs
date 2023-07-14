@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Common.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -13,30 +14,29 @@ public class RepositoriesController : Controller
 {
 	private readonly IOptionsMonitor<DevOpsOptions> _options;
 
-	public RepositoriesController(IOptionsMonitor<DevOpsOptions> options)
+	private readonly RepositoryService _repositoryService;
+
+	public RepositoriesController(IOptionsMonitor<DevOpsOptions> options, RepositoryService repositoryService)
 	{
 		_options = options;
+		_repositoryService = repositoryService;
 	}
 
 	private DevOpsOptions Options => _options.CurrentValue;
 
-	[Authorize]
+	//[Authorize]
 	[EnableCors("AzureDevOpsExtension")]
 	[HttpGet]
-	public async Task<IActionResult> GetRepositories(string project)
+	public async Task<IActionResult> GetRepositories(string projectId, CancellationToken ct)
 	{
-		if (string.IsNullOrWhiteSpace(project))
+		if (string.IsNullOrWhiteSpace(projectId))
 			throw new ValidationException("Required parameters were not provided");
 
-		await Task.CompletedTask;
+		var repositories = await _repositoryService.GetRepositoriesAsync(projectId, ct);
 
 		return Json(new
 		{
-			repositories = new List<dynamic>
-			{
-				new { name = "myrepo", description = "mydescription" },
-				new { name = "myrepo2", description = "mydescription2" },
-			}
+			repositories
 		});
 	}
 }

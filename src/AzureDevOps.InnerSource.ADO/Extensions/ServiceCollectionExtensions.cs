@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
 			.ValidateDataAnnotations();
 
 		services.AddTransient<RepositoryAggregator>();
+		services.AddTransient<RepositoryService>();
 
 		return services;
 	}

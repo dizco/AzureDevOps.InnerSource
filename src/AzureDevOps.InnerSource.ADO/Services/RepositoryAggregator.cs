@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using AzureDevOps.InnerSource.ADO.Configuration;
+using AzureDevOps.InnerSource.ADO.Models;
 using AzureDevOps.InnerSource.Common.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
@@ -77,7 +78,7 @@ npm install --save package
         return template.Replace("{{repositories}}", repositoriesMarkdown);
     }
 
-    private async Task<List<Repository>> GetRepositoriesAsync(List<Project> projects, CancellationToken ct)
+    public async Task<List<Repository>> GetRepositoriesAsync(List<Project> projects, CancellationToken ct)
     {
         var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
 
@@ -232,49 +233,4 @@ npm install --save package
         return DevOpsOptions.AllowedRepositories.Any(x => new Regex(x.RegexProject).IsMatch(repository.ProjectReference.Name)
                                                           && new Regex(x.RegexRepository).IsMatch(repository.Name));
     }
-}
-
-internal record Project
-{
-    public required Guid Id { get; init; }
-    public required string Name { get; init; }
-}
-
-internal class ProgrammingLanguage
-{
-    public ProgrammingLanguage(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
-
-    public string GetHtmlBadge()
-    {
-        return Name switch
-        {
-            "C#" => "<img src=\"https://img.shields.io/badge/-512BD4?logo=.net\" alt=\".NET\">",
-            "TypeScript" => "<img src=\"https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white\" alt=\"TypeScript\">",
-            "JavaScript" => "<img src=\"https://img.shields.io/badge/javascript-%23323330.svg?logo=javascript&logoColor=%23F7DF1E\" alt=\"JavaScript\">",
-            "C++" => "<img src=\"https://img.shields.io/badge/c++-%2300599C.svg?logo=c%2B%2B&logoColor=white\" alt=\"C++\">",
-            _ => ""
-        };
-    }
-}
-
-internal record Repository
-{
-    public required string Project { get; init; }
-
-    public required Guid Id { get; init; }
-
-    public required string Name { get; init; }
-
-    public required string? Description { get; init; }
-
-    public required string? Installation { get; init; }
-
-    public required string WebUrl { get; init; }
-
-    public required ProgrammingLanguage? Language { get; init; }
 }

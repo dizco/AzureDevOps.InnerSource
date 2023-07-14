@@ -1,5 +1,5 @@
 import * as SDK from 'azure-devops-extension-sdk';
-import { CommonServiceIds, IExtensionDataService } from 'azure-devops-extension-api';
+import { CommonServiceIds, IExtensionDataService, IProjectPageService } from 'azure-devops-extension-api';
 import React from 'react';
 
 interface IConfiguration {
@@ -49,8 +49,15 @@ export class ConfigurationService {
     }
 
     public async getRepositories(): Promise<{ name: string, description: string }[]> {
+        const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
+        const project = await projectService.getProject();
+        if (!project) {
+            console.error('Could not identify current project')
+            return [];
+        }
+
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + "/repositories", {
+        const response = await fetch(serverUrl + "/repositories/" + project.id, {
             credentials: "include"
         });
         return (await response.json()).repositories;
