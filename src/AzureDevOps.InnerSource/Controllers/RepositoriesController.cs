@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Common.Configuration;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
