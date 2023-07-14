@@ -49,7 +49,7 @@ public class RepositoryAggregator
 <h2 style=""margin: 0; margin-bottom: 5px;"">{{title}}</h2>
 <p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/stars/{{project}}/{{repository}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
-{{installation}}
+<pre><code>{{installation}}</code></pre>
 <a href=""{{link}}"">Go to project</a>
 </td>
 ";
@@ -165,14 +165,14 @@ npm install --save package
 
     private static string GetInstallation(string readme)
     {
-        var installationRegex = new Regex("<pre id=\"packageInstallation\">(.*)<\\/pre>");
+        var installationRegex = new Regex("<pre id=\"packageInstallation\"><code>(.*)</code><\\/pre>");
         var match = installationRegex.Match(readme);
 
         if (match.Success)
         {
             var installation = match.Groups[1].Value;
             // Take first 400 characters of installation
-            return "<pre>" + installation.Substring(0, Math.Min(installation.Length, 400)) + "</pre>";
+            return installation.Substring(0, Math.Min(installation.Length, 400));
         }
 
         return "";
