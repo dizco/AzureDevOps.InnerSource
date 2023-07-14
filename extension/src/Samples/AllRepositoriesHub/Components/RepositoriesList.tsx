@@ -44,7 +44,7 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
             );
         }
 
-        const rowSize = 2;
+        const rowSize = 3;
         const rows = [];
         for (let i = 0; i <= repositories.length; i += rowSize) {
             let columns = repositories.slice(i, i + rowSize);
