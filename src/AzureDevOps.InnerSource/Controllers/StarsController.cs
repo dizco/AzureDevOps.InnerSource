@@ -4,6 +4,7 @@ using AzureDevOps.InnerSource.Common;
 using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.InnerSource.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -26,9 +27,11 @@ public class StarsController : Controller
     private DevOpsOptions Options => _options.CurrentValue;
 
     [Authorize]
+    [EnableCors("AzureDevOpsExtension")]
     [HttpPost("{projectName}/{repositoryName}")]
-    public async Task<IActionResult> Star(string projectName, string repositoryName)
+    public async Task<IActionResult> PostStar(string projectName, string repositoryName)
     {
+        // TODO: Use repository id because it is more url-safe
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))
             throw new ValidationException("Required parameters were not provided");
 
