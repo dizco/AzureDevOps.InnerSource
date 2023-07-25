@@ -44,6 +44,12 @@ public class StarTableRepository : IStarRepository
 		return entity.HasValue ? entity.Value.StarCount : 0;
 	}
 
+	public async Task<bool> GetIsStarredAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
+		return entity.HasValue;
+	}
+
 	public async Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
 		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);

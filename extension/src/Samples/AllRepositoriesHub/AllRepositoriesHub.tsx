@@ -67,7 +67,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                             items={this.sortItems}
                             onSelect={this.onSortChanged}
                             selection={this.state.sortSelection}
-                            renderExpandable={props => <DropdownExpandableButton {...props} />}
+                            renderExpandable={props => <DropdownExpandableButton {...props} className="repository-sort" />}
                         />
                     </div>
                     <RepositoriesList sort={this.state.sort} />
@@ -80,6 +80,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
     private onSortChanged = (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): void => {
         console.log("Sort changed", item.data);
         this.setState({ sort: item.data ?? RepositoriesSort.Alphabetical });
+        // TODO: Could set this as a preference for the user in devops data storage
     }
 
     private getCommandBarItems(): IHeaderCommandBarItem[] {

@@ -18,6 +18,16 @@ public class StarInMemoryRepository : IStarRepository
 		return Task.FromResult(0);
 	}
 
+	public Task<bool> GetIsStarredAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		ct.ThrowIfCancellationRequested();
+		if (_stars.TryGetValue(repository, out var users))
+		{
+			return Task.FromResult(users.Contains(principal));
+		}
+		return Task.FromResult(false);
+	}
+
 	public Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
 		ct.ThrowIfCancellationRequested();

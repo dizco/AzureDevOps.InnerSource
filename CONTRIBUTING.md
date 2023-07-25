@@ -6,3 +6,7 @@ The project is built on [.NET 7](https://dotnet.microsoft.com/en-us/download/dot
 
 ## Install
 Follow the instructions in the README.
+
+## Azure DevOps Extension
+
+Icon list: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font

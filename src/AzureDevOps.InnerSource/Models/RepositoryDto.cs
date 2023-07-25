@@ -19,7 +19,7 @@ public record RepositoryDto
 	public required RepositoryMetadataDto Metadata { get; init; }
 }
 
-public record StarsDto(int Count);
+public record StarsDto(int Count, bool IsStarred);
 
 public record BadgeDto(string Name, string Url);
 

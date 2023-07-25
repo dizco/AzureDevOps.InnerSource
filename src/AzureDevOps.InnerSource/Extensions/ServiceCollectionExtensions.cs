@@ -45,6 +45,8 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddHttpClient();
+		services.AddHttpContextAccessor();
+		services.AddTransient<IPrincipalService, PrincipalService>();
 		services.AddTransient<BadgeService>();
 		services.AddTransient<RepositoryService>();
 		services.AddStars(configuration);

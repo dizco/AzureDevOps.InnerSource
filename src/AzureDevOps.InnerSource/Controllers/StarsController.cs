@@ -47,14 +47,13 @@ public class StarsController : Controller
             Project = projectName,
             Name = repositoryName
         }, ct);
-
-        // Redirect back to the original repository
+        
         return Json(new {});
     }
 
     // TODO: Think about how to authenticate this
-    [HttpGet("{projectName}/{repositoryName}")]
-    public async Task<IActionResult> GetStars(string projectName, string repositoryName, CancellationToken ct)
+    [HttpGet("{projectName}/{repositoryName}/badge")]
+    public async Task<IActionResult> GetStarsBadge(string projectName, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))
             throw new ValidationException("Required parameters were not provided");

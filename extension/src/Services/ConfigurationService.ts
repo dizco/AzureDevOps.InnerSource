@@ -18,6 +18,7 @@ export interface IRepository {
     installation: string;
     stars: {
         count: number;
+        isStarred: boolean;
     };
     metadata: {
         url: string;
