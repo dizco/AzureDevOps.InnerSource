@@ -3,6 +3,7 @@ import "./RepositoriesList.scss";
 import * as React from 'react';
 import { ConfigurationContext, IRepository } from '../../../Services/ConfigurationService';
 import * as SDK from 'azure-devops-extension-sdk';
+import { Link } from 'azure-devops-ui/Link';
 
 export interface IRepositoriesListState {
     repositories:  IRepository[];
@@ -31,7 +32,6 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
 
     public render(): JSX.Element {
         const repositories = [];
-        // TODO: Use navigation service to go to the project repo, otherwise it loads the page within the iframe.
         for (let i = 0; i < this.state.repositories.length; i++) {
             repositories.push(
                 <div className="column subtle-border">
@@ -39,14 +39,14 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
                     <p style={{ marginBottom: "5px" }}>{this.state.repositories[i].badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
                     {this.state.repositories[i].description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
                     {this.state.repositories[i].installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
-                    <a href={this.state.repositories[i].webUrl}>Go to project</a>
+                    <Link href={this.state.repositories[i].webUrl}>Go to project</Link>
                 </div>
             );
         }
 
         const rowSize = 3;
         const rows = [];
-        for (let i = 0; i <= repositories.length; i += rowSize) {
+        for (let i = 0; i < repositories.length; i += rowSize) {
             let columns = repositories.slice(i, i + rowSize);
             if (columns.length < rowSize) {
                 columns = columns.concat(Array(rowSize - columns.length).fill(<div className="column"></div>));
@@ -59,11 +59,9 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
         }
         return (
             <div className="repositories-list">
-                <h2>Repositories</h2>
-
                 {rows}
 
-                <table id="repositoriesAggregation" style={{ width: "900px" }}>
+                {/*<table id="repositoriesAggregation" style={{ width: "900px" }}>
                     <tbody>
                     <tr>
                         <td style={{ width: "450px" }}>
@@ -105,7 +103,7 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
                         </td>
                     </tr>
                     </tbody>
-                </table>
+                </table>*/}
             </div>
         );
     }

@@ -29,11 +29,11 @@ export class Settings extends React.Component<{}, ISettingsState> {
 
     public render(): JSX.Element {
         return (
-            <div style={{marginLeft: 32}}>
-                <h2>Settings</h2>
+            <div>
+                <h3>Settings</h3>
 
-                <h3>Server URL</h3>
-                <div className="page-content page-content-top flex-row rhythm-horizontal-16">
+                <h4>Server URL</h4>
+                <div className="flex-row rhythm-horizontal-16">
                     <TextField
                         value={this.state.serverUrlInput}
                         onChange={this.onServerUrlInputChanged}

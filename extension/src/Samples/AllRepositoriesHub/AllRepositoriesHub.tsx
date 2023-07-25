@@ -7,8 +7,6 @@ import { showRootComponent } from "../../Common";
 import { Dropdown, DropdownExpandableButton } from 'azure-devops-ui/Dropdown';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
-import { IMenuButtonProps } from 'azure-devops-ui/Menu';
-import { IButtonProps } from 'azure-devops-ui/Button';
 import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
 import { Settings } from './Components/Settings';
 import { RepositoriesList } from './Components/RepositoriesList';
@@ -27,6 +25,12 @@ interface IAllRepositoriesHubContent {
 class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubContent> {
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
+
+    private sortItems: IListBoxItem<RepositoriesSort>[] = [
+        { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
+        { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
+        { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
+    ];
 
     constructor(props: {}) {
         super(props);
@@ -54,21 +58,17 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
             /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">
 
-                <Header title="Repository Information Sample Hub"
+                <Header title="Repositories"
                         commandBarItems={this.getCommandBarItems()}
-                    titleSize={TitleSize.Medium} />
+                        titleSize={TitleSize.Large} />
 
                 <div className="page-content">
                     <div className="flex-row flex-center">
-                        <label htmlFor="message-level-picker">Sorting: </label>
+                        <label htmlFor="message-level-picker">Sort by: </label>
                         <Dropdown<RepositoriesSort>
                             className="repository-sort margin-left-8"
-                            placeholder="Sorting"
-                            items={[
-                                { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
-                                { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
-                                { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
-                            ]}
+                            placeholder="Sort by"
+                            items={this.sortItems}
                             onSelect={this.onSortChanged}
                             selection={this.state.sortSelection}
                             renderExpandable={props => <DropdownExpandableButton {...props} />}
@@ -102,26 +102,6 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
             {
                 id: "label-sort",
                 text: "Sort",
-            },
-            {
-                id: "sort",
-                renderButton: (props: IButtonProps | IMenuButtonProps): JSX.Element => {
-                    // TODO: https://developer.microsoft.com/en-us/azure-devops/components/menu
-                    return (
-                        <Dropdown<RepositoriesSort>
-                            key="something"
-                            className="repository-sort margin-left-8"
-                            items={[
-                                { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
-                                { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
-                                { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
-                            ]}
-                            onSelect={this.onSortChanged}
-                            selection={this.state.sortSelection}
-                            renderExpandable={props => <DropdownExpandableButton {...props} />}
-                        />
-                    );
-                }
             },
             {
                 id: "customDialog",
