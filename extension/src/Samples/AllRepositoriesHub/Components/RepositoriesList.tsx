@@ -65,7 +65,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     public async componentDidUpdate(previousProps: IRepositoriesListProps, previousState: IRepositoriesListState) {
         if (previousState.repositories !== this.state.repositories || previousProps.sort !== this.props.sort) {
             this.setState({
-                repositories: this.sortRepositories(this.state.repositories, this.props.sort);
+                repositories: this.sortRepositories(this.state.repositories, this.props.sort),
             });
         }
     }
