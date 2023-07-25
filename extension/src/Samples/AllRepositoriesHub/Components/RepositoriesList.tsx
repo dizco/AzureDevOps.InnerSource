@@ -76,7 +76,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
             const repo = this.state.repositories[i];
             repositories.push(
                 <div className="column subtle-border">
-                    <h2 style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: "FavoriteStar"}}/></h2>
+                    <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: "FavoriteStar"}} subtle={true} ariaLabel="Star this repository" onClick={() => this.starRepository(repo)}/></h2>
                     <p style={{ marginBottom: "5px" }}>{repo.badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
                     {repo.description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
                     {repo.installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
@@ -148,6 +148,11 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                 </table>*/}
             </div>
         );
+    }
+
+    private starRepository(repository: IRepository): void {
+        console.log("Star repo! (to be implemented)", repository);
+        // TODO: Implement
     }
 
     static defaultProps = {
