@@ -20,14 +20,15 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
 
-    private visibleRepositories = useMemo(() => this.sortRepositories(this.state.repositories, this.props.sort),
-        [this.state.repositories, this.props.sort]);
+    private readonly visibleRepositories: IRepository[];
 
     constructor(props: IRepositoriesListProps) {
         super(props);
         this.state = {
             repositories: [],
         };
+        this.visibleRepositories = useMemo(() => this.sortRepositories(this.state.repositories, this.props.sort),
+            [this.state.repositories, this.props.sort]);
     }
 
     private sortRepositories(repositories: IRepository[], sort: RepositoriesSort): IRepository[] {
