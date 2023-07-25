@@ -34,7 +34,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
             return repositories.sort((a, b) => a.name.localeCompare(b.name));
         }
         if (sort === RepositoriesSort.Stars) {
-            return repositories.sort((a, b) => a.stars.count - b.stars.count);
+            return repositories.sort((a, b) => b.stars.count - a.stars.count);
         }
         if (sort === RepositoriesSort.LastCommitDate) {
             return repositories.sort((a, b) => {
@@ -47,7 +47,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                 if (!a.metadata.lastCommitDate && !b.metadata.lastCommitDate) {
                     return 0;
                 }
-                 return a.metadata.lastCommitDate!.localeCompare(b.metadata.lastCommitDate!);
+                 return b.metadata.lastCommitDate!.localeCompare(a.metadata.lastCommitDate!);
             });
         }
         console.log("Sort mode unknown");
