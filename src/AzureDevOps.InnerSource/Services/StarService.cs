@@ -9,9 +9,9 @@ namespace AzureDevOps.InnerSource.Services;
 
 public interface IStarService
 {
-	Task StarAsync(Principal principal, Repository repository);
+	Task StarAsync(Principal principal, Repository repository, CancellationToken ct);
 
-	Task<int> GetStarCountAsync(Repository repository);
+	Task<int> GetStarCountAsync(Repository repository, CancellationToken ct);
 }
 
 public class StarService : IStarService
@@ -31,7 +31,7 @@ public class StarService : IStarService
 
 	private DevOpsOptions Options => _options.CurrentValue;
 
-	public async Task StarAsync(Principal principal, Repository repository)
+	public async Task StarAsync(Principal principal, Repository repository, CancellationToken ct)
 	{
 		if (!IsAllowedRepository(repository))
 		{
@@ -39,10 +39,10 @@ public class StarService : IStarService
 			throw new RepositoryNotAllowedException();
 		}
 
-		await _repository.SetStarAsync(repository, principal);
+		await _repository.SetStarAsync(repository, principal, ct);
 	}
 
-	public async Task<int> GetStarCountAsync(Repository repository)
+	public async Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
 		if (!IsAllowedRepository(repository))
 		{
@@ -50,7 +50,7 @@ public class StarService : IStarService
 			throw new RepositoryNotAllowedException();
 		}
 
-		return await _repository.GetStarCountAsync(repository);
+		return await _repository.GetStarCountAsync(repository, ct);
 	}
 
 	private bool IsAllowedRepository(Repository repository)

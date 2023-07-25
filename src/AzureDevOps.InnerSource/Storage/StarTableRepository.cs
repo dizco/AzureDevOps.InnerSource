@@ -38,15 +38,15 @@ public class StarTableRepository : IStarRepository
 		_table = table;
 	}
 
-	public async Task<int> GetStarCountAsync(Repository repository)
+	public async Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
-		var entity = await _table.GetEntityIfExistsAsync<StarCountEntity>(HashRepository(repository), CountRowKey);
+		var entity = await _table.GetEntityIfExistsAsync<StarCountEntity>(HashRepository(repository), CountRowKey, cancellationToken: ct);
 		return entity.HasValue ? entity.Value.StarCount : 0;
 	}
 
-	public async Task SetStarAsync(Repository repository, Principal principal)
+	public async Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
-		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id);
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
 		if (entity.HasValue) return;
 
 		await _table.UpsertEntityAsync(new StarEntity
@@ -56,14 +56,14 @@ public class StarTableRepository : IStarRepository
 			Repository = repository.ToString(),
 			UserId = principal.Id,
 			Email = principal.Email
-		});
+		}, cancellationToken: ct);
 
 		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
-		var count = await GetStarCountAsync(repository);
-		await SetStarCountAsync(repository, ++count);
+		var count = await GetStarCountAsync(repository, ct);
+		await SetStarCountAsync(repository, ++count, CancellationToken.None); // Don't cancel this here, because the upsert of individual star has already been done
 	}
 
-	public async Task SetStarCountAsync(Repository repository, int count)
+	public async Task SetStarCountAsync(Repository repository, int count, CancellationToken ct)
 	{
 		await _table.UpsertEntityAsync(new StarCountEntity
 		{
@@ -71,7 +71,7 @@ public class StarTableRepository : IStarRepository
 			RowKey = CountRowKey,
 			StarCount = count,
 			Repository = repository.ToString()
-		});
+		}, cancellationToken: ct);
 	}
 
 	private static string HashRepository(Repository repository)

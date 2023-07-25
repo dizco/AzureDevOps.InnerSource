@@ -7,8 +7,9 @@ namespace AzureDevOps.InnerSource.Storage;
 public class StarInMemoryRepository : IStarRepository
 {
 	private readonly ConcurrentDictionary<Repository, HashSet<Principal>> _stars = new();
-	public Task<int> GetStarCountAsync(Repository repository)
+	public Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
+		ct.ThrowIfCancellationRequested();
 		if (_stars.TryGetValue(repository, out var users))
 		{
 			return Task.FromResult(users.Count);
@@ -17,8 +18,9 @@ public class StarInMemoryRepository : IStarRepository
 		return Task.FromResult(0);
 	}
 
-	public Task SetStarAsync(Repository repository, Principal principal)
+	public Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
+		ct.ThrowIfCancellationRequested();
 		_stars.AddOrUpdate(repository,
 			new HashSet<Principal> { principal },
 			(key, set) =>

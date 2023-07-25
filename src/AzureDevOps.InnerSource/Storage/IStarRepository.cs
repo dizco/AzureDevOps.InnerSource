@@ -5,7 +5,7 @@ namespace AzureDevOps.InnerSource.Storage;
 
 public interface IStarRepository
 {
-	Task SetStarAsync(Repository repository, Principal principal);
+	Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct);
 
-	Task<int> GetStarCountAsync(Repository repository);
+	Task<int> GetStarCountAsync(Repository repository, CancellationToken ct);
 }

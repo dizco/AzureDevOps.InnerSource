@@ -13,12 +13,17 @@ public class RepositoryAggregator
 {
     // We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
     private readonly VssConnection _connection;
+    private readonly RepositoryHealthService _repositoryHealthService;
     private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
     private readonly IOptionsMonitor<RepositoryAggregationOptions> _options;
 
-    public RepositoryAggregator(VssConnection connection, IOptionsMonitor<RepositoryAggregationOptions> options, IOptionsMonitor<DevOpsOptions> devOpsOptions)
+    public RepositoryAggregator(VssConnection connection,
+        RepositoryHealthService repositoryHealthService,
+	    IOptionsMonitor<RepositoryAggregationOptions> options,
+	    IOptionsMonitor<DevOpsOptions> devOpsOptions)
     {
         _connection = connection;
+        _repositoryHealthService = repositoryHealthService;
         _options = options;
         _devOpsOptions = devOpsOptions;
     }
@@ -37,7 +42,7 @@ public class RepositoryAggregator
         await File.WriteAllTextAsync(filePath, md, ct);
     }
 
-    private string BuildMarkdown(List<Repository> repositories)
+    private string BuildMarkdown(List<AdoRepository> repositories)
     {
         const string template = @"<table id=""repositoriesAggregation"" width=""900px"">
 {{repositories}}
@@ -47,10 +52,10 @@ public class RepositoryAggregator
         const string repositoryTemplate = @"
 <td style=""width: 450px"">
 <h2 style=""margin: 0; margin-bottom: 5px;"">{{title}}</h2>
-<p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/stars/{{project}}/{{repository}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
+<p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/stars/{{adoProject}}/{{repository}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
 <pre><code>{{installation}}</code></pre>
-<a href=""{{link}}"">Go to project</a>
+<a href=""{{link}}"">Go to adoProject</a>
 </td>
 ";
         /*```shell
@@ -71,10 +76,10 @@ npm install --save package
             repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
                 .Replace("{{repositoryId}}", repositories[i].Id.ToString())
                 .Replace("{{repository}}", repositories[i].Name)
-                .Replace("{{project}}", repositories[i].Project)
+                .Replace("{{adoProject}}", repositories[i].Project)
                 .Replace("{{description}}", repositories[i].Description)
                 .Replace("{{installation}}", repositories[i].Installation)
-                .Replace("{{link}}", repositories[i].WebUrl)
+                .Replace("{{link}}", repositories[i].Metadata.Url)
                 .Replace("{{language}}",  languageBadge)
                 .Replace("{{badgeServerUrl}}", Options.BadgeServerUrl);
 
@@ -84,11 +89,23 @@ npm install --save package
         return template.Replace("{{repositories}}", repositoriesMarkdown);
     }
 
-    public async Task<List<Repository>> GetRepositoriesAsync(List<Project> projects, CancellationToken ct)
+    public async Task<List<AdoRepository>> GetRepositoriesAsync(string projectId, CancellationToken ct)
+    {
+	    var projectClient = await _connection.GetClientAsync<ProjectHttpClient>(ct);
+	    var project = await projectClient.GetProject(projectId);
+
+        return await GetRepositoriesAsync(new List<AdoProject>
+        {
+	        new() { Id = project.Id, Name = project.Name }
+        }, ct);
+	}
+
+
+	private async Task<List<AdoRepository>> GetRepositoriesAsync(List<AdoProject> projects, CancellationToken ct)
     {
         var gitClient = await _connection.GetClientAsync<GitHttpClient>(ct);
 
-        var repositories = new List<Repository>();
+        var repositories = new List<AdoRepository>();
         foreach (var project in projects)
         {
             var projectMetrics = await GetProjectMetricsAsync(project, ct);
@@ -99,7 +116,7 @@ npm install --save package
                 .ToAsyncEnumerable()
                 .SelectAwaitWithCancellation(async (x, token) =>
                 {
-                    var readme = await GetReadmeAsync(x.Id, ct);
+                    var readme = await GetReadmeAsync(x.Id, token);
                     string description;
                     string installation;
                     if (Options.Overrides.TryGetValue($"{project.Name}/{x.Name}", out var o))
@@ -125,25 +142,29 @@ npm install --save package
                         badges.Add(new Badge(language.Name, language.GetBadgeUrl()));
                     }
 
-					return new Repository
+                    var lastCommitDate = await _repositoryHealthService.GetLastCommitDateAsync(x.Id, token);
+
+					return new AdoRepository
                     {
+                        Organization = DevOpsOptions.Organization,
                         Project = project.Name,
                         Name = x.Name,
                         Id = x.Id,
                         Description = description,
                         Installation = installation,
                         Language = language,
-                        WebUrl = x.WebUrl,
-                        Badges = badges
+                        Badges = badges,
+                        Metadata = new AdoRepositoryMetadata
+                        {
+	                        Url = x.WebUrl,
+                            LastCommitDate = lastCommitDate
+						}
                     };
                 })
                 .ToListAsync(ct);
 
             repositories.AddRange(allowedRepositories);
         }
-
-        // TODO: Query number of stars for each repo
-        // TODO: Sort repositories by number of stars or by last commit
 
         return repositories;
     }
@@ -196,10 +217,10 @@ npm install --save package
     ///     Metrics are calculated with linguist. There are some ways to override this:
     ///     https://github.com/github-linguist/linguist/blob/master/docs/overrides.md
     /// </remarks>
-    private async Task<Dictionary<string, ProgrammingLanguage>> GetProjectMetricsAsync(Project project, CancellationToken ct)
+    private async Task<Dictionary<string, ProgrammingLanguage>> GetProjectMetricsAsync(AdoProject adoProject, CancellationToken ct)
     {
         var analysisClient = await _connection.GetClientAsync<ProjectAnalysisHttpClient>(ct);
-        var analytics = await analysisClient.GetProjectLanguageAnalyticsAsync(project.Id, ct);
+        var analytics = await analysisClient.GetProjectLanguageAnalyticsAsync(adoProject.Id, ct);
 
         var repositoriesAnalytics = new Dictionary<string, ProgrammingLanguage>();
         foreach (var repository in analytics.RepositoryLanguageAnalytics)
@@ -217,11 +238,11 @@ npm install --save package
         return repositoriesAnalytics;
     }
 
-    private async Task<List<Project>> GetProjectsAsync(CancellationToken ct)
+    private async Task<List<AdoProject>> GetProjectsAsync(CancellationToken ct)
     {
         var projectClient = await _connection.GetClientAsync<ProjectHttpClient>(ct);
         string? continuationToken = null;
-        var projects = new List<Project>();
+        var projects = new List<AdoProject>();
         do
         {
             var page = await projectClient.GetProjects(ProjectState.WellFormed,
@@ -231,7 +252,7 @@ npm install --save package
 
             var allowedProjects = page.Where(IsAllowedProject);
 
-            projects.AddRange(allowedProjects.Select(x => new Project
+            projects.AddRange(allowedProjects.Select(x => new AdoProject
             {
                 Id = x.Id,
                 Name = x.Name

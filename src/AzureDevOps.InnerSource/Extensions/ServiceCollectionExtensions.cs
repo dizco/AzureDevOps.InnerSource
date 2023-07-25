@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
 	{
 		services.AddHttpClient();
 		services.AddTransient<BadgeService>();
+		services.AddTransient<RepositoryService>();
 		services.AddStars(configuration);
 		return services;
 	}

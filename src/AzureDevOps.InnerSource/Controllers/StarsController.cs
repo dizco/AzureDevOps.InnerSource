@@ -29,7 +29,7 @@ public class StarsController : Controller
     [Authorize]
     [EnableCors("AzureDevOpsExtension")]
     [HttpPost("{projectName}/{repositoryName}")]
-    public async Task<IActionResult> PostStar(string projectName, string repositoryName)
+    public async Task<IActionResult> PostStar(string projectName, string repositoryName, CancellationToken ct)
     {
         // TODO: Use repository id because it is more url-safe
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))
@@ -46,7 +46,7 @@ public class StarsController : Controller
             Organization = Options.Organization,
             Project = projectName,
             Name = repositoryName
-        });
+        }, ct);
 
         // Redirect back to the original repository
         return Json(new {});
@@ -65,7 +65,7 @@ public class StarsController : Controller
             Project = projectName,
             Name = repositoryName
         };
-        var stars = await _starService.GetStarCountAsync(repository);
+        var stars = await _starService.GetStarCountAsync(repository, ct);
 
         // TODO: Read this once and cache it to avoid unecessary IO operations
         byte[] imageArray = await System.IO.File.ReadAllBytesAsync(@"Assets/segoe-star.png", ct);

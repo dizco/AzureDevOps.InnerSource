@@ -10,14 +10,11 @@ namespace AzureDevOps.InnerSource.ADO.Services;
 /// </summary>
 public class RepositoryHealthService
 {
-	// We don't explicitly dispose any Client derived from the connection because the connection handles their lifetimes
 	private readonly VssConnection _connection;
-	private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
 
-	public RepositoryHealthService(VssConnection connection, IOptionsMonitor<DevOpsOptions> devOpsOptions)
+	public RepositoryHealthService(VssConnection connection)
 	{
 		_connection = connection;
-		_devOpsOptions = devOpsOptions;
 	}
 
 	public async Task<DateTime?> GetLastCommitDateAsync(Guid repositoryId, CancellationToken ct)
