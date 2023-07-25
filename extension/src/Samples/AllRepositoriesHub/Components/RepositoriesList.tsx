@@ -1,7 +1,6 @@
 import "./RepositoriesList.scss";
 
 import * as React from 'react';
-import { useMemo } from 'react';
 import { ConfigurationContext, IRepository } from '../../../Services/ConfigurationService';
 import * as SDK from 'azure-devops-extension-sdk';
 import { Link } from 'azure-devops-ui/Link';
@@ -20,19 +19,12 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
 
-    state = {
-        repositories: []
-    }
-
-    private visibleRepositories = useMemo(() => {
-            const sorted = this.sortRepositories(this.state.repositories, this.props.sort);
-            console.log("Sorted repositories", sorted);
-            return sorted;
-        },
-        [this.state.repositories, this.props.sort]);
-
     constructor(props: IRepositoriesListProps) {
         super(props);
+
+        this.state = {
+            repositories: []
+        }
     }
 
     private sortRepositories(repositories: IRepository[], sort: RepositoriesSort): IRepository[] {
@@ -70,10 +62,18 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         });
     }
 
+    public async componentDidUpdate(previousProps: IRepositoriesListProps, previousState: IRepositoriesListState) {
+        if (previousState.repositories !== this.state.repositories || previousProps.sort !== this.props.sort) {
+            this.setState({
+                repositories: this.sortRepositories(this.state.repositories, this.props.sort);
+            });
+        }
+    }
+
     public render(): JSX.Element {
         const repositories = [];
-        for (let i = 0; i < this.visibleRepositories.length; i++) {
-            const repo = this.visibleRepositories[i];
+        for (let i = 0; i < this.state.repositories.length; i++) {
+            const repo = this.state.repositories[i];
             repositories.push(
                 <div className="column subtle-border">
                     <h2 style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: "FavoriteStar"}}/></h2>
