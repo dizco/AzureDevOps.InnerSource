@@ -1,23 +1,58 @@
 import "./RepositoriesList.scss";
 
 import * as React from 'react';
+import { useMemo } from 'react';
 import { ConfigurationContext, IRepository } from '../../../Services/ConfigurationService';
 import * as SDK from 'azure-devops-extension-sdk';
 import { Link } from 'azure-devops-ui/Link';
+import { RepositoriesSort } from '../RepositoriesSort';
+import { Button } from 'azure-devops-ui/Button';
+
+export interface IRepositoriesListProps {
+    sort: RepositoriesSort;
+}
 
 export interface IRepositoriesListState {
     repositories:  IRepository[];
 }
 
-export class RepositoriesList extends React.Component<{}, IRepositoriesListState> {
+export class RepositoriesList extends React.Component<IRepositoriesListProps, IRepositoriesListState> {
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
 
-    constructor(props: {}) {
+    private visibleRepositories = useMemo(() => this.sortRepositories(this.state.repositories, this.props.sort),
+        [this.state.repositories, this.props.sort]);
+
+    constructor(props: IRepositoriesListProps) {
         super(props);
         this.state = {
             repositories: [],
         };
+    }
+
+    private sortRepositories(repositories: IRepository[], sort: RepositoriesSort): IRepository[] {
+        if (sort === RepositoriesSort.Alphabetical) {
+            return repositories.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        if (sort === RepositoriesSort.Stars) {
+            return repositories.sort((a, b) => a.stars.count - b.stars.count);
+        }
+        if (sort === RepositoriesSort.LastCommitDate) {
+            return repositories.sort((a, b) => {
+                if (a.metadata.lastCommitDate && !b.metadata.lastCommitDate) {
+                    return -1;
+                }
+                if (!a.metadata.lastCommitDate && b.metadata.lastCommitDate) {
+                    return 1;
+                }
+                if (!a.metadata.lastCommitDate && !b.metadata.lastCommitDate) {
+                    return 0;
+                }
+                 return a.metadata.lastCommitDate!.localeCompare(b.metadata.lastCommitDate!);
+            });
+        }
+        console.log("Sort mode unknown");
+        return repositories.sort();
     }
 
     public async componentDidMount() {
@@ -32,14 +67,15 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
 
     public render(): JSX.Element {
         const repositories = [];
-        for (let i = 0; i < this.state.repositories.length; i++) {
+        for (let i = 0; i < this.visibleRepositories.length; i++) {
+            const repo = this.visibleRepositories[i];
             repositories.push(
                 <div className="column subtle-border">
-                    <h2 style={{ margin: 0, marginBottom: "5px" }}>{this.state.repositories[i].name}</h2>
-                    <p style={{ marginBottom: "5px" }}>{this.state.repositories[i].badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
-                    {this.state.repositories[i].description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
-                    {this.state.repositories[i].installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
-                    <Link href={this.state.repositories[i].webUrl}>Go to project</Link>
+                    <h2 style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: "FavoriteStar"}}/></h2>
+                    <p style={{ marginBottom: "5px" }}>{repo.badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
+                    {repo.description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
+                    {repo.installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
+                    <Link href={repo.metadata.url}>Go to project</Link>
                 </div>
             );
         }
@@ -57,6 +93,7 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
                 </div>
             );
         }
+
         return (
             <div className="repositories-list">
                 {rows}
@@ -106,5 +143,9 @@ export class RepositoriesList extends React.Component<{}, IRepositoriesListState
                 </table>*/}
             </div>
         );
+    }
+
+    static defaultProps = {
+        sort: RepositoriesSort.Alphabetical,
     }
 }

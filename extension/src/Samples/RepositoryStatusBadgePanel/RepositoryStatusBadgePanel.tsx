@@ -63,6 +63,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
     public render(): JSX.Element {
         const { repository, starBadgeSrc, lastCommitBadgeSrc } = this.state;
 
+        // TODO: Use copy clipboard button: https://developer.microsoft.com/en-us/azure-devops/components/button#clipboard-button
         return (
             <div className="flex-grow">
                 <div>

@@ -16,7 +16,13 @@ export interface IRepository {
     name: string;
     description: string;
     installation: string;
-    webUrl: string;
+    stars: {
+        count: number;
+    };
+    metadata: {
+        url: string;
+        lastCommitDate: string | null;
+    };
     badges: IRepositoryBadge[];
 }
 

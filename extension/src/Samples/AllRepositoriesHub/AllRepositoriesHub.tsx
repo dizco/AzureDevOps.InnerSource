@@ -7,16 +7,12 @@ import { showRootComponent } from "../../Common";
 import { Dropdown, DropdownExpandableButton } from 'azure-devops-ui/Dropdown';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
-import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
+import { ConfigurationContext, ConfigurationService } from '../../Services/ConfigurationService';
 import { Settings } from './Components/Settings';
 import { RepositoriesList } from './Components/RepositoriesList';
 import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
+import { RepositoriesSort } from './RepositoriesSort';
 
-enum RepositoriesSort {
-    Alphabetical = 0,
-    Stars = 1,
-    LastCommitDate = 2,
-}
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
     sortSelection: DropdownSelection;
@@ -28,8 +24,8 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
 
     private sortItems: IListBoxItem<RepositoriesSort>[] = [
         { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
-        { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
-        { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
+        { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Most stars"},
+        { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Most recent commit"},
     ];
 
     constructor(props: {}) {
@@ -74,7 +70,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                             renderExpandable={props => <DropdownExpandableButton {...props} />}
                         />
                     </div>
-                    <RepositoriesList/>
+                    <RepositoriesList sort={this.state.sort} />
                     <Settings/>
                 </div>
             </Page>
