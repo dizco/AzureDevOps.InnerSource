@@ -13,6 +13,7 @@ export interface IRepositoriesListProps {
 
 export interface IRepositoriesListState {
     repositories:  IRepository[];
+    isLoading: boolean;
 }
 
 export class RepositoriesList extends React.Component<IRepositoriesListProps, IRepositoriesListState> {
@@ -23,7 +24,8 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         super(props);
 
         this.state = {
-            repositories: []
+            repositories: [],
+            isLoading: true,
         }
     }
 
@@ -55,10 +57,12 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     public async componentDidMount() {
         await SDK.ready();
         await this.context.ensureAuthenticated();
-        const repositories = await this.context.getRepositories();
+        let repositories = await this.context.getRepositories();
+        repositories = this.sortRepositories(repositories, this.props.sort);
         console.log("Repositories:", repositories);
         this.setState({
-            repositories: repositories
+            repositories: repositories,
+            isLoading: false,
         });
     }
 
