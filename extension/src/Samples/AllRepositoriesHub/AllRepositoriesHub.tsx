@@ -1,17 +1,18 @@
+import "./AllRepositoriesHub.scss";
 import * as React from "react";
 import * as SDK from "azure-devops-extension-sdk";
 import { Header, TitleSize } from "azure-devops-ui/Header";
 import { Page } from "azure-devops-ui/Page";
 import { showRootComponent } from "../../Common";
-import { Dropdown } from 'azure-devops-ui/Dropdown';
+import { Dropdown, DropdownExpandableButton } from 'azure-devops-ui/Dropdown';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
-import { ListSelection } from 'azure-devops-ui/List';
 import { IMenuButtonProps } from 'azure-devops-ui/Menu';
 import { IButtonProps } from 'azure-devops-ui/Button';
 import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
 import { Settings } from './Components/Settings';
 import { RepositoriesList } from './Components/RepositoriesList';
+import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 
 enum RepositoriesSort {
     Alphabetical = 0,
@@ -20,7 +21,7 @@ enum RepositoriesSort {
 }
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
-    sortSelection: ListSelection;
+    sortSelection: DropdownSelection;
 }
 
 class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubContent> {
@@ -30,13 +31,14 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
     constructor(props: {}) {
         super(props);
 
-        const selection = new ListSelection();
+        const selection = new DropdownSelection();
         selection.select(0, 1);
 
         this.state = {
             sort: RepositoriesSort.Alphabetical,
             sortSelection: selection,
         };
+
     }
 
     public async componentWillMount() {
@@ -49,6 +51,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
 
     public render(): JSX.Element {
         return (
+            /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">
 
                 <Header title="Repository Information Sample Hub"
@@ -59,14 +62,16 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                     <div className="flex-row flex-center">
                         <label htmlFor="message-level-picker">Sorting: </label>
                         <Dropdown<RepositoriesSort>
-                            className="margin-left-8"
+                            className="repository-sort margin-left-8"
+                            placeholder="Sorting"
                             items={[
-                                { id: "info", data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
-                                { id: "error", data: RepositoriesSort.Stars, text: "Stars"},
-                                { id: "Warning", data: RepositoriesSort.LastCommitDate, text: "Last commit"},
+                                { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
+                                { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
+                                { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
                             ]}
                             onSelect={this.onSortChanged}
                             selection={this.state.sortSelection}
+                            renderExpandable={props => <DropdownExpandableButton {...props} />}
                         />
                     </div>
                     <RepositoriesList/>
@@ -105,14 +110,15 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
                     return (
                         <Dropdown<RepositoriesSort>
                             key="something"
-                            className="margin-left-8"
+                            className="repository-sort margin-left-8"
                             items={[
-                                { id: "alphabetical", data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
-                                { id: "stars", data: RepositoriesSort.Stars, text: "Stars"},
-                                { id: "last-commit", data: RepositoriesSort.LastCommitDate, text: "Last commit"},
+                                { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
+                                { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Stars"},
+                                { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Last commit"},
                             ]}
                             onSelect={this.onSortChanged}
                             selection={this.state.sortSelection}
+                            renderExpandable={props => <DropdownExpandableButton {...props} />}
                         />
                     );
                 }
