@@ -1,6 +1,7 @@
 import * as SDK from 'azure-devops-extension-sdk';
 import { CommonServiceIds, IExtensionDataService, IProjectPageService } from 'azure-devops-extension-api';
 import React from 'react';
+import axios, { RawAxiosRequestConfig } from 'axios';
 
 interface IConfiguration {
     serverUrl: string;
@@ -78,6 +79,13 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
+
+        const config: RawAxiosRequestConfig = {
+            withCredentials: true
+        }
+        const axiosResponse = await axios.get<string>(serverUrl + "/repositories/" + project.id, config);
+        console.log("Axios response", axiosResponse);
+
         const response = await fetch(serverUrl + "/repositories/" + project.id, {
             credentials: "include"
         });
