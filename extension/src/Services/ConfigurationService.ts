@@ -79,17 +79,18 @@ export class ConfigurationService {
         }
     }
 
-    private getJwtBearer(): string {
+    private getJwtBearer(): string | null {
         return this.getCookie(ConfigurationService.AuthenticationCookieName);
     }
 
     // Source: https://stackoverflow.com/a/15724300/6316091
-    private getCookie(name: string): string {
+    private getCookie(name: string): string | null {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) {
             return parts.pop().split(';').shift();
         }
+        return null;
     }
 
     public async getRepositories(): Promise<IRepository[]> {
