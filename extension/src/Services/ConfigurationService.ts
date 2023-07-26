@@ -1,7 +1,6 @@
 import * as SDK from 'azure-devops-extension-sdk';
 import { CommonServiceIds, IExtensionDataService, IProjectPageService } from 'azure-devops-extension-api';
 import React from 'react';
-import axios, { RawAxiosRequestConfig } from 'axios';
 
 interface IConfiguration {
     serverUrl: string;
