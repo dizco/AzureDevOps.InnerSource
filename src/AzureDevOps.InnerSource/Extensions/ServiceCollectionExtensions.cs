@@ -1,13 +1,12 @@
 ﻿using System.Text;
 using Azure.Data.Tables;
 using AzureDevOps.InnerSource.Common.Configuration;
+using AzureDevOps.InnerSource.Configuration;
 using AzureDevOps.InnerSource.Configuration.Settings;
 using AzureDevOps.InnerSource.Services;
 using AzureDevOps.InnerSource.Storage;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -77,12 +76,27 @@ public static class ServiceCollectionExtensions
 
 	public static IServiceCollection ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
 	{
+		// Note-gbourgault: The obviously safer and cleaner approach to authentication would be to leverage cookie authentication with the host
+		// however, it does not work within the Azure DevOps iframe (even with SameSite=none cookies).
+		// Our workaround is to generate our own tokens that the frontend can use during API calls.
+
+		var authenticationSettings = configuration.GetRequiredSection(AuthenticationSettings.SectionName).Get<AuthenticationSettings>();
+		services.AddOptions<AuthenticationOptions>()
+			.Configure(o =>
+			{
+				o.Key = authenticationSettings.Key;
+				o.Issuer = authenticationSettings.Issuer;
+				o.Audience = authenticationSettings.Audience;
+			})
+			.ValidateDataAnnotations();
+
+		services.AddTransient<ITokenService, TokenService>();
+
 		services.AddAuthentication(options =>
 			{
-				options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = "AzureDevOpsExtension";
+				options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = "AzureDevOpsExtensionHandshake";
 			})
-			.AddCookie()
 			.AddJwtBearer("AzureDevOpsExtension", options =>
 			{
 				// See: https://learn.microsoft.com/en-us/azure/devops/extend/develop/auth?view=azure-devops#net-framework
@@ -128,7 +142,50 @@ public static class ServiceCollectionExtensions
 					OnTokenValidated = ctx =>
 					{
 						var t = 4;
-						
+
+						return Task.CompletedTask;
+					}
+				};
+			})
+			.AddJwtBearer(options =>
+			{
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.Key)),
+					ValidateIssuer = true,
+					ValidIssuer = authenticationSettings.Issuer,
+					RequireSignedTokens = true,
+					RequireExpirationTime = true,
+					ValidateLifetime = true,
+					ValidateAudience = true,
+					ValidAudience = authenticationSettings.Audience
+				};
+
+				options.Events = new JwtBearerEvents
+				{
+					OnAuthenticationFailed = ctx =>
+					{
+						var t = 0;
+						return Task.CompletedTask;
+					},
+					OnChallenge = ctx =>
+					{
+						var t = 1;
+						return Task.CompletedTask;
+					},
+					OnForbidden = ctx =>
+					{
+						var t = 2;
+						return Task.CompletedTask;
+					},
+					OnMessageReceived = ctx =>
+					{
+						var t = 3;
+						return Task.CompletedTask;
+					},
+					OnTokenValidated = ctx =>
+					{
+						var t = 4;
 						return Task.CompletedTask;
 					}
 				};

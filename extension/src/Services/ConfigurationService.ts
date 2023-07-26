@@ -29,6 +29,7 @@ export interface IRepository {
 }
 
 export class ConfigurationService {
+    private static readonly AuthenticationCookieName = "ado.innersource.authentication";
     private static readonly ConfigurationKey = "configuration";
     // TODO: Could keep a local, cached copy of the configuration for a certain amount of time
 
@@ -45,6 +46,11 @@ export class ConfigurationService {
             return;
         }
 
+        if (this.getJwtBearer()) {
+            console.log("Authentication session still active.");
+            return;
+        }
+
         const accessToken = await SDK.getAccessToken();
         console.log("SDK access token", accessToken);
 
@@ -52,7 +58,8 @@ export class ConfigurationService {
         console.log("SDK app token", appToken);
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + "/authenticate", {
+        const response = await fetch(serverUrl + "/token", {
+            method: "POST",
             headers: {
                 Authorization: 'Bearer ' + appToken,
                 'X-AzureDevOps-AccessToken': accessToken,
@@ -60,6 +67,9 @@ export class ConfigurationService {
         });
 
         if (response.ok) {
+            const json: {accessToken: string, expiresInSeconds: number} = await response.json();
+            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure";
+
             // TODO: Remove log
             console.log("Authentication success: ", response.status);
             this.isAuthenticated = true;
@@ -67,6 +77,19 @@ export class ConfigurationService {
         else {
             console.log("Authentication failed: ", response.status);
             this.isAuthenticated = false;
+        }
+    }
+
+    private getJwtBearer(): string {
+        return this.getCookie(ConfigurationService.AuthenticationCookieName);
+    }
+
+    // Source: https://stackoverflow.com/a/15724300/6316091
+    private getCookie(name: string): string {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
         }
     }
 
@@ -79,15 +102,10 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
-
-        const config: RawAxiosRequestConfig = {
-            withCredentials: true
-        }
-        const axiosResponse = await axios.get<string>(serverUrl + "/repositories/" + project.id, config);
-        console.log("Axios response", axiosResponse);
-
         const response = await fetch(serverUrl + "/repositories/" + project.id, {
-            credentials: "include"
+            headers: {
+                Authorization: 'Bearer ' + this.getJwtBearer(),
+            }
         });
         return (await response.json()).repositories;
     }

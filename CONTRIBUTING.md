@@ -10,3 +10,4 @@ Follow the instructions in the README.
 ## Azure DevOps Extension
 
 Icon list: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
+https://uifabricicons.azurewebsites.net/
