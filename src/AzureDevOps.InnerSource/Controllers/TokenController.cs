@@ -1,5 +1,7 @@
-﻿using AzureDevOps.InnerSource.Services;
+﻿using System.Security.Claims;
+using AzureDevOps.InnerSource.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +21,7 @@ public class TokenController : Controller
 
 	[HttpPost("token")]
 	[EnableCors("AzureDevOpsExtension")]
-	public async Task<IActionResult> Authenticate(CancellationToken ct)
+	public async Task<IActionResult> PostToken(CancellationToken ct)
 	{
 		var challengeResult = await HttpContext.AuthenticateAsync("AzureDevOpsExtension");
 		if (challengeResult.Succeeded && HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out var userAccessToken))
@@ -46,5 +48,26 @@ public class TokenController : Controller
 		}
 
 		return Unauthorized();
+	}
+
+	[Authorize]
+	[HttpPost("badges/token")]
+	[EnableCors("AzureDevOpsExtension")]
+	public IActionResult PostBadgeToken()
+	{
+		var notBefore = DateTime.UtcNow;
+		var expires = DateTime.UtcNow.AddDays(30); // TODO: Could probably extend this
+		var jwtToken = _tokenService.GenerateJwt(new Claim[]
+		{
+			// TODO: Claim for the organization?
+			new("scope", "badges.read")
+		}, notBefore, expires);
+		var expiresInSeconds = (notBefore - expires).Seconds;
+
+		return Json(new
+		{
+			accessToken = jwtToken,
+			expiresInSeconds
+		});
 	}
 }

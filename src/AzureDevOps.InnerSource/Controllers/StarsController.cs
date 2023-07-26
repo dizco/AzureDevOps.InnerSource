@@ -3,6 +3,7 @@ using System.Security.Claims;
 using AzureDevOps.InnerSource.Common;
 using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.InnerSource.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -51,8 +52,8 @@ public class StarsController : Controller
         return Json(new {});
     }
 
-    // TODO: Think about how to authenticate this
-    [HttpGet("{projectName}/{repositoryName}/badge")]
+	[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
+	[HttpGet("{projectName}/{repositoryName}/badge")]
     public async Task<IActionResult> GetStarsBadge(string projectName, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))

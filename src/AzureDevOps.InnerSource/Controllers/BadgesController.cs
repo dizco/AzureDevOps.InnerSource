@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AzureDevOps.InnerSource.Controllers;
@@ -16,8 +18,8 @@ public class BadgesController : Controller
         _badgeService = badgeService;
         _repositoryHealthService = repositoryHealthService;
     }
-
-    // Could possibly expose [HttpGet("last-commit/{project}/{repositoryName}")], but should think about security impacts 
+    
+    [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
     [HttpGet("last-commit/{repositoryId}")]
     public async Task<IActionResult> GetLastCommit(string repositoryId, CancellationToken ct)
     {

@@ -190,6 +190,7 @@ public static class ServiceCollectionExtensions
 					}
 				};
 			});
+		// TODO-gb: Add a JWT Bearer authentication scheme "AzureDevOpsBadge" that searches for the JWT in the query string (see https://stackoverflow.com/a/53295042/6316091)
 
 		services.AddAuthorization(options =>
 		{
