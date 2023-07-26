@@ -57,7 +57,7 @@ export class ConfigurationService {
         console.log("SDK app token", appToken);
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + "/token", {
+        const response = await fetch(`${serverUrl}/token`, {
             method: "POST",
             headers: {
                 Authorization: 'Bearer ' + appToken,
@@ -104,7 +104,7 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + "/repositories/" + project.id, {
+        const response = await fetch(`${serverUrl}/${project.id}/repositories`, {
             headers: {
                 Authorization: 'Bearer ' + this.getJwtBearer(),
             }
@@ -146,24 +146,27 @@ export class ConfigurationService {
     }
 
     public async getBadgeJwtToken(repositoryId: string): Promise<string> {
+        const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
+        const project = await projectService.getProject();
+        if (!project) {
+            console.error('Could not identify current project')
+            return "";
+        }
+
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + `/token`, {
+        const response = await fetch(serverUrl + `${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
             method: 'POST',
             headers: {
-                "Content-Type": "application/json",
                 "Accept": "application/json",
-            },
-            body: JSON.stringify({
-                repositoryId
-            })
+            }
         });
         console.log('Jwt response', response.status);
-        return (await response.json()).token;
+        return (await response.json()).accessToken;
     }
 
     public async starRepository(projectName: string, repositoryName: string): Promise<void> {
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/star/${projectName}/${repositoryName}`, {
+        const response = await fetch(`${serverUrl}/${projectName}/${repositoryName}/star`, {
             method: 'POST',
             headers: {
                 "Accept": "application/json",

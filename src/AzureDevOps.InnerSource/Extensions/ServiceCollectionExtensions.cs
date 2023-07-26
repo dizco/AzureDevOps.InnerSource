@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using Azure.Data.Tables;
 using AzureDevOps.InnerSource.Common.Configuration;
 using AzureDevOps.InnerSource.Configuration;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
@@ -189,14 +191,63 @@ public static class ServiceCollectionExtensions
 						return Task.CompletedTask;
 					}
 				};
+			})
+			.AddJwtBearer("AzureDevOpsBadge", options =>
+			{
+				// Because badges are displayed as images, this authentication scheme looks for an "access_token" in the query string
+
+				options.TokenValidationParameters = new TokenValidationParameters
+				{
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.Key)),
+					ValidateIssuer = true,
+					ValidIssuer = authenticationSettings.Issuer,
+					RequireSignedTokens = true,
+					RequireExpirationTime = true,
+					ValidateLifetime = true,
+					ValidateAudience = true,
+					ValidAudience = authenticationSettings.Audience
+				};
+
+				// Source: https://stackoverflow.com/a/53295042/6316091
+				options.Events = new JwtBearerEvents
+				{
+					OnMessageReceived = context => {
+						if (!context.Request.Query.TryGetValue("access_token", out var values))
+						{
+							return Task.CompletedTask;
+						}
+
+						if (values.Count > 1)
+						{
+							context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+							context.Fail($"Only one 'access_token' query string parameter can be defined. However, {values.Count:N0} were included in the request.");
+							return Task.CompletedTask;
+						}
+
+						var token = values.Single();
+
+						if (string.IsNullOrWhiteSpace(token))
+						{
+							context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+							context.Fail("The 'access_token' query string parameter was defined, but a value to represent the token was not included.");
+							return Task.CompletedTask;
+						}
+
+						context.Token = token;
+						return Task.CompletedTask;
+					}
+				};
 			});
-		// TODO-gb: Add a JWT Bearer authentication scheme "AzureDevOpsBadge" that searches for the JWT in the query string (see https://stackoverflow.com/a/53295042/6316091)
 
 		services.AddAuthorization(options =>
 		{
 			options.DefaultPolicy = new AuthorizationPolicyBuilder()
 				.RequireAuthenticatedUser()
 				.Build();
+
+			// TODO: Define authorization policies
+			/*options.AddPolicy("BadgeReader", builder => builder.RequireAuthenticatedUser()
+				.RequireClaim("scope", "badges.read"));*/
 		});
 
 		return services;

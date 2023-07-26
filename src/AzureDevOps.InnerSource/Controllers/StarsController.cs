@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
-[Route("stars")]
 public class StarsController : Controller
 {
     private readonly IOptionsMonitor<DevOpsOptions> _options;
@@ -29,7 +28,7 @@ public class StarsController : Controller
 
     [Authorize]
     [EnableCors("AzureDevOpsExtension")]
-    [HttpPost("{projectName}/{repositoryName}")]
+    [HttpPost("{projectName}/repositories/{repositoryName}/stars")]
     public async Task<IActionResult> PostStar(string projectName, string repositoryName, CancellationToken ct)
     {
         // TODO: Use repository id because it is more url-safe
@@ -53,7 +52,7 @@ public class StarsController : Controller
     }
 
 	[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
-	[HttpGet("{projectName}/{repositoryName}/badge")]
+	[HttpGet("{projectName}/repositories/{repositoryName}/stars/badge")]
     public async Task<IActionResult> GetStarsBadge(string projectName, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))

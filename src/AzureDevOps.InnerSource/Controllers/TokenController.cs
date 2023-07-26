@@ -51,14 +51,16 @@ public class TokenController : Controller
 	}
 
 	[Authorize]
-	[HttpPost("badges/token")]
+	[HttpPost("{projectName}/repositories/{repositoryId}/badges/token")]
 	[EnableCors("AzureDevOpsExtension")]
-	public IActionResult PostBadgeToken()
+	public IActionResult PostBadgeToken(string projectName, string repositoryId)
 	{
 		var notBefore = DateTime.UtcNow;
 		var expires = DateTime.UtcNow.AddDays(30); // TODO: Could probably extend this
 		var jwtToken = _tokenService.GenerateJwt(new Claim[]
 		{
+			new("project", projectName),
+			new("repositoryId", repositoryId),
 			// TODO: Claim for the organization?
 			new("scope", "badges.read")
 		}, notBefore, expires);

@@ -4,25 +4,54 @@ import * as React from "react";
 import * as SDK from "azure-devops-extension-sdk";
 import { showRootComponent } from "../../Common";
 import { GitRepository } from 'azure-devops-extension-api/Git/Git';
+import { Location } from "azure-devops-ui/Utilities/Position";
 import { FormItem } from 'azure-devops-ui/FormItem';
 import { TextField } from 'azure-devops-ui/TextField';
 import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
+import { Observer } from 'azure-devops-ui/Observer';
+import { ClipboardButton } from 'azure-devops-ui/Clipboard';
+import { ITooltipProps } from 'azure-devops-ui/TooltipEx';
 
 interface IPanelContentState {
     repository?: GitRepository;
     starBadgeSrc?: string;
     lastCommitBadgeSrc?: string;
     badgeJwt?: string;
+    lastCopied: number;
 }
 
 class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState> {
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
 
+    private copyToClipboardLabel = "Copy to Clipboard";
+
     constructor(props: {}) {
         super(props);
-        this.state = {};
+        this.state = {
+            lastCopied: -1,
+        };
     }
+
+    private onChange = (ev: any, value: string) => {
+        this.setState({
+            starBadgeSrc: value,
+        });
+    };
+
+    private getTooltip = (index: number): ITooltipProps => {
+        return {
+            text: this.state.lastCopied === index ? "Copied to clipboard!" : "Click to copy",
+            anchorOrigin: {
+                horizontal: Location.center,
+                vertical: Location.end,
+            },
+            tooltipOrigin: {
+                horizontal: Location.center,
+                vertical: Location.start,
+            },
+        };
+    };
 
     public async componentDidMount() {
         await SDK.init();
@@ -48,15 +77,15 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
 
         const serverUrl = await this.context.getServerUrl();
         if (!!this.state.repository?.id) {
-            const badgeJwt = await this.context.getBadgeJwtToken(this.state.repository?.id);
+            const badgeJwt = await this.context.getBadgeJwtToken(this.state.repository?.id!);
             this.setState({
                 badgeJwt
             });
         }
 
         this.setState((previousState, props) => ({
-            starBadgeSrc: serverUrl + `/stars/Kiosoft/${previousState.repository?.name}?token=${previousState.badgeJwt}`,
-            lastCommitBadgeSrc: serverUrl + `/badges/last-commit/${previousState.repository?.id}?token=${previousState.badgeJwt}`,
+            starBadgeSrc: serverUrl + `/stars/Kiosoft/${previousState.repository?.name}?access_token=${previousState.badgeJwt}`,
+            lastCommitBadgeSrc: serverUrl + `/badges/last-commit/${previousState.repository?.id}?access_token=${previousState.badgeJwt}`,
         }));
     }
 
@@ -67,14 +96,27 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         return (
             <div className="flex-grow">
                 <div>
-                    {starBadgeSrc && <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />}
-                    <div className="status-badge-text-wrapper">
-                        <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
-                            <TextField
-                                value={starBadgeSrc}
-                            />
-                        </FormItem>
-                    </div>
+                    {starBadgeSrc && (<>
+                        <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
+                        <div className="status-badge-text-wrapper">
+                            <TextField value={starBadgeSrc} onChange={this.onChange} />
+                            <Observer value={starBadgeSrc}>
+                                {(observerProps: { value: string }) => (
+                                    <ClipboardButton
+                                        ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
+                                        getContent={() => this.state.starBadgeSrc || ""}
+                                        onCopy={() => (this.setState({lastCopied: 1}))}
+                                        tooltipProps={this.getTooltip(1)}
+                                    />
+                                )}
+                            </Observer>
+                            <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
+                                <TextField
+                                    value={starBadgeSrc}
+                                />
+                            </FormItem>
+                        </div>
+                    </>)}
                 </div>
                 <div className="separator-line-top">
                     {lastCommitBadgeSrc && <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />}
