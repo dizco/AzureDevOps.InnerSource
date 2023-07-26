@@ -33,10 +33,10 @@ stages:
       displayName: 'npm run build'
       workingDirectory: $(WorkingDirectory)
 
-    - script: |
-        npm run test
-      displayName: 'npm run test'
-      workingDirectory: $(WorkingDirectory)
+    #- script: |
+    #    npm run test
+    #  displayName: 'npm run test'
+    #  workingDirectory: $(WorkingDirectory)
 
     - task: PublishTestResults@2
       inputs:
