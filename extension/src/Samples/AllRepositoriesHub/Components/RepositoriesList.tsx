@@ -7,6 +7,7 @@ import { Link } from 'azure-devops-ui/Link';
 import { RepositoriesSort } from '../RepositoriesSort';
 import { Button } from 'azure-devops-ui/Button';
 import { Spinner } from 'azure-devops-ui/Spinner';
+import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension-api';
 
 export interface IRepositoriesListProps {
     sort: RepositoriesSort;
@@ -85,8 +86,9 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                     <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: repo.stars.isStarred ? "FavoriteStarFill" : "FavoriteStar"}} subtle={true} ariaLabel={repo.stars.isStarred ? "Unstar this repository" : "Star this repository"} onClick={async () => await this.starRepository(repo)}/></h2>
                     <p style={{ marginBottom: "5px" }}>{repo.badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
                     {repo.description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
-                    {repo.installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
-                    <Link href={repo.metadata.url}>Go to project</Link>
+                    {repo.installation && <pre><code>{repo.installation}</code></pre>}
+                    <a className="bolt-link" onClick={(event) => this.navigateToRepository(event, repo)}>Go to repository</a>
+                    <Link href={repo.metadata.url}>Go to repository</Link>
                 </div>
             );
         }
@@ -136,6 +138,12 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                 };
             });
         }
+    }
+
+    private async navigateToRepository(event: React.MouseEvent<HTMLAnchorElement> | React.KeyboardEvent<HTMLAnchorElement>, repository: IRepository): Promise<void> {
+        event.preventDefault();
+        const navigationService = await SDK.getService<IHostNavigationService>(CommonServiceIds.HostNavigationService);
+        navigationService.navigate(repository.metadata.url);
     }
 
     static defaultProps = {

@@ -87,7 +87,7 @@ public class RepositoryService
 				};
 			}).ToListAsync(ct);
 		
-		_cache.Set(CacheKey, list, TimeSpan.FromSeconds(60));
+		_cache.Set(CacheKey, list, TimeSpan.FromSeconds(30));
 
 		return list;
 	}
