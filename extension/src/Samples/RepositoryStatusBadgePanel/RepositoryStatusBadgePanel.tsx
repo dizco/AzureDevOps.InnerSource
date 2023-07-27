@@ -115,6 +115,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                                         getContent={() => this.state.starBadgeSrc || ""}
                                         onCopy={() => (this.setState({lastCopied: 1}))}
                                         tooltipProps={this.getTooltip(1)}
+                                        subtle={true}
                                     />
                                 )}
                             </Observer>
