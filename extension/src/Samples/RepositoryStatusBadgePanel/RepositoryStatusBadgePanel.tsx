@@ -106,7 +106,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={starBadgeSrc} onChange={this.onChange} label="Image URL" />
+                                <TextField value={starBadgeSrc} onChange={this.onChange} label="Stars badge image URL" />
                             </div>
                             <Observer value={starBadgeSrc}>
                                 {(observerProps: { value: string }) => (
@@ -127,7 +127,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     {lastCommitBadgeSrc && (<>
                         <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeSrc} />
                         <div className="status-badge-text-wrapper">
-                            <TextField value={lastCommitBadgeSrc} onChange={this.onChange} />
+                            <TextField value={lastCommitBadgeSrc} onChange={this.onChange} label="Last commit date badge image URL" />
                             <Observer value={lastCommitBadgeSrc}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
@@ -135,6 +135,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                                         getContent={() => this.state.lastCommitBadgeSrc || ""}
                                         onCopy={() => (this.setState({lastCopied: 2}))}
                                         tooltipProps={this.getTooltip(2)}
+                                        subtle={true}
                                     />
                                 )}
                             </Observer>

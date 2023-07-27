@@ -14,3 +14,11 @@
 .status-badge-text-wrapper .status-badge-url-textfield {
     flex: 1 100%;
 }
+
+.status-badge-text-wrapper .status-badge-url-copy-button {
+    align-self: flex-end;
+}
+
+label {
+    color: var(--text-secondary-color, rgba(0, 0, 0, .55));
+}
