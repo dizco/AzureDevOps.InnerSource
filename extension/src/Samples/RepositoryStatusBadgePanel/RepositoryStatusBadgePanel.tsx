@@ -95,6 +95,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         this.setState((previousState, props) => ({
             starBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`,
             lastCommitBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
+            isLoading: false,
         }));
     }
 
@@ -109,6 +110,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     </div>
                 }
                 {!this.state.isLoading &&
+                    <>
                 <div>
                     {starBadgeSrc && (<>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
@@ -153,6 +155,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         </div>
                     </>)}
                 </div>
+                    </>
                 }
                 <div className="separator-line-top">
                     <p>Status badges are private and secured with a token that expires in 1 year.</p>
