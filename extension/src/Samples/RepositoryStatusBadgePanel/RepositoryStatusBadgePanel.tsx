@@ -89,8 +89,8 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         }
 
         this.setState((previousState, props) => ({
-            starBadgeSrc: `${serverUrl}/${previousState.project.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`,
-            lastCommitBadgeSrc: `${serverUrl}/${previousState.project.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
+            starBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`,
+            lastCommitBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
         }));
     }
 
