@@ -90,10 +90,11 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
             const starSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`;
             const lastCommitSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`;
             return {
+                ...previousState,
                 starBadgeSrc: starSrc,
                 starBadgeMarkdown: `![Repository stars](${starSrc})`,
                 lastCommitBadgeSrc: lastCommitSrc,
-                lastCommitBadgeMardown: `![Last commit date](${lastCommitSrc})`,
+                lastCommitBadgeMarkdown: `![Last commit date](${lastCommitSrc})`,
                 isLoading: false,
             };
         });
@@ -140,7 +141,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
                                 <TextField value={lastCommitBadgeMarkdown} onChange={(e, value) => this.setState({
-                                    lastCommitBadgeMardown: value,
+                                    lastCommitBadgeMarkdown: value,
                                 })} label="Last commit date badge (markdown)" />
                             </div>
                             <Observer value={lastCommitBadgeMarkdown}>
