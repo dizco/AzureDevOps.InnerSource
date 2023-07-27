@@ -2,7 +2,7 @@ import "es6-promise/auto";
 import * as SDK from "azure-devops-extension-sdk";
 import { GitServiceIds, IVersionControlRepositoryService } from 'azure-devops-extension-api/Git/GitServices';
 import { ConfigurationService } from '../../Services/ConfigurationService';
-import { CommonServiceIds, IProjectPageService } from 'azure-devops-extension-api';
+import { CommonServiceIds, IGlobalMessagesService, IProjectPageService } from 'azure-devops-extension-api';
 
 SDK.register("repository-menu-star", () => {
     return {
@@ -28,6 +28,16 @@ SDK.register("repository-menu-star", () => {
             const context = new ConfigurationService();
             await context.ensureAuthenticated();
             await context.starRepository(project.name, repository.id);
+
+            const globalMessagesSvc = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
+            globalMessagesSvc.addToast({
+                callToAction: "Unstar",
+                duration: 5000,
+                message: "Thank you for your star!",
+                onCallToActionClick: async () => {
+                    await context.unstarRepository(project.name, repository.id);
+                }
+            });
         }
     };
 });
