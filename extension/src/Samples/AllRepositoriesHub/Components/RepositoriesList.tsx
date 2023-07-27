@@ -87,7 +87,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
             const repo = this.state.repositories[i];
             repositories.push(
                 <div className="column subtle-border">
-                    <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: repo.stars.isStarred ? "FavoriteStarFill" : "FavoriteStar"}} subtle={true} ariaLabel="Star this repository" onClick={() => this.starRepository(repo)}/></h2>
+                    <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}>{repo.name} <Button iconProps={{iconName: repo.stars.isStarred ? "FavoriteStarFill" : "FavoriteStar"}} subtle={true} ariaLabel={repo.stars.isStarred ? "Unstar this repository" : "Star this repository"} onClick={async () => await this.starRepository(repo)}/></h2>
                     <p style={{ marginBottom: "5px" }}>{repo.badges.map(badge => (<><img key={badge.name} src={badge.url} alt={badge.name} /> </>))}</p>
                     {repo.description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
                     {repo.installation && <pre><code>{this.state.repositories[i].installation}</code></pre>}
@@ -126,9 +126,8 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         );
     }
 
-    private starRepository(repository: IRepository): void {
-        console.log("Star repo! (to be implemented)", repository);
-        // TODO: Implement
+    private async starRepository(repository: IRepository): Promise<void> {
+        await this.context.starRepository(repository.project, repository.id);
     }
 
     static defaultProps = {
