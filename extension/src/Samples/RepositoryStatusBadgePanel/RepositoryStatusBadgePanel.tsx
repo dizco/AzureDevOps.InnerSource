@@ -37,13 +37,6 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         };
     }
 
-    private onChange = (ev: any, value: string) => {
-        // TODO: Support change of last commit date badge
-        this.setState({
-            starBadgeSrc: value,
-        });
-    };
-
     private getTooltip = (index: number): ITooltipProps => {
         return {
             text: this.state.lastCopied === index ? "Copied to clipboard!" : "Click to copy",
@@ -118,7 +111,9 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeMarkdown} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={starBadgeMarkdown} onChange={this.onChange} label="Stars badge (markdown)" />
+                                <TextField value={starBadgeMarkdown} onChange={(e, value) => this.setState({
+                                    starBadgeMarkdown: value,
+                                })} label="Stars badge (markdown)" />
                             </div>
                             <Observer value={starBadgeMarkdown}>
                                 {(observerProps: { value: string }) => (
@@ -140,7 +135,9 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeMardown} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={lastCommitBadgeMardown} onChange={this.onChange} label="Last commit date badge (markdown))" />
+                                <TextField value={lastCommitBadgeMardown} onChange={(e, value) => this.setState({
+                                    lastCommitBadgeMardown: value,
+                                })} label="Last commit date badge (markdown))" />
                             </div>
                             <Observer value={lastCommitBadgeMardown}>
                                 {(observerProps: { value: string }) => (
