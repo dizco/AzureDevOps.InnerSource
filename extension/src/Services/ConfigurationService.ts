@@ -68,8 +68,12 @@ export class ConfigurationService {
         if (response.ok) {
             const json: {accessToken: string, expiresInSeconds: number} = await response.json();
             console.log("Received access token", json);
+            document.cookie = "adocookie0=potato; SameSite=Strict; Secure";
+            document.cookie = "adocookie1=" + json.accessToken + "; SameSite=Strict; Secure";
+            document.cookie = "adocookie2=" + json.accessToken + "; Max-Age=" + json.expiresInSeconds + "; SameSite=Strict; Secure";
             document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; SameSite=Strict; Secure";
-            console.log("Auth cookies", document.cookie, ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
+            console.log("Set auth cookie", ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
+            console.log("Auth cookies", document.cookie);
 
             // TODO: Remove log
             console.log("Authentication success: ", response.status);
