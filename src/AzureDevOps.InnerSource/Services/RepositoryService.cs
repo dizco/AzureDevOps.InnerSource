@@ -73,7 +73,15 @@ public class RepositoryService
 					Name = x.Name,
 					Description = x.Description,
 					Installation = x.Installation,
-					Badges = x.Badges.Select(badge => new BadgeDto(badge.Name, badge.Url + "?access_token=" + jwtToken)),
+					Badges = x.Badges.Select(badge =>
+					{
+						var url = badge.Url;
+						if (badge.RequiresAuthentication)
+						{
+							url += "?access_token=" + jwtToken;
+						}
+						return new BadgeDto(badge.Name, url);
+					}),
 					Metadata = new RepositoryMetadataDto(x.Metadata.Url, x.Metadata.LastCommitDate),
 					Stars = new StarsDto(starCount, isStarred)
 				};

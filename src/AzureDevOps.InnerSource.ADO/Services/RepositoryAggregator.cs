@@ -134,8 +134,8 @@ npm install --save package
 
                     var badges = new List<Badge>
                     {
-	                    new("Stars", $"{Options.BadgeServerUrl}/{project.Name}/repositories/{x.Id}/badges/stars"),
-	                    new("Last Commit", $"{Options.BadgeServerUrl}/{project.Name}/repositories/{x.Id}/badges/last-commit"),
+	                    new("Stars", $"{Options.BadgeServerUrl}/{project.Name}/repositories/{x.Id}/badges/stars", true),
+	                    new("Last Commit", $"{Options.BadgeServerUrl}/{project.Name}/repositories/{x.Id}/badges/last-commit", true)
                     };
                     if (language is not null)
                     {
