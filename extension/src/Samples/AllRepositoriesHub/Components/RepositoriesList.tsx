@@ -135,7 +135,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         else {
             await this.context.starRepository(repository.project, repository.id);
             this.setState((previousState, previousProps) => {
-                previousState.repositories.find(x => x.id === repository.id).stars.isStarred = true;
+                previousState.repositories.find(x => x.id === repository.id)!.stars.isStarred = true;
                 return {
                     repositories: previousState.repositories,
                 };
