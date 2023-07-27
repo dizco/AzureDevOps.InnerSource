@@ -127,7 +127,20 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     }
 
     private async starRepository(repository: IRepository): Promise<void> {
-        await this.context.starRepository(repository.project, repository.id);
+        const isStarred = this.state.repositories.find(x => x.id === repository.id).stars.isStarred;
+        if (isStarred) {
+            // TODO: Support unstarring
+            console.error("Unstarring a repository is not supported yet");
+        }
+        else {
+            await this.context.starRepository(repository.project, repository.id);
+            this.setState((previousState, previousProps) => {
+                previousState.repositories.find(x => x.id === repository.id).stars.isStarred = true;
+                return {
+                    repositories: previousState.repositories,
+                };
+            });
+        }
     }
 
     static defaultProps = {
