@@ -80,21 +80,21 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
     private emptyRow = (
         <div className="row">
             <div className="column subtle-border shimmer">
-                <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps="FavoriteStar" subtle={true} ariaLabel="Star this repository" /></h2>
+                <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps={{iconName: "FavoriteStar"}} subtle={true} ariaLabel="Star this repository" /></h2>
                 <p style={{ marginBottom: "5px" }}></p>
                 <p style={{ marginBottom: "8px" }}></p>}
                 <pre><code></code></pre>}
                 <a className="bolt-link"></a>
             </div>
             <div className="column subtle-border">
-                <h2 className="flex-row justify-space-between shimmer" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps="FavoriteStar" subtle={true} ariaLabel="Star this repository" /></h2>
+                <h2 className="flex-row justify-space-between shimmer" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps={{iconName: "FavoriteStar"}} subtle={true} ariaLabel="Star this repository" /></h2>
                 <p style={{ marginBottom: "5px" }} className="shimmer"></p>
                 <p style={{ marginBottom: "8px" }} className="shimmer"></p>}
                 <pre className="shimmer"><code></code></pre>}
                 <a className="bolt-link shimmer"></a>
             </div>
             <div className="column subtle-border shimmer-line">
-                <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps="FavoriteStar" subtle={true} ariaLabel="Star this repository" /></h2>
+                <h2 className="flex-row justify-space-between" style={{ margin: 0, marginBottom: "5px" }}> <Button iconProps={{iconName: "FavoriteStar"}} subtle={true} ariaLabel="Star this repository" /></h2>
                 <p style={{ marginBottom: "5px" }}></p>
                 <p style={{ marginBottom: "8px" }}></p>}
                 <pre><code></code></pre>}
