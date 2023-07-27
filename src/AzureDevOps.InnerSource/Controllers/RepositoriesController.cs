@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
-[Route("repositories")]
 public class RepositoriesController : Controller
 {
 	private readonly RepositoryService _repositoryService;
@@ -18,7 +17,7 @@ public class RepositoriesController : Controller
 
 	[Authorize]
 	[EnableCors("AzureDevOpsExtension")]
-	[HttpGet("{projectId}")]
+	[HttpGet("{projectId}/repositories")]
 	public async Task<IActionResult> GetRepositories(string projectId, CancellationToken ct)
 	{
 		if (string.IsNullOrWhiteSpace(projectId))

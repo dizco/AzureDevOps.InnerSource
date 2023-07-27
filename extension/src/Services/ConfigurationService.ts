@@ -154,7 +154,7 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(serverUrl + `${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
+        const response = await fetch(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
             method: 'POST',
             headers: {
                 "Accept": "application/json",

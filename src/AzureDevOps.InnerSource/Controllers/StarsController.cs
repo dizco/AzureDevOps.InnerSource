@@ -52,7 +52,7 @@ public class StarsController : Controller
     }
 
 	[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
-	[HttpGet("{projectName}/repositories/{repositoryName}/stars/badge")]
+	[HttpGet("{projectName}/repositories/{repositoryName}/badges/stars")]
     public async Task<IActionResult> GetStarsBadge(string projectName, string repositoryName, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryName))

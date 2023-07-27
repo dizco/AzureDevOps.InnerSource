@@ -20,8 +20,8 @@ public class BadgesController : Controller
     }
     
     [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
-    [HttpGet("last-commit/{repositoryId}")]
-    public async Task<IActionResult> GetLastCommit(string repositoryId, CancellationToken ct)
+    [HttpGet("{projectName}/repositories/{repositoryId}/badges/last-commit")]
+    public async Task<IActionResult> GetLastCommit(string projectName, string repositoryId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(repositoryId))
             throw new ValidationException("Required parameters were not provided");
