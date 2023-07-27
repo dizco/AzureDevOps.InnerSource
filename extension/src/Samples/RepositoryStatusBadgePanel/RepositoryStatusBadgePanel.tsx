@@ -105,7 +105,9 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     {starBadgeSrc && (<>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
                         <div className="status-badge-text-wrapper">
-                            <TextField value={starBadgeSrc} onChange={this.onChange} />
+                            <div className="status-badge-url-textfield flex-column">
+                                <TextField value={starBadgeSrc} onChange={this.onChange} label="Image URL" />
+                            </div>
                             <Observer value={starBadgeSrc}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
