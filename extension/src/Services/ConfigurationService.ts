@@ -166,7 +166,7 @@ export class ConfigurationService {
 
     public async starRepository(projectName: string, repositoryName: string): Promise<void> {
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${projectName}/${repositoryName}/star`, {
+        const response = await fetch(`${serverUrl}/${projectName}/${repositoryName}/stars`, {
             method: 'POST',
             headers: {
                 "Accept": "application/json",

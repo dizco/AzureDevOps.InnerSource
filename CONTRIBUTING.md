@@ -9,5 +9,11 @@ Follow the instructions in the README.
 
 ## Azure DevOps Extension
 
+The extension was started from this sample: https://github.com/microsoft/azure-devops-extension-sample
+This sample is also interesting: https://github.com/microsoft/azure-devops-extension-hot-reload-and-debug
+
 Icon list: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
 https://uifabricicons.azurewebsites.net/
+
+
+There is an issue with unit tests, that has the same symptoms as this: https://github.com/nrwl/nx/issues/812

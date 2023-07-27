@@ -11,6 +11,7 @@ import { ConfigurationService, ConfigurationContext } from '../../Services/Confi
 import { Observer } from 'azure-devops-ui/Observer';
 import { ClipboardButton } from 'azure-devops-ui/Clipboard';
 import { ITooltipProps } from 'azure-devops-ui/TooltipEx';
+import { IPanelContentProps } from 'azure-devops-ui/Panel.Types';
 
 interface IPanelContentState {
     repository?: GitRepository;
@@ -58,7 +59,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         
         SDK.ready().then(() => {
             const config = SDK.getConfiguration();
-            const repository = config.repository;
+            const repository: GitRepository = config.repository;
             this.setState({ repository });
 
             if (config.dialog) {
@@ -84,8 +85,8 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         }
 
         this.setState((previousState, props) => ({
-            starBadgeSrc: serverUrl + `/stars/Kiosoft/${previousState.repository?.name}?access_token=${previousState.badgeJwt}`,
-            lastCommitBadgeSrc: serverUrl + `/badges/last-commit/${previousState.repository?.id}?access_token=${previousState.badgeJwt}`,
+            starBadgeSrc: `${serverUrl}/${previousState.repository?.project.name}/repositories/${previousState.repository?.name}/badges/stars?access_token=${previousState.badgeJwt}`,
+            lastCommitBadgeSrc: `${serverUrl}/${previousState.repository?.project.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
         }));
     }
 
