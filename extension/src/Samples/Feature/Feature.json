@@ -3,7 +3,7 @@
         {
             "id": "feature-innersource",
             "type": "ms.vss-web.feature",
-            "description": "Activate the AzureDevOps.InnerSource extension for this project",
+            "description": "Activate the AzureDevOps.InnerSource extension",
             "targets": [ "ms.vss-web.managed-features", "ms.vss-web.managed-features-onprem" ],
             "properties": {
                 "name": "AzureDevOps.InnerSource extension",
