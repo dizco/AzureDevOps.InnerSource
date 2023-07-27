@@ -32,7 +32,7 @@ SDK.register("repository-menu-star", () => {
             const globalMessagesSvc = await SDK.getService<IGlobalMessagesService>(CommonServiceIds.GlobalMessagesService);
             globalMessagesSvc.addToast({
                 callToAction: "Unstar",
-                duration: 5000,
+                duration: 10000,
                 message: "Thank you for your star!",
                 onCallToActionClick: async () => {
                     await context.unstarRepository(project.name, repository.id);
