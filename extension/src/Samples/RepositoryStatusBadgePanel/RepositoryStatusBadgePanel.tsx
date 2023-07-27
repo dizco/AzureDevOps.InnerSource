@@ -106,7 +106,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         return (
             <div className="flex-grow">
                 {this.state.isLoading &&
-                    <div className="flex-row flex-center">
+                    <div className="flex-row justify-center">
                         <Spinner label="loading" />
                     </div>
                 }
