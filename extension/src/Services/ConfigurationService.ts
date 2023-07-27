@@ -132,6 +132,18 @@ export class ConfigurationService {
         console.log('Star response', response.status);
     }
 
+    public async unstarRepository(projectName: string, repositoryId: string): Promise<void> {
+        const serverUrl = await this.getServerUrl();
+        const response = await fetch(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
+            method: 'DELETE',
+            headers: {
+                "Accept": "application/json",
+                Authorization: 'Bearer ' + this.getJwtBearer(),
+            }
+        });
+        console.log('Unstar response', response.status);
+    }
+
     public async isReady(): Promise<boolean> {
         return !!await this.getServerUrl();
     }

@@ -52,6 +52,30 @@ public class StarsController : Controller
         return Json(new {});
     }
 
+    [Authorize]
+    [EnableCors("AzureDevOpsExtension")]
+    [HttpDelete("{projectName}/repositories/{repositoryId}/stars")]
+    public async Task<IActionResult> DeleteStar(string projectName, string repositoryId, CancellationToken ct)
+    {
+	    if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(repositoryId))
+		    throw new ValidationException("Required parameters were not provided");
+
+	    var principal = new Principal
+	    {
+		    Id = User.FindFirstValue("sub") ?? throw new Exception("Expected to find a sub claim"),
+		    Email = User.FindFirstValue("email")
+	    };
+
+	    await _starService.UnstarAsync(principal, new Repository
+	    {
+		    Organization = Options.Organization,
+		    Project = projectName,
+		    Id = repositoryId
+	    }, ct);
+
+	    return Json(new { });
+    }
+
 	[Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
 	[HttpGet("{projectName}/repositories/{repositoryId}/badges/stars")]
 	[EnableCors("AzureDevOpsExtension")]

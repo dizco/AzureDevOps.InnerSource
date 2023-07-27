@@ -10,4 +10,6 @@ public interface IStarRepository
 	Task<int> GetStarCountAsync(Repository repository, CancellationToken ct);
 
 	Task<bool> GetIsStarredAsync(Repository repository, Principal principal, CancellationToken ct);
+
+	Task RemoveStarAsync(Repository repository, Principal principal, CancellationToken ct);
 }

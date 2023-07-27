@@ -69,6 +69,18 @@ public class StarTableRepository : IStarRepository
 		await SetStarCountAsync(repository, ++count, CancellationToken.None); // Don't cancel this here, because the upsert of individual star has already been done
 	}
 
+	public async Task RemoveStarAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
+		if (!entity.HasValue) return;
+
+		await _table.DeleteEntityAsync(HashRepository(repository), principal.Id, entity.Value.ETag, ct);;
+
+		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
+		var count = await GetStarCountAsync(repository, ct);
+		await SetStarCountAsync(repository, Math.Max(--count, 0), CancellationToken.None); // Don't cancel this here, because the delete of individual star has already been done
+	}
+
 	public async Task SetStarCountAsync(Repository repository, int count, CancellationToken ct)
 	{
 		await _table.UpsertEntityAsync(new StarCountEntity

@@ -28,6 +28,17 @@ public class StarInMemoryRepository : IStarRepository
 		return Task.FromResult(false);
 	}
 
+	public Task RemoveStarAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		ct.ThrowIfCancellationRequested();
+		if (_stars.TryGetValue(repository, out var value))
+		{
+			value.Remove(principal);
+		}
+
+		return Task.CompletedTask;
+	}
+
 	public Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
 		ct.ThrowIfCancellationRequested();
