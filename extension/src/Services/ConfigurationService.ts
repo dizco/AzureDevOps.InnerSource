@@ -67,7 +67,9 @@ export class ConfigurationService {
 
         if (response.ok) {
             const json: {accessToken: string, expiresInSeconds: number} = await response.json();
+            console.log("Received access token", json);
             document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure";
+            console.log("Auth cookies", document.cookie);
 
             // TODO: Remove log
             console.log("Authentication success: ", response.status);

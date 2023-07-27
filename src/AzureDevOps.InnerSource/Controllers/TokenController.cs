@@ -30,7 +30,7 @@ public class TokenController : Controller
 			if (devOpsResult.IsAuthenticated)
 			{
 				var jwtToken = _tokenService.GenerateJwt(devOpsResult.Claims, devOpsResult.NotBefore, devOpsResult.Expires);
-				var expiresInSeconds = (DateTime.UtcNow - devOpsResult.Expires).Seconds;
+				var expiresInSeconds = (devOpsResult.Expires - DateTime.UtcNow).Seconds;
 				if (expiresInSeconds <= 0) throw new Exception("Expected the expiration of the token to be in the future, but it is already expired");
 
 				return Json(new

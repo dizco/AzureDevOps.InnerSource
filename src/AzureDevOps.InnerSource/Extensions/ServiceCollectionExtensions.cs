@@ -97,10 +97,11 @@ public static class ServiceCollectionExtensions
 		services.AddAuthentication(options =>
 			{
 				options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = "AzureDevOpsExtensionHandshake";
+				options.DefaultChallengeScheme = "AzureDevOpsExtension";
 			})
 			.AddJwtBearer("AzureDevOpsExtension", options =>
 			{
+				// Allows the Azure DevOps extension tokens
 				// See: https://learn.microsoft.com/en-us/azure/devops/extend/develop/auth?view=azure-devops#net-framework
 
 				//var secret =
@@ -118,39 +119,10 @@ public static class ServiceCollectionExtensions
 					ValidateAudience = false,
 					ValidateActor = false
 				};
-
-				options.Events = new JwtBearerEvents
-				{
-					OnAuthenticationFailed = ctx =>
-					{
-						var t = 0;
-						return Task.CompletedTask;
-					},
-					OnChallenge = ctx =>
-					{
-						var t = 1;
-						return Task.CompletedTask;
-					},
-					OnForbidden = ctx =>
-					{
-						var t = 2;
-						return Task.CompletedTask;
-					},
-					OnMessageReceived = ctx =>
-					{
-						var t = 3;
-						return Task.CompletedTask;
-					},
-					OnTokenValidated = ctx =>
-					{
-						var t = 4;
-
-						return Task.CompletedTask;
-					}
-				};
 			})
 			.AddJwtBearer(options =>
 			{
+				// Allows our tokens
 				options.TokenValidationParameters = new TokenValidationParameters
 				{
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.Key)),
