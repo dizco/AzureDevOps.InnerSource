@@ -51,10 +51,10 @@ export class ConfigurationService {
         }
 
         const accessToken = await SDK.getAccessToken();
-        console.log("SDK access token", accessToken);
+        //console.log("SDK access token", accessToken);
 
         const appToken = await SDK.getAppToken();
-        console.log("SDK app token", appToken);
+        //console.log("SDK app token", appToken);
 
         const serverUrl = await this.getServerUrl();
         const response = await fetch(`${serverUrl}/token`, {
@@ -67,17 +67,7 @@ export class ConfigurationService {
 
         if (response.ok) {
             const json: {accessToken: string, expiresInSeconds: number} = await response.json();
-            console.log("Received access token", json);
-            document.cookie = "adocookie0=potato; SameSite=Strict; Secure";
-            document.cookie = "adocookie1=" + json.accessToken + "; SameSite=Strict; Secure";
-            document.cookie = "adocookie2=" + json.accessToken + "; Max-Age=" + json.expiresInSeconds + "; SameSite=Strict; Secure";
             document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + "; SameSite=None; Secure"; // Need to set it with SameSite=none otherwise the cookie is not readable within our iframe
-            console.log("Set auth cookie", ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
-            document.cookie = "adocookie3=" + json.accessToken + "; SameSite=None; Secure";
-            document.cookie = "adocookie4=" + json.accessToken + "; SameSite=Lax; Secure";
-            console.log("Auth cookies", document.cookie);
-
-            // TODO: Remove log
             console.log("Authentication success: ", response.status);
             this.isAuthenticated = true;
         }

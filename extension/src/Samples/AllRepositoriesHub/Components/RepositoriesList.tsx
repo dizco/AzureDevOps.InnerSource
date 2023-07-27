@@ -57,12 +57,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
 
     public async componentDidMount() {
         await SDK.ready();
-        console.log("Cookies0", document.cookie);
         await this.context.ensureAuthenticated();
-
-        console.log("Cookies1", document.cookie);
-        document.cookie = "favorite_food=tripe; SameSite=None; Secure";
-        console.log("Cookies2", document.cookie);
 
         let repositories = await this.context.getRepositories();
         repositories = this.sortRepositories(repositories, this.props.sort);

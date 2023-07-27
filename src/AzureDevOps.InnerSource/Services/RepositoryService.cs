@@ -50,7 +50,7 @@ public class RepositoryService
 				{
 					Organization = x.Organization,
 					Project = x.Project,
-					Id = x.Name
+					Id = x.Id.ToString(),
 				};
 
 				var starCount = await _starService.GetStarCountAsync(repository, token);
