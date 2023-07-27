@@ -116,17 +116,12 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                                     />
                                 )}
                             </Observer>
-                            <FormItem label="Stars badge" className="status-badge-url-textfield flex-column">
-                                <TextField
-                                    value={starBadgeSrc}
-                                />
-                            </FormItem>
                         </div>
                     </>)}
                 </div>
                 <div className="separator-line-top">
                     {lastCommitBadgeSrc && (<>
-                        <img className="status-badge-image" alt="Stars badge" src={lastCommitBadgeSrc} />
+                        <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeSrc} />
                         <div className="status-badge-text-wrapper">
                             <TextField value={lastCommitBadgeSrc} onChange={this.onChange} />
                             <Observer value={lastCommitBadgeSrc}>
@@ -134,26 +129,13 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                                     <ClipboardButton
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
                                         getContent={() => this.state.lastCommitBadgeSrc || ""}
-                                        onCopy={() => (this.setState({lastCopied: 1}))}
-                                        tooltipProps={this.getTooltip(1)}
+                                        onCopy={() => (this.setState({lastCopied: 2}))}
+                                        tooltipProps={this.getTooltip(2)}
                                     />
                                 )}
                             </Observer>
-                            <FormItem label="Last commit date badge" className="status-badge-url-textfield flex-column">
-                                <TextField
-                                    value={lastCommitBadgeSrc}
-                                />
-                            </FormItem>
                         </div>
                     </>)}
-                    {lastCommitBadgeSrc && <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />}
-                    <div className="status-badge-text-wrapper">
-                        <FormItem label="Last commit date badge" className="status-badge-url-textfield flex-column">
-                            <TextField
-                                value={lastCommitBadgeSrc}
-                            />
-                        </FormItem>
-                    </div>
                 </div>
                 <div className="separator-line-top">
                     <p>Status badges are private and secured with a token that expires in 1 year.</p>
