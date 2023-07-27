@@ -68,8 +68,8 @@ export class ConfigurationService {
         if (response.ok) {
             const json: {accessToken: string, expiresInSeconds: number} = await response.json();
             console.log("Received access token", json);
-            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure";
-            console.log("Auth cookies", document.cookie);
+            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; SameSite=Strict; Secure";
+            console.log("Auth cookies", document.cookie, ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
 
             // TODO: Remove log
             console.log("Authentication success: ", response.status);
@@ -79,22 +79,6 @@ export class ConfigurationService {
             console.log("Authentication failed: ", response.status);
             this.isAuthenticated = false;
         }
-    }
-
-    private getJwtBearer(): string | undefined {
-        return this.getCookie(ConfigurationService.AuthenticationCookieName);
-    }
-
-    // Source: https://stackoverflow.com/a/15724300/6316091
-    private getCookie(name: string): string | undefined {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return parts.pop()
-                ?.split(';')
-                .shift();
-        }
-        return undefined;
     }
 
     public async getRepositories(): Promise<IRepository[]> {
@@ -111,7 +95,43 @@ export class ConfigurationService {
                 Authorization: 'Bearer ' + this.getJwtBearer(),
             }
         });
-        return (await response.json()).repositories;
+        if (response.ok) {
+            return (await response.json()).repositories;
+        }
+        else {
+            console.error("Could not get repositories", response.status);
+            return [];
+        }
+    }
+
+    public async getBadgeJwtToken(repositoryId: string): Promise<string> {
+        const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
+        const project = await projectService.getProject();
+        if (!project) {
+            console.error('Could not identify current project')
+            return "";
+        }
+
+        const serverUrl = await this.getServerUrl();
+        const response = await fetch(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+            }
+        });
+        console.log('Jwt response', response.status);
+        return (await response.json()).accessToken;
+    }
+
+    public async starRepository(projectName: string, repositoryName: string): Promise<void> {
+        const serverUrl = await this.getServerUrl();
+        const response = await fetch(`${serverUrl}/${projectName}/${repositoryName}/stars`, {
+            method: 'POST',
+            headers: {
+                "Accept": "application/json",
+            }
+        });
+        console.log('Star response', response.status);
     }
 
     public async isReady(): Promise<boolean> {
@@ -147,34 +167,20 @@ export class ConfigurationService {
         return data?.serverUrl;
     }
 
-    public async getBadgeJwtToken(repositoryId: string): Promise<string> {
-        const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
-        const project = await projectService.getProject();
-        if (!project) {
-            console.error('Could not identify current project')
-            return "";
-        }
-
-        const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
-            method: 'POST',
-            headers: {
-                "Accept": "application/json",
-            }
-        });
-        console.log('Jwt response', response.status);
-        return (await response.json()).accessToken;
+    private getJwtBearer(): string | undefined {
+        return this.getCookie(ConfigurationService.AuthenticationCookieName);
     }
 
-    public async starRepository(projectName: string, repositoryName: string): Promise<void> {
-        const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${projectName}/${repositoryName}/stars`, {
-            method: 'POST',
-            headers: {
-                "Accept": "application/json",
-            }
-        });
-        console.log('Star response', response.status);
+    // Source: https://stackoverflow.com/a/15724300/6316091
+    private getCookie(name: string): string | undefined {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop()
+                ?.split(';')
+                .shift();
+        }
+        return undefined;
     }
 }
 
