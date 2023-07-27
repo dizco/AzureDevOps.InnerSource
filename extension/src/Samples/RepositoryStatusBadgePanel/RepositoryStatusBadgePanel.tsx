@@ -12,6 +12,7 @@ import { Observer } from 'azure-devops-ui/Observer';
 import { ClipboardButton } from 'azure-devops-ui/Clipboard';
 import { ITooltipProps } from 'azure-devops-ui/TooltipEx';
 import { IProjectInfo } from 'azure-devops-extension-api';
+import { Spinner } from 'azure-devops-ui/Spinner';
 
 interface IPanelContentState {
     project?: IProjectInfo;
@@ -20,6 +21,7 @@ interface IPanelContentState {
     lastCommitBadgeSrc?: string;
     badgeJwt?: string;
     lastCopied: number;
+    isLoading: boolean;
 }
 
 class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState> {
@@ -32,6 +34,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         super(props);
         this.state = {
             lastCopied: -1,
+            isLoading: true,
         };
     }
 
@@ -98,9 +101,14 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
     public render(): JSX.Element {
         const { repository, starBadgeSrc, lastCommitBadgeSrc } = this.state;
 
-        // TODO: Use copy clipboard button: https://developer.microsoft.com/en-us/azure-devops/components/button#clipboard-button
         return (
             <div className="flex-grow">
+                {this.state.isLoading &&
+                    <div className="flex-row">
+                        <Spinner label="loading" />
+                    </div>
+                }
+                {!this.state.isLoading &&
                 <div>
                     {starBadgeSrc && (<>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
@@ -127,10 +135,13 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     {lastCommitBadgeSrc && (<>
                         <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeSrc} />
                         <div className="status-badge-text-wrapper">
-                            <TextField value={lastCommitBadgeSrc} onChange={this.onChange} label="Last commit date badge image URL" />
+                            <div className="status-badge-url-textfield flex-column">
+                                <TextField value={lastCommitBadgeSrc} onChange={this.onChange} label="Last commit date badge image URL" />
+                            </div>
                             <Observer value={lastCommitBadgeSrc}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
+                                        className="status-badge-url-copy-button"
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
                                         getContent={() => this.state.lastCommitBadgeSrc || ""}
                                         onCopy={() => (this.setState({lastCopied: 2}))}
@@ -142,6 +153,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         </div>
                     </>)}
                 </div>
+                }
                 <div className="separator-line-top">
                     <p>Status badges are private and secured with a token that expires in 1 year.</p>
                 </div>
