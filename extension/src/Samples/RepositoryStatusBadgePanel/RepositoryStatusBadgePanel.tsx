@@ -36,6 +36,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
     }
 
     private onChange = (ev: any, value: string) => {
+        // TODO: Support change of last commit date badge
         this.setState({
             starBadgeSrc: value,
         });
@@ -124,6 +125,27 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     </>)}
                 </div>
                 <div className="separator-line-top">
+                    {lastCommitBadgeSrc && (<>
+                        <img className="status-badge-image" alt="Stars badge" src={lastCommitBadgeSrc} />
+                        <div className="status-badge-text-wrapper">
+                            <TextField value={lastCommitBadgeSrc} onChange={this.onChange} />
+                            <Observer value={lastCommitBadgeSrc}>
+                                {(observerProps: { value: string }) => (
+                                    <ClipboardButton
+                                        ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
+                                        getContent={() => this.state.lastCommitBadgeSrc || ""}
+                                        onCopy={() => (this.setState({lastCopied: 1}))}
+                                        tooltipProps={this.getTooltip(1)}
+                                    />
+                                )}
+                            </Observer>
+                            <FormItem label="Last commit date badge" className="status-badge-url-textfield flex-column">
+                                <TextField
+                                    value={lastCommitBadgeSrc}
+                                />
+                            </FormItem>
+                        </div>
+                    </>)}
                     {lastCommitBadgeSrc && <img className="status-badge-image" alt="Last commit badge" src={lastCommitBadgeSrc} />}
                     <div className="status-badge-text-wrapper">
                         <FormItem label="Last commit date badge" className="status-badge-url-textfield flex-column">
