@@ -8,7 +8,6 @@ SDK.register("repository-menu-star", () => {
     return {
         execute: async () => {
             await SDK.init();
-            console.log("Star!");
 
             const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
             const project = await projectService.getProject();

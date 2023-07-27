@@ -11,9 +11,10 @@ import { ConfigurationService, ConfigurationContext } from '../../Services/Confi
 import { Observer } from 'azure-devops-ui/Observer';
 import { ClipboardButton } from 'azure-devops-ui/Clipboard';
 import { ITooltipProps } from 'azure-devops-ui/TooltipEx';
-import { IPanelContentProps } from 'azure-devops-ui/Panel.Types';
+import { IProjectInfo } from 'azure-devops-extension-api';
 
 interface IPanelContentState {
+    project?: IProjectInfo;
     repository?: GitRepository;
     starBadgeSrc?: string;
     lastCommitBadgeSrc?: string;
@@ -59,8 +60,9 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         
         SDK.ready().then(() => {
             const config = SDK.getConfiguration();
+            const project: GitRepository = config.project;
             const repository: GitRepository = config.repository;
-            this.setState({ repository });
+            this.setState({ project, repository });
 
             if (config.dialog) {
                 // Give the host frame the size of our dialog content so that the dialog can be sized appropriately.
@@ -87,8 +89,8 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         }
 
         this.setState((previousState, props) => ({
-            starBadgeSrc: `${serverUrl}/${previousState.repository?.project.name}/repositories/${previousState.repository?.name}/badges/stars?access_token=${previousState.badgeJwt}`,
-            lastCommitBadgeSrc: `${serverUrl}/${previousState.repository?.project.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
+            starBadgeSrc: `${serverUrl}/${previousState.project.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`,
+            lastCommitBadgeSrc: `${serverUrl}/${previousState.project.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
         }));
     }
 
