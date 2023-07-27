@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
 	{
 		services.AddHttpClient();
 		services.AddHttpContextAccessor();
+		services.AddMemoryCache();
 		services.AddTransient<IPrincipalService, PrincipalService>();
 		services.AddTransient<BadgeService>();
 		services.AddTransient<RepositoryService>();
