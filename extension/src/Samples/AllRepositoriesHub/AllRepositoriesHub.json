@@ -16,7 +16,15 @@
                 "order": 100,
                 "iconName": "FavoriteList",
                 "uri": "dist/AllRepositoriesHub/AllRepositoriesHub.html"
-            }
+            },
+            "constraints": [
+                {
+                    "name": "Feature",
+                    "properties": {
+                        "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
+                    }
+                }
+            ]
         }
     ]
 }
