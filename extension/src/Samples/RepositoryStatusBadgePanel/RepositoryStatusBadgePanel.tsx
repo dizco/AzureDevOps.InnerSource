@@ -16,8 +16,10 @@ import { Spinner } from 'azure-devops-ui/Spinner';
 interface IPanelContentState {
     project?: IProjectInfo;
     repository?: GitRepository;
+    starBadgeSrc?: string;
     starBadgeMarkdown?: string;
-    lastCommitBadgeMardown?: string;
+    lastCommitBadgeMarkdown?: string;
+    lastCommitBadgeMarkdown?: string;
     badgeJwt?: string;
     lastCopied: number;
     isLoading: boolean;
@@ -84,15 +86,21 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
             });
         }
 
-        this.setState((previousState, props) => ({
-            starBadgeMarkdown: `![Repository stars](${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt})`,
-            lastCommitBadgeMardown: `![Last commit date](${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt})`,
-            isLoading: false,
-        }));
+        this.setState((previousState, props) => {
+            const starSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`;
+            const lastCommitSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`;
+            return {
+                starBadgeSrc: starSrc,
+                starBadgeMarkdown: `![Repository stars](${starSrc})`,
+                lastCommitBadgeSrc: lastCommitSrc,
+                lastCommitBadgeMardown: `![Last commit date](${lastCommitSrc})`,
+                isLoading: false,
+            })
+        });
     }
 
     public render(): JSX.Element {
-        const { starBadgeMarkdown, lastCommitBadgeMardown } = this.state;
+        const { starBadgeSrc, starBadgeMarkdown, lastCommitBadgeSrc, lastCommitBadgeMarkdown } = this.state;
 
         return (
             <div className="flex-grow">
@@ -103,12 +111,12 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                 }
                 {!this.state.isLoading &&
                     <>
-                        <div className="flex-row flex-center">
+                        <div className="flex-row justify-center">
                             <Spinner label="loading" />
                         </div>
                 <div>
-                    {starBadgeMarkdown && (<>
-                        <img className="status-badge-image" alt="Stars badge" src={starBadgeMarkdown} />
+                    {starBadgeSrc && starBadgeMarkdown && (<>
+                        <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
                                 <TextField value={starBadgeMarkdown} onChange={(e, value) => this.setState({
@@ -131,20 +139,20 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     </>)}
                 </div>
                 <div className="separator-line-top">
-                    {lastCommitBadgeMardown && (<>
-                        <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeMardown} />
+                    {lastCommitBadgeSrc && lastCommitBadgeMarkdown && (<>
+                        <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeSrc} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={lastCommitBadgeMardown} onChange={(e, value) => this.setState({
+                                <TextField value={lastCommitBadgeMarkdown} onChange={(e, value) => this.setState({
                                     lastCommitBadgeMardown: value,
-                                })} label="Last commit date badge (markdown))" />
+                                })} label="Last commit date badge (markdown)" />
                             </div>
-                            <Observer value={lastCommitBadgeMardown}>
+                            <Observer value={lastCommitBadgeMarkdown}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
                                         className="status-badge-url-copy-button"
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
-                                        getContent={() => lastCommitBadgeMardown || ""}
+                                        getContent={() => lastCommitBadgeMarkdown || ""}
                                         onCopy={() => (this.setState({lastCopied: 2}))}
                                         tooltipProps={this.getTooltip(2)}
                                         subtle={true}

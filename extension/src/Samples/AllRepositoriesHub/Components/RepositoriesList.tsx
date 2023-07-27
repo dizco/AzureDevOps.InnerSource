@@ -133,8 +133,10 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
             <>
                 {this.state.isLoading &&
                     <>
-                        {this.emptyRow}
-                        <div className="flex-row">
+                        <div className="repositories-list">
+                            {this.emptyRow}
+                        </div>
+                        <div className="flex-row justify-center">
                             <Spinner label="loading" />
                         </div>
                     </>
