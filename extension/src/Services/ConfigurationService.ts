@@ -123,6 +123,7 @@ export class ConfigurationService {
             method: 'POST',
             headers: {
                 "Accept": "application/json",
+                Authorization: 'Bearer ' + this.getJwtBearer(),
             }
         });
         console.log('Jwt response', response.status);
@@ -135,6 +136,7 @@ export class ConfigurationService {
             method: 'POST',
             headers: {
                 "Accept": "application/json",
+                Authorization: 'Bearer ' + this.getJwtBearer(),
             }
         });
         console.log('Star response', response.status);
