@@ -88,7 +88,6 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                     {repo.description && <p style={{ marginBottom: "8px" }}>{this.state.repositories[i].description}</p>}
                     {repo.installation && <pre><code>{repo.installation}</code></pre>}
                     <a className="bolt-link" onClick={(event) => this.navigateToRepository(event, repo)}>Go to repository</a>
-                    <Link href={repo.metadata.url}>Go to repository</Link>
                 </div>
             );
         }
@@ -145,6 +144,12 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         }
     }
 
+    /**
+     * We use the navigation service to redirect because our extension runs in an iframe. If we do a normal link, only the content of the iframe changes, not the top-level page.
+     * @param event
+     * @param repository
+     * @private
+     */
     private async navigateToRepository(event: React.MouseEvent<HTMLAnchorElement> | React.KeyboardEvent<HTMLAnchorElement>, repository: IRepository): Promise<void> {
         event.preventDefault();
         const navigationService = await SDK.getService<IHostNavigationService>(CommonServiceIds.HostNavigationService);

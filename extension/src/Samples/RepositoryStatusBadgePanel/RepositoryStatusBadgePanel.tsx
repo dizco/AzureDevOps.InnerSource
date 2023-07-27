@@ -76,6 +76,8 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
             }
         });
 
+        await SDK.ready();
+        await this.context.ensureAuthenticated();
         const serverUrl = await this.context.getServerUrl();
         if (!!this.state.repository?.id) {
             const badgeJwt = await this.context.getBadgeJwtToken(this.state.repository?.id!);
