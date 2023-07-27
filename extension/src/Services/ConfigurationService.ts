@@ -73,6 +73,8 @@ export class ConfigurationService {
             document.cookie = "adocookie2=" + json.accessToken + "; Max-Age=" + json.expiresInSeconds + "; SameSite=Strict; Secure";
             document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; SameSite=Strict; Secure";
             console.log("Set auth cookie", ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
+            document.cookie = "adocookie3=" + json.accessToken + "; SameSite=None; Secure";
+            document.cookie = "adocookie4=" + json.accessToken + "; SameSite=Lax; Secure";
             console.log("Auth cookies", document.cookie);
 
             // TODO: Remove log

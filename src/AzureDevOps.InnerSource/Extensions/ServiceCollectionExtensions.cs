@@ -98,7 +98,7 @@ public static class ServiceCollectionExtensions
 		services.AddAuthentication(options =>
 			{
 				options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = "AzureDevOpsExtension";
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 			})
 			.AddJwtBearer("AzureDevOpsExtension", options =>
 			{
