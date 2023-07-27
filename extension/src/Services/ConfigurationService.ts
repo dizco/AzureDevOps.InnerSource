@@ -71,7 +71,7 @@ export class ConfigurationService {
             document.cookie = "adocookie0=potato; SameSite=Strict; Secure";
             document.cookie = "adocookie1=" + json.accessToken + "; SameSite=Strict; Secure";
             document.cookie = "adocookie2=" + json.accessToken + "; Max-Age=" + json.expiresInSeconds + "; SameSite=Strict; Secure";
-            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; SameSite=Strict; Secure";
+            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + "; SameSite=None; Secure"; // Need to set it with SameSite=none otherwise the cookie is not readable within our iframe
             console.log("Set auth cookie", ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + ";SameSite=Strict; Secure");
             document.cookie = "adocookie3=" + json.accessToken + "; SameSite=None; Secure";
             document.cookie = "adocookie4=" + json.accessToken + "; SameSite=Lax; Secure";
