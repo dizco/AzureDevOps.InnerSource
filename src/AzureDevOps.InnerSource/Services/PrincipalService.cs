@@ -23,7 +23,7 @@ public class PrincipalService : IPrincipalService
 		
 		var principal = new Principal
 		{
-			Id = Context.User.FindFirstValue("ado-userid") ?? throw new Exception("Expected to find an ado-userid claim"),
+			Id = Context.User.FindFirstValue("sub") ?? throw new Exception("Expected to find a sub claim"),
 			Email = Context.User.FindFirstValue("email")
 		};
 		return principal;

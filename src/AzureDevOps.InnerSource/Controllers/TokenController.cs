@@ -64,7 +64,7 @@ public class TokenController : Controller
 			// TODO: Claim for the organization?
 			new("scope", "badges.read")
 		}, notBefore, expires);
-		var expiresInSeconds = (notBefore - expires).Seconds;
+		var expiresInSeconds = Math.Floor((notBefore - expires).TotalSeconds);
 
 		return Json(new
 		{

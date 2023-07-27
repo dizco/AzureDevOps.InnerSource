@@ -28,7 +28,7 @@ SDK.register("repository-menu-star", () => {
 
             const context = new ConfigurationService();
             await context.ensureAuthenticated();
-            await context.starRepository(project.name, repository.name);
+            await context.starRepository(project.name, repository.id);
         }
     };
 });

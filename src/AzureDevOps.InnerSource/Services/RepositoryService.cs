@@ -1,4 +1,5 @@
-﻿using AzureDevOps.InnerSource.ADO.Services;
+﻿using System.Security.Claims;
+using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Common;
 using AzureDevOps.InnerSource.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,12 +18,19 @@ public class RepositoryService
 
 	private readonly IStarService _starService;
 
-	public RepositoryService(IMemoryCache cache, RepositoryAggregator aggregator, IStarService starService, IPrincipalService principalService)
+	private readonly ITokenService _tokenService;
+
+	public RepositoryService(IMemoryCache cache,
+		RepositoryAggregator aggregator,
+		IStarService starService,
+		IPrincipalService principalService,
+		ITokenService tokenService)
 	{
 		_cache = cache;
 		_aggregator = aggregator;
 		_starService = starService;
 		_principalService = principalService;
+		_tokenService = tokenService;
 	}
 
 	public async Task<List<RepositoryDto>> GetRepositoriesAsync(string projectId, CancellationToken ct)
@@ -42,11 +50,21 @@ public class RepositoryService
 				{
 					Organization = x.Organization,
 					Project = x.Project,
-					Name = x.Name
+					Id = x.Name
 				};
 
 				var starCount = await _starService.GetStarCountAsync(repository, token);
 				var isStarred = await _starService.GetIsStarredAsync(principal, repository, token);
+
+				var notBefore = DateTime.UtcNow;
+				var expires = DateTime.UtcNow.AddHours(1);
+				var jwtToken = _tokenService.GenerateJwt(new Claim[]
+				{
+					new("project", x.Project),
+					new("repositoryId", x.Id.ToString()),
+					// TODO: Claim for the organization?
+					new("scope", "badges.read")
+				}, notBefore, expires);
 
 				return new RepositoryDto
 				{
@@ -55,7 +73,7 @@ public class RepositoryService
 					Name = x.Name,
 					Description = x.Description,
 					Installation = x.Installation,
-					Badges = x.Badges.Select(badge => new BadgeDto(badge.Name, badge.Url)),
+					Badges = x.Badges.Select(badge => new BadgeDto(badge.Name, badge.Url + "?access_token=" + jwtToken)),
 					Metadata = new RepositoryMetadataDto(x.Metadata.Url, x.Metadata.LastCommitDate),
 					Stars = new StarsDto(starCount, isStarred)
 				};

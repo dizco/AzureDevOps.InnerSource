@@ -71,6 +71,6 @@ public class StarService : IStarService
 		return string.Equals(Options.Organization, repository.Organization, StringComparison.OrdinalIgnoreCase)
 		       && Options.AllowedRepositories.Any(x =>
 			       new Regex(x.RegexProject).IsMatch(repository.Project) &&
-			       new Regex(x.RegexRepository).IsMatch(repository.Name));
+			       new Regex(x.RegexRepository).IsMatch(repository.Id));
 	}
 }
