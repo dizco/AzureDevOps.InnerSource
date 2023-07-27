@@ -111,6 +111,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                             <Observer value={starBadgeSrc}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
+                                        className="status-badge-url-copy-button"
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
                                         getContent={() => this.state.starBadgeSrc || ""}
                                         onCopy={() => (this.setState({lastCopied: 1}))}
