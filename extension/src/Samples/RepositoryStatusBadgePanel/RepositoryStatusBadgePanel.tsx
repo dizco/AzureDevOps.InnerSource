@@ -18,7 +18,7 @@ interface IPanelContentState {
     repository?: GitRepository;
     starBadgeSrc?: string;
     starBadgeMarkdown?: string;
-    lastCommitBadgeMarkdown?: string;
+    lastCommitBadgeSrc?: string;
     lastCommitBadgeMarkdown?: string;
     badgeJwt?: string;
     lastCopied: number;
@@ -95,7 +95,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                 lastCommitBadgeSrc: lastCommitSrc,
                 lastCommitBadgeMardown: `![Last commit date](${lastCommitSrc})`,
                 isLoading: false,
-            })
+            };
         });
     }
 
