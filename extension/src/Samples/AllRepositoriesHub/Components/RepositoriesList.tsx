@@ -3,7 +3,6 @@ import "./RepositoriesList.scss";
 import * as React from 'react';
 import { ConfigurationContext, IRepository } from '../../../Services/ConfigurationService';
 import * as SDK from 'azure-devops-extension-sdk';
-import { Link } from 'azure-devops-ui/Link';
 import { RepositoriesSort } from '../RepositoriesSort';
 import { Button } from 'azure-devops-ui/Button';
 import { Spinner } from 'azure-devops-ui/Spinner';
@@ -49,7 +48,21 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
                 if (!a.metadata.lastCommitDate && !b.metadata.lastCommitDate) {
                     return 0;
                 }
-                 return b.metadata.lastCommitDate!.localeCompare(a.metadata.lastCommitDate!);
+                return b.metadata.lastCommitDate!.localeCompare(a.metadata.lastCommitDate!);
+            });
+        }
+        if (sort === RepositoriesSort.MyStars) {
+            return repositories.sort((a, b) => {
+                if (a.stars.isStarred && b.stars.isStarred) {
+                    return 0;
+                }
+                if (a.stars.isStarred) {
+                    return -1;
+                }
+                if (b.stars.isStarred) {
+                    return 1;
+                }
+                return 0;
             });
         }
         console.log("Sort mode unknown");

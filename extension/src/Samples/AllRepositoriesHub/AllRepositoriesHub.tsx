@@ -26,6 +26,7 @@ class AllRepositoriesHubContent extends React.Component<{}, IAllRepositoriesHubC
         { id: RepositoriesSort.Alphabetical.toString(), data: RepositoriesSort.Alphabetical, text: "Alphabetical"},
         { id: RepositoriesSort.Stars.toString(), data: RepositoriesSort.Stars, text: "Most stars"},
         { id: RepositoriesSort.LastCommitDate.toString(), data: RepositoriesSort.LastCommitDate, text: "Most recent commit"},
+        { id: RepositoriesSort.MyStars.toString(), data: RepositoriesSort.MyStars, text: "My stars"},
     ];
 
     constructor(props: {}) {
