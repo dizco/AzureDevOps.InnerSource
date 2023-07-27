@@ -5,7 +5,6 @@ import * as SDK from "azure-devops-extension-sdk";
 import { showRootComponent } from "../../Common";
 import { GitRepository } from 'azure-devops-extension-api/Git/Git';
 import { Location } from "azure-devops-ui/Utilities/Position";
-import { FormItem } from 'azure-devops-ui/FormItem';
 import { TextField } from 'azure-devops-ui/TextField';
 import { ConfigurationService, ConfigurationContext } from '../../Services/ConfigurationService';
 import { Observer } from 'azure-devops-ui/Observer';
@@ -17,8 +16,8 @@ import { Spinner } from 'azure-devops-ui/Spinner';
 interface IPanelContentState {
     project?: IProjectInfo;
     repository?: GitRepository;
-    starBadgeSrc?: string;
-    lastCommitBadgeSrc?: string;
+    starBadgeMarkdown?: string;
+    lastCommitBadgeMardown?: string;
     badgeJwt?: string;
     lastCopied: number;
     isLoading: boolean;
@@ -93,37 +92,40 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
         }
 
         this.setState((previousState, props) => ({
-            starBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`,
-            lastCommitBadgeSrc: `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`,
+            starBadgeMarkdown: `![Repository stars](${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt})`,
+            lastCommitBadgeMardown: `![Last commit date](${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt})`,
             isLoading: false,
         }));
     }
 
     public render(): JSX.Element {
-        const { repository, starBadgeSrc, lastCommitBadgeSrc } = this.state;
+        const { starBadgeMarkdown, lastCommitBadgeMardown } = this.state;
 
         return (
             <div className="flex-grow">
                 {this.state.isLoading &&
-                    <div className="flex-row">
+                    <div className="flex-row flex-center">
                         <Spinner label="loading" />
                     </div>
                 }
                 {!this.state.isLoading &&
                     <>
+                        <div className="flex-row flex-center">
+                            <Spinner label="loading" />
+                        </div>
                 <div>
-                    {starBadgeSrc && (<>
-                        <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
+                    {starBadgeMarkdown && (<>
+                        <img className="status-badge-image" alt="Stars badge" src={starBadgeMarkdown} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={starBadgeSrc} onChange={this.onChange} label="Stars badge image URL" />
+                                <TextField value={starBadgeMarkdown} onChange={this.onChange} label="Stars badge (markdown)" />
                             </div>
-                            <Observer value={starBadgeSrc}>
+                            <Observer value={starBadgeMarkdown}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
                                         className="status-badge-url-copy-button"
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
-                                        getContent={() => this.state.starBadgeSrc || ""}
+                                        getContent={() => starBadgeMarkdown || ""}
                                         onCopy={() => (this.setState({lastCopied: 1}))}
                                         tooltipProps={this.getTooltip(1)}
                                         subtle={true}
@@ -134,18 +136,18 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                     </>)}
                 </div>
                 <div className="separator-line-top">
-                    {lastCommitBadgeSrc && (<>
-                        <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeSrc} />
+                    {lastCommitBadgeMardown && (<>
+                        <img className="status-badge-image" alt="Last commit date badge" src={lastCommitBadgeMardown} />
                         <div className="status-badge-text-wrapper">
                             <div className="status-badge-url-textfield flex-column">
-                                <TextField value={lastCommitBadgeSrc} onChange={this.onChange} label="Last commit date badge image URL" />
+                                <TextField value={lastCommitBadgeMardown} onChange={this.onChange} label="Last commit date badge (markdown))" />
                             </div>
-                            <Observer value={lastCommitBadgeSrc}>
+                            <Observer value={lastCommitBadgeMardown}>
                                 {(observerProps: { value: string }) => (
                                     <ClipboardButton
                                         className="status-badge-url-copy-button"
                                         ariaLabel={observerProps.value + " " + this.copyToClipboardLabel}
-                                        getContent={() => this.state.lastCommitBadgeSrc || ""}
+                                        getContent={() => lastCommitBadgeMardown || ""}
                                         onCopy={() => (this.setState({lastCopied: 2}))}
                                         tooltipProps={this.getTooltip(2)}
                                         subtle={true}
