@@ -109,11 +109,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         <Spinner label="loading" />
                     </div>
                 }
-                {!this.state.isLoading &&
-                    <>
-                        <div className="flex-row justify-center">
-                            <Spinner label="loading" />
-                        </div>
+                {!this.state.isLoading && <>
                 <div>
                     {starBadgeSrc && starBadgeMarkdown && (<>
                         <img className="status-badge-image" alt="Stars badge" src={starBadgeSrc} />
@@ -162,8 +158,7 @@ class RepositoryStatusBadgePanel extends React.Component<{}, IPanelContentState>
                         </div>
                     </>)}
                 </div>
-                    </>
-                }
+                </>}
                 <div className="separator-line-top">
                     <p>Status badges are private and secured with a token that expires in 1 year.</p>
                 </div>
