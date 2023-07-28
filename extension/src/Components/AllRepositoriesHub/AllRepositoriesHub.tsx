@@ -55,9 +55,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
             /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">
 
-                <Header title="Repositories"
-                        commandBarItems={this.getCommandBarItems()}
-                        titleSize={TitleSize.Large} />
+                <Header title="Repositories" titleSize={TitleSize.Large} />
 
                 <div className="page-content">
                     <div className="flex-row flex-center">
@@ -82,33 +80,6 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
         console.log("Sort changed", item.data);
         this.setState({ sort: item.data ?? RepositoriesSort.Alphabetical });
         // TODO: Could set this as a preference for the user in devops data storage
-    }
-
-    private getCommandBarItems(): IHeaderCommandBarItem[] {
-        return [
-            {
-                id: "panel",
-                text: "Panel",
-                iconProps: {
-                    iconName: 'Add'
-                },
-                isPrimary: true,
-                tooltipProps: {
-                    text: "Open a panel with custom extension content"
-                }
-            },
-            {
-                id: "label-sort",
-                text: "Sort",
-            },
-            {
-                id: "customDialog",
-                text: "Custom Dialog",
-                tooltipProps: {
-                    text: "Open a dialog with custom extension content"
-                }
-            }
-        ];
     }
 }
 
