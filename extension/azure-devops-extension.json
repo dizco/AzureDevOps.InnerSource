@@ -48,13 +48,18 @@
   },
   "badges": [
     {
-      "href": "https://travis.ci/fabrikam-fiber-inc/myextension",
-      "uri": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml",
+      "href": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml",
+      "uri": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg",
       "description": "Github Actions build"
     },
     {
       "uri": "https://dev.azure.com/gabrielbourgault/Kiosoft/_apis/build/status%2Fdizco.AzureDevOps.InnerSource%20Extension?branchName=master",
       "description": "Azure Pipelines build"
+    },
+    {
+      "href": "https://github.com/dizco/AzureDevOps.InnerSource/blob/master/CONTRIBUTING.md",
+      "uri": "https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square",
+      "description": "Pull requests are welcome"
     }
   ],
   "scopes": [
