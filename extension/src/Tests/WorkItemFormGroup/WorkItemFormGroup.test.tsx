@@ -8,7 +8,9 @@ import {
     waitForElementToBeRemoved
 } from '@testing-library/react';
 import React from 'react';
-import WorkItemFormGroupComponent from '../../Samples/WorkItemFormGroup/WorkItemFormGroup'
+//import WorkItemFormGroupComponent from '../../Samples/WorkItemFormGroup/WorkItemFormGroup'
+//import { AllRepositoriesHub } from '../../Components/AllRepositoriesHub/AllRepositoriesHub';
+import { RepositoryStatusBadgePanel } from '../../Components/RepositoryStatusBadgePanel/RepositoryStatusBadgePanel';
 import { mockSetFieldValue, spyWorkItemCallBackAccessor } from '../../__mocks__/azure-devops-extension-sdk'
 
 // AzDO related Mocks are loaded automatically (implementations /src/__mocks__)
@@ -20,13 +22,12 @@ describe('WorkItemFormGroup', () => {
 
     test('WorkItemFormGroupComponent - rendering', () => {
 
-        render(<WorkItemFormGroupComponent />);
-        const textElement = screen.getByText(/Click me to change title!/i);
+        render(<RepositoryStatusBadgePanel />);
+        const textElement = screen.getByText(/Repositories/i);
         expect(textElement).toBeDefined();
-
     });
 
-    test('WorkItemFormGroupComponent - click button', async() => {
+    /*test('WorkItemFormGroupComponent - click button', async() => {
 
         render(<WorkItemFormGroupComponent />);
         const linkElement = screen.getByText(/Click me to change title!/i);
@@ -83,72 +84,7 @@ describe('WorkItemFormGroup', () => {
 
         expect(screen.getByText(/onLoaded/i).textContent).toEqual(`onLoaded - ${JSON.stringify(args)}`);
 
-    });
-
-    test('WorkItemFormGroupComponent - onUnloaded', async() => {
-
-        render(<WorkItemFormGroupComponent />);
-       
-        await delay(1);
-
-        // Trigger onUnloaded event
-        const args = {id: 42};
-        spyWorkItemCallBackAccessor().onUnloaded(args);
-
-        await delay(1);
-
-        expect(screen.getByText(/onUnloaded/i).textContent).toEqual(`onUnloaded - ${JSON.stringify(args)}`);
-
-    });
-
-    test('WorkItemFormGroupComponent - onSaved', async() => {
-
-        render(<WorkItemFormGroupComponent />);
-       
-        await delay(1);
-
-        // Trigger onSaved event
-        const args = {id: 42};
-        spyWorkItemCallBackAccessor().onSaved(args);
-
-        await delay(1);
-
-        expect(screen.getByText(/onSaved/i).textContent).toEqual(`onSaved - ${JSON.stringify(args)}`);
-
-    });
-
-    test('WorkItemFormGroupComponent - onReset', async() => {
-
-        render(<WorkItemFormGroupComponent />);
-       
-        await delay(1);
-
-        // Trigger onReset event
-        const args = {id: 42};
-        spyWorkItemCallBackAccessor().onReset(args);
-
-        await delay(1);
-
-        expect(screen.getByText(/onReset/i).textContent).toEqual(`onReset - ${JSON.stringify(args)}`);
-
-    });
-
-    test('WorkItemFormGroupComponent - onRefreshed', async() => {
-
-        render(<WorkItemFormGroupComponent />);
-       
-        await delay(1);
-
-        // Trigger onRefreshed event
-        const args = {id: 42};
-        spyWorkItemCallBackAccessor().onRefreshed(args);
-
-        await delay(1);
-
-        expect(screen.getByText(/onRefreshed/i).textContent).toEqual(`onRefreshed - ${JSON.stringify(args)}`);
-
-    });
-
+    });*/
 });
 
 

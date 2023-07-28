@@ -16,8 +16,8 @@
     "clean": "rimraf ./dist",
     "build": "npm run clean && webpack --mode production",
     "build:dev": "npm run clean && webpack --mode development",
-    "package-extension": "tfx extension create --manifest-globs azure-devops-extension.json src/Samples/**/*.json",
-    "publish-extension": "tfx extension publish --manifest-globs azure-devops-extension.json src/Samples/**/*.json",
+    "package-extension": "tfx extension create --manifest-globs azure-devops-extension.json src/Components/**/*.json",
+    "publish-extension": "tfx extension publish --manifest-globs azure-devops-extension.json src/Components/**/*.json",
     "test": "cross-env TEST_REPORT_FILENAME=test-results.xml jest --verbose"
   },
   "dependencies": {

@@ -1,0 +1,23 @@
+{
+  "contributions": [
+    {
+      "id": "view-all-repositories",
+      "type": "ms.vss-web.menu-item",
+      "targets": [ "ms.vss-code-web.command-bar-repository-picker-actions" ],
+      "properties": {
+        "text": "View all repositories",
+        "uri": "dist/RepositoryActions/RepositoryActions.html",
+        "iconName" : "FavoriteList",
+        "registeredObjectId": "view-all-repositories-action"
+      },
+      "constraints": [
+        {
+          "name": "Feature",
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
+          }
+        }
+      ]
+    }
+  ]
+}
