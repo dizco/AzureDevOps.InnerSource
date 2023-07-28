@@ -21,8 +21,8 @@ public class ProgrammingLanguage
 		return Name switch
         {
             //"C#" => "https://img.shields.io/badge/-512BD4?logo=.net",
-            "C#" => "https://img.shields.io/badge/c%23-239120.svg?logo=c-sharp&logoColor=white",
-            "TypeScript" => "https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white",
+            "C#" => "https://img.shields.io/badge/c%23-512BD4.svg?logo=c-sharp&logoColor=white", // -239120
+			"TypeScript" => "https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white",
             "JavaScript" => "https://img.shields.io/badge/javascript-323330.svg?logo=javascript&logoColor=%23F7DF1E",
             "C++" => "https://img.shields.io/badge/c++-%2300599C.svg?logo=c%2B%2B&logoColor=white",
             "Python" => "https://img.shields.io/badge/Python-14354C?logo=python&logoColor=white",
