@@ -67,5 +67,20 @@
     "vso.packaging",
     "vso.project",
     "vso.identity"
+  ],
+  "contributions": [
+    {
+      "id": "feature-innersource",
+      "type": "ms.vss-web.feature",
+      "description": "Activate the AzureDevOps.InnerSource extension",
+      "targets": [ "ms.vss-web.managed-features", "ms.vss-web.managed-features-onprem" ],
+      "properties": {
+        "name": "AzureDevOps.InnerSource extension",
+        "userConfigurable": false,
+        "hostConfigurable": true,
+        "hostScopes": [ "project", null ],
+        "defaultState": false
+      }
+    }
   ]
 }

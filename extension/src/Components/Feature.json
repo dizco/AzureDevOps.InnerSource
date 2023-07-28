@@ -1,12 +1,12 @@
 {
   "contributions": [
     {
-      "id": "feature-innersource",
+      "id": "feature-innersource2",
       "type": "ms.vss-web.feature",
-      "description": "Activate the AzureDevOps.InnerSource extension",
+      "description": "Activate the AzureDevOps.InnerSource extension2",
       "targets": [ "ms.vss-web.managed-features", "ms.vss-web.managed-features-onprem" ],
       "properties": {
-        "name": "AzureDevOps.InnerSource extension",
+        "name": "AzureDevOps.InnerSource extension2",
         "userConfigurable": false,
         "hostConfigurable": true,
         "hostScopes": [ "project", null ],
