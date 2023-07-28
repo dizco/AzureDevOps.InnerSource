@@ -59,7 +59,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
 
                 <div className="page-content">
                     <div className="flex-row flex-center">
-                        <label htmlFor="message-level-picker">Sort by: </label>
+                        <label htmlFor="message-level-picker" style={{marginRight: "5px"}}>Sort by:</label>
                         <Dropdown<RepositoriesSort>
                             className="repository-sort margin-left-8"
                             placeholder="Sort by"
