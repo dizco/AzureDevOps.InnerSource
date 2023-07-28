@@ -30,6 +30,7 @@ export interface IRepository {
 export class ConfigurationService {
     private static readonly AuthenticationCookieName = "ado.innersource.authentication";
     private static readonly ConfigurationKey = "configuration";
+    private static readonly UserPreferrencePrefix = "userconfiguration";
     // TODO: Could keep a local, cached copy of the configuration for a certain amount of time
 
     private isAuthenticated = false;
@@ -175,6 +176,33 @@ export class ConfigurationService {
         }
 
         return data?.serverUrl;
+    }
+
+    public async setUserPreferrence<T>(key: string, value: T): Promise<void> {
+        await SDK.ready();
+        const accessToken = await SDK.getAccessToken();
+        const extDataService = await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
+        const dataManager = await extDataService.getExtensionDataManager(SDK.getExtensionContext().id, accessToken);
+
+        await dataManager.setValue<T>(ConfigurationService.UserPreferrencePrefix + key, value, { scopeType: "User" })
+    }
+
+    public async getUserPreferrence<T>(key: string): Promise<T|undefined> {
+        await SDK.ready();
+        const accessToken = await SDK.getAccessToken();
+        const extDataService = await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
+        const dataManager = await extDataService.getExtensionDataManager(SDK.getExtensionContext().id, accessToken);
+
+        let data;
+        try {
+            data = await dataManager.getValue<T|undefined>(ConfigurationService.UserPreferrencePrefix + key, { scopeType: "User" });
+        }
+        catch (e) {
+            // Swallow errors
+            console.log("Could not find user preferrence", e);
+        }
+
+        return data;
     }
 
     private getJwtBearer(): string | undefined {

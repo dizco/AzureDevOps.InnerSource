@@ -5,7 +5,6 @@ import { Header, TitleSize } from "azure-devops-ui/Header";
 import { Page } from "azure-devops-ui/Page";
 import { showRootComponent } from "../../Common";
 import { Dropdown, DropdownExpandableButton } from 'azure-devops-ui/Dropdown';
-import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
 import { ConfigurationContext, ConfigurationService } from '../../Services/ConfigurationService';
 import { Settings } from './Components/Settings';
@@ -48,6 +47,11 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
 
     public async componentDidMount() {
         await SDK.ready();
+
+        const sort = await this.context.getUserPreferrence(AllRepositoriesHub.name + "sort");
+        if (sort) {
+            this.setState({ sort: sort });
+        }
     }
 
     public render(): JSX.Element {
@@ -76,10 +80,11 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
         );
     }
 
-    private onSortChanged = (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): void => {
-        console.log("Sort changed", item.data);
-        this.setState({ sort: item.data ?? RepositoriesSort.Alphabetical });
-        // TODO: Could set this as a preference for the user in devops data storage
+    private onSortChanged = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): Promise<void> => {
+        const sort = item.data ?? RepositoriesSort.Alphabetical;
+        this.setState({ sort: sort });
+        await this.context.setUserPreferrence(AllRepositoriesHub.name + "sort", sort);
+        console.log("Sort changed", sort);
     }
 }
 
