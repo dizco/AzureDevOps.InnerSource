@@ -4,13 +4,9 @@
     "publisher": "gabrielbourgault",
     "version": "1.0.51",
     "name": "AzureDevOps InnerSource",
-    "description": "Azure DevOps Extension",
+    "description": "InnerSource tools for Azure DevOps",
     "categories": [
-        "Azure Repos",
-        "Azure Boards",
-        "Azure Pipelines",
-        "Azure Test Plans",
-        "Azure Artifacts"
+        "Azure Repos"
     ],
     "targets": [
         {
@@ -34,5 +30,36 @@
             "path": "dist",
             "addressable": true
         }
+    ],
+    "links": {
+        "getstarted": {
+            "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+        },
+        "repository": {
+            "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+        },
+        "issues": {
+            "uri": "https://github.com/dizco/AzureDevOps.InnerSource/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+    },
+    "badges": [
+        {
+            "href": "https://travis.ci/fabrikam-fiber-inc/myextension",
+            "uri": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml",
+            "description": "Github Actions build"
+        },
+        {
+            "uri": "https://dev.azure.com/gabrielbourgault/Kiosoft/_apis/build/status%2Fdizco.AzureDevOps.InnerSource%20Extension?branchName=master",
+            "description": "Azure Pipelines build"
+        }
+    ],
+    "scopes": [
+        "vso.code",
+        "vso.packaging",
+        "vso.project"
     ]
 }

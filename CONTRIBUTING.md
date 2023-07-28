@@ -16,4 +16,7 @@ Icon list: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-
 https://uifabricicons.azurewebsites.net/
 
 
+Extension manifest: https://learn.microsoft.com/en-us/azure/devops/extend/develop/manifest?view=azure-devops#scopes
+
+
 There is an issue with unit tests, that has the same symptoms as this: https://github.com/nrwl/nx/issues/812
