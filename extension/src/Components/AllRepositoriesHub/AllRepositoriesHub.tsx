@@ -81,9 +81,10 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     }
 
     private onSortChanged = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): Promise<void> => {
+        console.log("Changing sort");
         const sort = item.data ?? RepositoriesSort.Alphabetical;
-        this.setState({ sort: sort });
         await this.context.setUserPreferrence<RepositoriesSort>(AllRepositoriesHub.name + "sort", sort);
+        this.setState({ sort: sort });
         console.log("Sort changed", sort);
     }
 }

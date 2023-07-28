@@ -184,7 +184,10 @@ export class ConfigurationService {
         const extDataService = await SDK.getService<IExtensionDataService>(CommonServiceIds.ExtensionDataService);
         const dataManager = await extDataService.getExtensionDataManager(SDK.getExtensionContext().id, accessToken);
 
-        await dataManager.setValue<T>(ConfigurationService.UserPreferrencePrefix + key, value, { scopeType: "User" })
+        console.log("Set user preferrence", value, value.toString());
+        await dataManager.setValue<T>(ConfigurationService.UserPreferrencePrefix + key, value, { scopeType: "User" });
+        const value2 = await dataManager.getValue<T|undefined>(ConfigurationService.UserPreferrencePrefix + key, { scopeType: "User" });
+        console.log("Roundtrip:", value2);
     }
 
     public async getUserPreferrence<T>(key: string): Promise<T|undefined> {
