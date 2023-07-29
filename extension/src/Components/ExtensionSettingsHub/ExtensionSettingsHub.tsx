@@ -30,8 +30,9 @@ export class ExtensionSettingsHub extends React.Component<{}, IExtensionSettings
 
         const extensionId = SDK.getExtensionContext().id;
 
+        // TODO: Try to query the Rest API to know the status of the feature flag
         // https://learn.microsoft.com/en-us/javascript/api/azure-devops-extension-api/featuremanagementrestclient
-        const featureClient = await getClient(FeatureManagementRestClient);
+        /*const featureClient = await getClient(FeatureManagementRestClient);
         const featureState1 = await featureClient.getFeatureState(`${extensionId}.feature-innersource`, "me");
         console.log("Feature state 1", featureState1);
 
@@ -39,7 +40,7 @@ export class ExtensionSettingsHub extends React.Component<{}, IExtensionSettings
         console.log("Feature state 2", featureState2);
 
         const featureState3 = featureClient.getFeature(`${extensionId}.feature-innersource`);
-        console.log("Feature state 3", featureState3);
+        console.log("Feature state 3", featureState3);*/
     }
 
     public render(): JSX.Element {
