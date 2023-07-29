@@ -62,7 +62,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
             <Page className="sample-hub flex-grow">
 
                 <Header title="Repositories"
-                        commandBarItems={this.getCommandBarItems}
+                        commandBarItems={this.getCommandBarItems()}
                         titleSize={TitleSize.Large} />
 
                 <div className="page-content">
