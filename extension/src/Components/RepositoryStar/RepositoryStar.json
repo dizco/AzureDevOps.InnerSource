@@ -18,12 +18,14 @@
       "constraints": [
         {
           "name": "Feature",
+          "group": 1,
           "properties": {
             "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
           }
         },
         {
           "name": "Feature",
+          "group": 2,
           "properties": {
             "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
           }
