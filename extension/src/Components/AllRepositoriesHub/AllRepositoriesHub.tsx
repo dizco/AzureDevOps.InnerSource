@@ -15,7 +15,6 @@ import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension
 
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
-    sortSelection: DropdownSelection;
 }
 
 export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubContent> {
@@ -32,12 +31,8 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     constructor(props: {}) {
         super(props);
 
-        const selection = new DropdownSelection();
-        selection.select(0, 1);
-
         this.state = {
             sort: RepositoriesSort.Alphabetical,
-            sortSelection: selection,
         };
 
     }
@@ -51,7 +46,6 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
 
         const sort = await this.context.getUserPreferrence<RepositoriesSort>("hubsort");
         if (sort) {
-            // TODO: Set sortSelection here too
             this.setState({ sort: sort });
         }
     }
@@ -73,7 +67,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                             placeholder="Sort by"
                             items={this.sortItems}
                             onSelect={this.onSortChanged}
-                            selection={this.state.sortSelection}
+                            selection={this.sortSelection}
                             renderExpandable={props => <DropdownExpandableButton {...props} className="repository-sort" />}
                         />
                     </div>
@@ -81,6 +75,16 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                 </div>
             </Page>
         );
+    }
+
+    private get sortSelection() {
+        const selection = new DropdownSelection();
+        let index = this.sortItems.findIndex(x => x.data === this.state.sort);
+        if (index < 0) { // If item is not found
+            index = 0;
+        }
+        selection.select(index);
+        return selection;
     }
 
     private getCommandBarItems(): IHeaderCommandBarItem[] {
@@ -109,7 +113,6 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     }
 
     private onSortChanged = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): Promise<void> => {
-        console.log("Changing sort");
         const sort = item.data ?? RepositoriesSort.Alphabetical;
         await this.context.setUserPreferrence<RepositoriesSort>("hubsort", sort);
         this.setState({ sort: sort });
