@@ -151,7 +151,9 @@ stages:
               vsixFile: '$(Pipeline.Workspace)/vsix/azuredevops-innersource.vsix'
               publisherId: 'gabrielbourgault'
               extensionId: 'azuredevops-innersource'
-              updateTasksVersion: false
+              extensionVersion: '$(Build.BuildNumber)'
+              updateTasksVersion: true
+              updateTasksVersionType: patch
               #extensionVisibility: 'public' # TODO: Set public
               extensionVisibility: 'privatepreview'
               shareWith: 'gabrielbourgault'
