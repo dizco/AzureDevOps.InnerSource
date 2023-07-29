@@ -1,7 +1,12 @@
 name: '1.1$(rev:.r)'
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - 'v*.*.*'
 
 pr:
 - master
