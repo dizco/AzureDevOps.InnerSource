@@ -8,25 +8,24 @@ trigger:
 
 pr: none
 
-schedules:
-- cron: '0 0 * * *'
-  displayName: Daily midnight build
-  branches:
-    include:
-    - master
+#schedules:
+#- cron: '0 0 * * *'
+#  displayName: Daily midnight build
+#  branches:
+#    include:
+#    - master
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
+- group: innersource
 - name: ImageTag
   value: latest
 
 jobs:
 - job: Deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  variables:
-  - group: innersource
   steps:
   - task: AzureCLI@2
     inputs:
