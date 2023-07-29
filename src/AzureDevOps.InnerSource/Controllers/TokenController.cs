@@ -62,7 +62,6 @@ public class TokenController : Controller
 			new("project", projectName),
 			new("repositoryId", repositoryId),
 			// TODO: Claim for the organization?
-			new("scope", "badges.read")
 		}, notBefore, expires);
 		var expiresInSeconds = Math.Floor((expires - notBefore).TotalSeconds);
 
