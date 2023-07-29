@@ -161,7 +161,7 @@ export class RepositoryStatusBadgePanel extends React.Component<{}, IPanelConten
                 </div>
                 </>}
                 <div className="separator-line-top">
-                    <p>Status badges are private and secured with a token that expires in {this.state.badgeJwt?.expiresInSeconds/(60*60*24) ?? 0} days.</p>
+                    <p>Status badges are private and secured with a token that expires in {(this.state.badgeJwt?.expiresInSeconds ?? 0) /(60*60*24)} days.</p>
                 </div>
             </div>
         );
