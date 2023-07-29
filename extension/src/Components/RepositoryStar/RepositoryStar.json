@@ -19,6 +19,12 @@
         {
           "name": "Feature",
           "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
+          }
+        },
+        {
+          "name": "Feature",
+          "properties": {
             "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
           }
         }

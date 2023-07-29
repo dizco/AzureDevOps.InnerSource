@@ -6,6 +6,8 @@ import { Page } from "azure-devops-ui/Page";
 import { showRootComponent } from "../../Common";
 import { ConfigurationContext, ConfigurationService } from '../../Services/ConfigurationService';
 import { ServerSettings } from './Components/ServerSettings';
+import { getClient } from 'azure-devops-extension-api';
+import { FeatureManagementRestClient } from 'azure-devops-extension-api/FeatureManagement';
 
 interface IExtensionSettingsHubContent {}
 
@@ -25,6 +27,19 @@ export class ExtensionSettingsHub extends React.Component<{}, IExtensionSettings
 
     public async componentDidMount() {
         await SDK.ready();
+
+        const extensionId = SDK.getExtensionContext().id;
+
+        // https://learn.microsoft.com/en-us/javascript/api/azure-devops-extension-api/featuremanagementrestclient
+        const featureClient = await getClient(FeatureManagementRestClient);
+        const featureState1 = await featureClient.getFeatureState(`${extensionId}.feature-innersource`, "me");
+        console.log("Feature state 1", featureState1);
+
+        const featureState2 = await featureClient.getFeatureState(`${extensionId}.feature-innersource`, "host");
+        console.log("Feature state 2", featureState2);
+
+        const featureState3 = featureClient.getFeature(`${extensionId}.feature-innersource`);
+        console.log("Feature state 3", featureState3);
     }
 
     public render(): JSX.Element {
