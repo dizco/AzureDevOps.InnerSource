@@ -30,9 +30,10 @@ jobs:
   steps:
   - script: env | sort
     displayName: Print env
+  - script: echo $(AzureSubscription)
   - task: AzureCLI@2
     inputs:
-      azureSubscription: $(AzureSubscription)
+      azureSubscription: kiosoft-azure
       scriptType: 'pscore'
       scriptLocation: 'inlineScript'
       inlineScript: |
@@ -55,7 +56,7 @@ jobs:
   
   - task: AzureContainerApps@1
     inputs:
-      azureSubscription: $(AzureSubscription)
+      azureSubscription: kiosoft-azure
       containerAppName: $(ContainerAppName)
       resourceGroup: $(ResourceGroup)
       imageToDeploy: 'ghcr.io/dizco/azuredevops.innersource:$(ImageTag)'
