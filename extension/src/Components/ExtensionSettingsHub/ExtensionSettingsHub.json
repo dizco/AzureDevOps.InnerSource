@@ -1,0 +1,21 @@
+{
+  "contributions": [
+    {
+      "id": "extension-settings-hub",
+      "type": "ms.vss-web.hub",
+      "description": "Custom hub in the Extensions settings of an organization",
+      "targets": [
+        "ms.vss-web.collection-admin-hub-group"
+      ],
+      "includes": [
+        "ms.vss-features.extension-data-service"
+      ],
+      "properties": {
+        "name": "AzureDevOps.InnerSource",
+        "order": 100,
+        "iconName": "FavoriteList",
+        "uri": "dist/ExtensionSettingsHub/ExtensionSettingsHub.html"
+      }
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import { TextField } from 'azure-devops-ui/TextField';
 import { Button } from 'azure-devops-ui/Button';
 import { ConfigurationContext } from '../../../Services/ConfigurationService';
 
-export interface ISettingsState {
+export interface IServerSettingsState {
     serverUrl?:  string;
     serverUrlInput?: string;
 }
 
-export class Settings extends React.Component<{}, ISettingsState> {
+export class ServerSettings extends React.Component<{}, IServerSettingsState> {
     static contextType = ConfigurationContext;
     context!: React.ContextType<typeof ConfigurationContext>;
 
@@ -30,9 +30,7 @@ export class Settings extends React.Component<{}, ISettingsState> {
     public render(): JSX.Element {
         return (
             <div>
-                <h3>Settings</h3>
-
-                <h4>Server URL</h4>
+                <h3>Server URL</h3>
                 <div className="flex-row rhythm-horizontal-16">
                     <TextField
                         value={this.state.serverUrlInput}

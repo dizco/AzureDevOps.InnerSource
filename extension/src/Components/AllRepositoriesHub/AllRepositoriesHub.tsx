@@ -48,8 +48,9 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     public async componentDidMount() {
         await SDK.ready();
 
-        const sort = await this.context.getUserPreferrence<RepositoriesSort>(AllRepositoriesHub.name + "sort");
+        const sort = await this.context.getUserPreferrence<RepositoriesSort>("hubsort");
         if (sort) {
+            // TODO: Set sortSelection here too
             this.setState({ sort: sort });
         }
     }
@@ -74,7 +75,6 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                         />
                     </div>
                     <RepositoriesList sort={this.state.sort} />
-                    <Settings/>
                 </div>
             </Page>
         );
@@ -83,7 +83,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     private onSortChanged = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): Promise<void> => {
         console.log("Changing sort");
         const sort = item.data ?? RepositoriesSort.Alphabetical;
-        await this.context.setUserPreferrence<RepositoriesSort>(AllRepositoriesHub.name + "sort", sort);
+        await this.context.setUserPreferrence<RepositoriesSort>("hubsort", sort);
         this.setState({ sort: sort });
         console.log("Sort changed", sort);
     }
