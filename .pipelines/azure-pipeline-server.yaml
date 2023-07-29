@@ -25,7 +25,7 @@ variables:
 
 jobs:
 - job: Deploy
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
   steps:
   - task: AzureCLI@2
     inputs:
