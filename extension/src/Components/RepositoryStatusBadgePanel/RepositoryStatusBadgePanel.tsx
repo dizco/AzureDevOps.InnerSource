@@ -20,7 +20,7 @@ interface IPanelContentState {
     starBadgeMarkdown?: string;
     lastCommitBadgeSrc?: string;
     lastCommitBadgeMarkdown?: string;
-    badgeJwt?: string;
+    badgeJwt?: {accessToken: string, expiresInSeconds: number};
     lastCopied: number;
     isLoading: boolean;
 }
@@ -82,13 +82,13 @@ export class RepositoryStatusBadgePanel extends React.Component<{}, IPanelConten
         if (!!this.state.repository?.id) {
             const badgeJwt = await this.context.getBadgeJwtToken(this.state.repository?.id!);
             this.setState({
-                badgeJwt
+                badgeJwt,
             });
         }
 
         this.setState((previousState, props) => {
-            const starSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt}`;
-            const lastCommitSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt}`;
+            const starSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/stars?access_token=${previousState.badgeJwt?.accessToken ?? ""}`;
+            const lastCommitSrc = `${serverUrl}/${previousState.project?.name}/repositories/${previousState.repository?.id}/badges/last-commit?access_token=${previousState.badgeJwt?.accessToken ?? ""}`;
             return {
                 ...previousState,
                 starBadgeSrc: starSrc,
@@ -161,7 +161,7 @@ export class RepositoryStatusBadgePanel extends React.Component<{}, IPanelConten
                 </div>
                 </>}
                 <div className="separator-line-top">
-                    <p>Status badges are private and secured with a token that expires in 1 year.</p>
+                    <p>Status badges are private and secured with a token that expires in {this.state.badgeJwt?.expiresInSeconds/(60*60*24) ?? 0} days.</p>
                 </div>
             </div>
         );

@@ -10,6 +10,7 @@ export interface IRepositoryBadge {
     name: string;
     url: string;
 }
+
 export interface IRepository {
     project: string;
     id: string;
@@ -31,7 +32,6 @@ export class ConfigurationService {
     private static readonly AuthenticationCookieName = "ado.innersource.authentication";
     private static readonly ConfigurationKey = "configuration";
     private static readonly UserPreferrencePrefix = "userconfiguration";
-    // TODO: Could keep a local, cached copy of the configuration for a certain amount of time
 
     private isAuthenticated = false;
 
@@ -52,10 +52,7 @@ export class ConfigurationService {
         }
 
         const accessToken = await SDK.getAccessToken();
-        //console.log("SDK access token", accessToken);
-
         const appToken = await SDK.getAppToken();
-        //console.log("SDK app token", appToken);
 
         const serverUrl = await this.getServerUrl();
         const response = await fetch(`${serverUrl}/token`, {
@@ -101,12 +98,12 @@ export class ConfigurationService {
         }
     }
 
-    public async getBadgeJwtToken(repositoryId: string): Promise<string> {
+    public async getBadgeJwtToken(repositoryId: string): Promise<{ accessToken: string, expiresInSeconds: number }|undefined> {
         const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
         const project = await projectService.getProject();
         if (!project) {
             console.error('Could not identify current project')
-            return "";
+            return undefined;
         }
 
         const serverUrl = await this.getServerUrl();
@@ -117,8 +114,18 @@ export class ConfigurationService {
                 Authorization: 'Bearer ' + this.getJwtBearer(),
             }
         });
-        console.log('Jwt response', response.status);
-        return (await response.json()).accessToken;
+
+        if (response.ok) {
+            const json: {accessToken: string, expiresInSeconds: number} = await response.json();
+            return {
+                accessToken: json.accessToken,
+                expiresInSeconds: json.expiresInSeconds,
+            }
+        }
+        else {
+            console.log("Could not get badge jwt token", response.status);
+            return undefined;
+        }
     }
 
     public async starRepository(projectName: string, repositoryId: string): Promise<void> {
