@@ -36,13 +36,13 @@ jobs:
       inlineScript: |
         az containerapp secret set -n $(ContainerAppName) -g $(ResourceGroup) --secrets `
           devopspat=$(DevOpsPersonalAccessToken) `
-          idpclientsecret=$(IdpClientSecret) `
+          authkey=$(AuthenticationKey) `
+          extcert=$(AzureDevOpsExtensionCertificate) `
           tableconnstring="$(TableStorageConnectionString)"
 
         az containerapp update -n $(ContainerAppName) -g $(ResourceGroup) --set-env-vars `
-          IdentityProvider__Authority=$(IdpAuthority) `
-          IdentityProvider__ClientId=$(IdpClientId) `
-          IdentityProvider__ClientSecret=secretref:idpclientsecret `
+          Authentication__Key=secretref:authkey `
+          Authentication__AzureDevOpsKey=secretref:extcert `
           DevOps__PersonalAccessToken=secretref:devopspat `
           DevOps__Organization=$(DevOpsOrganization) `
           Storage__Mode=TableStorage `
