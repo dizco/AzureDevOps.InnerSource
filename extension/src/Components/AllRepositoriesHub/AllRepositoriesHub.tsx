@@ -10,6 +10,8 @@ import { ConfigurationContext, ConfigurationService } from '../../Services/Confi
 import { RepositoriesList } from './Components/RepositoriesList';
 import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 import { RepositoriesSort } from './RepositoriesSort';
+import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
+import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension-api';
 
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
@@ -59,7 +61,9 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
             /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">
 
-                <Header title="Repositories" titleSize={TitleSize.Large} />
+                <Header title="Repositories"
+                        commandBarItems={this.getCommandBarItems}
+                        titleSize={TitleSize.Large} />
 
                 <div className="page-content">
                     <div className="flex-row flex-center">
@@ -77,6 +81,31 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                 </div>
             </Page>
         );
+    }
+
+    private getCommandBarItems(): IHeaderCommandBarItem[] {
+        return [
+            {
+                id: "settings",
+                text: "Settings",
+                onActivate: () => {
+                    this.navigateToSettings();
+                },
+                iconProps: {
+                    iconName: 'Settings'
+                },
+                tooltipProps: {
+                    text: "Open the extension settings"
+                }
+            },
+        ];
+    }
+
+    private async navigateToSettings(): Promise<void> {
+        const navigationService = await SDK.getService<IHostNavigationService>(CommonServiceIds.HostNavigationService);
+        const host = SDK.getHost().name;
+        const extensionId = SDK.getExtensionContext().id;
+        navigationService.navigate(`https://dev.azure.com/${host}/_settings/${extensionId}.extension-settings-hub`);
     }
 
     private onSortChanged = async (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<RepositoriesSort>): Promise<void> => {
