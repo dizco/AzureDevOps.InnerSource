@@ -12,9 +12,11 @@ import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 import { RepositoriesSort } from './RepositoriesSort';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension-api';
+import { RefObject } from 'react';
 
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
+    sortSelection: DropdownSelection;
 }
 
 export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubContent> {
@@ -31,10 +33,13 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
     constructor(props: {}) {
         super(props);
 
+        const sortSelection = new DropdownSelection();
+        sortSelection.select(0);
+
         this.state = {
             sort: RepositoriesSort.Alphabetical,
+            sortSelection,
         };
-
     }
 
     public async componentWillMount() {
@@ -46,7 +51,14 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
 
         const sort = await this.context.getUserPreferrence<RepositoriesSort>("hubsort");
         if (sort) {
-            this.setState({ sort: sort });
+            this.setState((previousState: IAllRepositoriesHubContent, previousProps) => {
+                let index = this.sortItems.findIndex(x => x.data === sort);
+                if (index < 0) { // If item is not found
+                    index = 0;
+                }
+                previousState.sortSelection.select(index);
+                return { sort: sort };
+            });
         }
     }
 
@@ -67,7 +79,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                             placeholder="Sort by"
                             items={this.sortItems}
                             onSelect={this.onSortChanged}
-                            selection={this.sortSelection}
+                            selection={this.state.sortSelection}
                             renderExpandable={props => <DropdownExpandableButton {...props} className="repository-sort" />}
                         />
                     </div>
@@ -75,16 +87,6 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                 </div>
             </Page>
         );
-    }
-
-    private get sortSelection() {
-        const selection = new DropdownSelection();
-        let index = this.sortItems.findIndex(x => x.data === this.state.sort);
-        if (index < 0) { // If item is not found
-            index = 0;
-        }
-        selection.select(index);
-        return selection;
     }
 
     private getCommandBarItems(): IHeaderCommandBarItem[] {
