@@ -7,7 +7,6 @@ import { showRootComponent } from "../../Common";
 import { Dropdown, DropdownExpandableButton } from 'azure-devops-ui/Dropdown';
 import { IListBoxItem } from 'azure-devops-ui/ListBox';
 import { ConfigurationContext, ConfigurationService } from '../../Services/ConfigurationService';
-import { Settings } from './Components/Settings';
 import { RepositoriesList } from './Components/RepositoriesList';
 import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 import { RepositoriesSort } from './RepositoriesSort';
