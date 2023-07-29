@@ -1,0 +1,86 @@
+{
+  "manifestVersion": 1,
+  "id": "azuredevops-innersource",
+  "publisher": "gabrielbourgault",
+  "version": "1.0.51",
+  "name": "AzureDevOps InnerSource",
+  "description": "InnerSource tools for Azure DevOps",
+  "categories": [
+    "Azure Repos"
+  ],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "icons": {
+    "default": "logo.png"
+  },
+  "content": {
+    "details": {
+      "path": "overview.md"
+    }
+  },
+  "files": [
+    {
+      "path": "static",
+      "addressable": true
+    },
+    {
+      "path": "dist",
+      "addressable": true
+    }
+  ],
+  "links": {
+    "getstarted": {
+      "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+    },
+    "repository": {
+      "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+    },
+    "issues": {
+      "uri": "https://github.com/dizco/AzureDevOps.InnerSource/issues"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/dizco/AzureDevOps.InnerSource"
+  },
+  "badges": [
+    {
+      "href": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml",
+      "uri": "https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg",
+      "description": "Github Actions build"
+    },
+    {
+      "uri": "https://dev.azure.com/gabrielbourgault/Kiosoft/_apis/build/status%2Fdizco.AzureDevOps.InnerSource%20Extension?branchName=master",
+      "description": "Azure Pipelines build"
+    },
+    {
+      "href": "https://github.com/dizco/AzureDevOps.InnerSource/blob/master/CONTRIBUTING.md",
+      "uri": "https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square",
+      "description": "Pull requests are welcome"
+    }
+  ],
+  "scopes": [
+    "vso.code",
+    "vso.packaging",
+    "vso.project",
+    "vso.identity"
+  ],
+  "contributions": [
+    {
+      "id": "feature-innersource",
+      "type": "ms.vss-web.feature",
+      "description": "Activate the AzureDevOps.InnerSource extension",
+      "targets": [ "ms.vss-web.managed-features", "ms.vss-web.managed-features-onprem" ],
+      "properties": {
+        "name": "AzureDevOps.InnerSource extension",
+        "userConfigurable": false,
+        "hostConfigurable": true,
+        "hostScopes": [ "project", null ],
+        "defaultState": false
+      }
+    }
+  ]
+}

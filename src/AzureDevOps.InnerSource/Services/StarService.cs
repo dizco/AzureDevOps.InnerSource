@@ -9,9 +9,13 @@ namespace AzureDevOps.InnerSource.Services;
 
 public interface IStarService
 {
-	Task StarAsync(Principal principal, Repository repository);
+	Task StarAsync(Principal principal, Repository repository, CancellationToken ct);
 
-	Task<int> GetStarCountAsync(Repository repository);
+	Task<int> GetStarCountAsync(Repository repository, CancellationToken ct);
+
+	Task<bool> GetIsStarredAsync(Principal principal, Repository repository, CancellationToken ct);
+	
+	Task UnstarAsync(Principal principal, Repository repository, CancellationToken ct);
 }
 
 public class StarService : IStarService
@@ -31,7 +35,7 @@ public class StarService : IStarService
 
 	private DevOpsOptions Options => _options.CurrentValue;
 
-	public async Task StarAsync(Principal principal, Repository repository)
+	public async Task StarAsync(Principal principal, Repository repository, CancellationToken ct)
 	{
 		if (!IsAllowedRepository(repository))
 		{
@@ -39,10 +43,21 @@ public class StarService : IStarService
 			throw new RepositoryNotAllowedException();
 		}
 
-		await _repository.SetStarAsync(repository, principal);
+		await _repository.SetStarAsync(repository, principal, ct);
 	}
 
-	public async Task<int> GetStarCountAsync(Repository repository)
+	public async Task UnstarAsync(Principal principal, Repository repository, CancellationToken ct)
+	{
+		if (!IsAllowedRepository(repository))
+		{
+			_logger.LogInformation("Repository {repository} does not match any allowed repository", repository);
+			throw new RepositoryNotAllowedException();
+		}
+
+		await _repository.RemoveStarAsync(repository, principal, ct);
+	}
+
+	public async Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
 		if (!IsAllowedRepository(repository))
 		{
@@ -50,7 +65,18 @@ public class StarService : IStarService
 			throw new RepositoryNotAllowedException();
 		}
 
-		return await _repository.GetStarCountAsync(repository);
+		return await _repository.GetStarCountAsync(repository, ct);
+	}
+
+	public async Task<bool> GetIsStarredAsync(Principal principal, Repository repository, CancellationToken ct)
+	{
+		if (!IsAllowedRepository(repository))
+		{
+			_logger.LogInformation("Repository {repository} does not match any allowed repository.", repository);
+			throw new RepositoryNotAllowedException();
+		}
+
+		return await _repository.GetIsStarredAsync(repository, principal, ct);
 	}
 
 	private bool IsAllowedRepository(Repository repository)
@@ -58,6 +84,6 @@ public class StarService : IStarService
 		return string.Equals(Options.Organization, repository.Organization, StringComparison.OrdinalIgnoreCase)
 		       && Options.AllowedRepositories.Any(x =>
 			       new Regex(x.RegexProject).IsMatch(repository.Project) &&
-			       new Regex(x.RegexRepository).IsMatch(repository.Name));
+			       new Regex(x.RegexRepository).IsMatch(repository.Id));
 	}
 }

@@ -1,28 +1,41 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AzureDevOps.InnerSource.Controllers;
 
-[Route("badges")]
 public class BadgesController : Controller
 {
     private readonly BadgeService _badgeService;
     private readonly RepositoryHealthService _repositoryHealthService;
 
-    public BadgesController(BadgeService badgeService, RepositoryHealthService repositoryHealthService)
+    private readonly ILogger<BadgesController> _logger;
+
+    public BadgesController(BadgeService badgeService, RepositoryHealthService repositoryHealthService, ILogger<BadgesController> logger)
     {
         _badgeService = badgeService;
         _repositoryHealthService = repositoryHealthService;
+        _logger = logger;
     }
-
-    // Could possibly expose [HttpGet("last-commit/{project}/{repositoryName}")], but should think about security impacts 
-    [HttpGet("last-commit/{repositoryId}")]
-    public async Task<IActionResult> GetLastCommit(string repositoryId, CancellationToken ct)
+    
+    [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
+    [HttpGet("{projectName}/repositories/{repositoryId}/badges/last-commit")]
+    [EnableCors("AzureDevOpsExtension")]
+	public async Task<IActionResult> GetLastCommit(string projectName, string repositoryId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(repositoryId))
             throw new ValidationException("Required parameters were not provided");
+
+        if (!User.HasClaim(x => string.Equals(x.Type, "sub", StringComparison.OrdinalIgnoreCase))
+            && !User.HasClaim("repositoryId", repositoryId))
+        {
+            _logger.LogError("Badge access token is not permitted for the requested repository {repositoryId}", repositoryId);
+	        return Forbid();
+        }
 
         var lastCommitDate = await _repositoryHealthService.GetLastCommitDateAsync(Guid.Parse(repositoryId), ct);
         var humanReadableDate = "never";

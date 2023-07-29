@@ -1,0 +1,27 @@
+{
+  "contributions": [
+    {
+      "id": "repository-status-badge-panel-content",
+      "type": "ms.vss-web.external-content",
+      "properties": {
+        "uri": "dist/RepositoryStatusBadgePanel/RepositoryStatusBadgePanel.html"
+      },
+      "constraints": [
+        {
+          "name": "Feature",
+          "group": 1,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
+          }
+        },
+        {
+          "name": "Feature",
+          "group": 2,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
+          }
+        }
+      ]
+    }
+  ]
+}

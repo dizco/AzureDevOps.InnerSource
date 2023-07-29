@@ -10,7 +10,7 @@ namespace AzureDevOps.InnerSource.Storage;
 public class StarEntity : ITableEntity
 {
 	public required string Repository { get; set; }
-	public required string Oid { get; set; }
+	public required string UserId { get; set; }
 	public string? Email { get; set; }
 	public required string PartitionKey { get; set; } = null!;
 	public required string RowKey { get; set; } = null!;
@@ -38,15 +38,21 @@ public class StarTableRepository : IStarRepository
 		_table = table;
 	}
 
-	public async Task<int> GetStarCountAsync(Repository repository)
+	public async Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
-		var entity = await _table.GetEntityIfExistsAsync<StarCountEntity>(HashRepository(repository), CountRowKey);
+		var entity = await _table.GetEntityIfExistsAsync<StarCountEntity>(HashRepository(repository), CountRowKey, cancellationToken: ct);
 		return entity.HasValue ? entity.Value.StarCount : 0;
 	}
 
-	public async Task SetStarAsync(Repository repository, Principal principal)
+	public async Task<bool> GetIsStarredAsync(Repository repository, Principal principal, CancellationToken ct)
 	{
-		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id);
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
+		return entity.HasValue;
+	}
+
+	public async Task SetStarAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
 		if (entity.HasValue) return;
 
 		await _table.UpsertEntityAsync(new StarEntity
@@ -54,16 +60,28 @@ public class StarTableRepository : IStarRepository
 			PartitionKey = HashRepository(repository),
 			RowKey = principal.Id,
 			Repository = repository.ToString(),
-			Oid = principal.Id,
+			UserId = principal.Id,
 			Email = principal.Email
-		});
+		}, cancellationToken: ct);
 
 		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
-		var count = await GetStarCountAsync(repository);
-		await SetStarCountAsync(repository, ++count);
+		var count = await GetStarCountAsync(repository, ct);
+		await SetStarCountAsync(repository, ++count, CancellationToken.None); // Don't cancel this here, because the upsert of individual star has already been done
 	}
 
-	public async Task SetStarCountAsync(Repository repository, int count)
+	public async Task RemoveStarAsync(Repository repository, Principal principal, CancellationToken ct)
+	{
+		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
+		if (!entity.HasValue) return;
+
+		await _table.DeleteEntityAsync(HashRepository(repository), principal.Id, entity.Value.ETag, ct);;
+
+		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
+		var count = await GetStarCountAsync(repository, ct);
+		await SetStarCountAsync(repository, Math.Max(--count, 0), CancellationToken.None); // Don't cancel this here, because the delete of individual star has already been done
+	}
+
+	public async Task SetStarCountAsync(Repository repository, int count, CancellationToken ct)
 	{
 		await _table.UpsertEntityAsync(new StarCountEntity
 		{
@@ -71,7 +89,7 @@ public class StarTableRepository : IStarRepository
 			RowKey = CountRowKey,
 			StarCount = count,
 			Repository = repository.ToString()
-		});
+		}, cancellationToken: ct);
 	}
 
 	private static string HashRepository(Repository repository)

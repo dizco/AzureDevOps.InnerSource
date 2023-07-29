@@ -1,0 +1,24 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+.separator-line-top {
+    margin-top: 16px;
+    padding-top: 16px;
+}
+
+.status-badge-text-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-top: 8px;
+
+    & .status-badge-url-textfield {
+        flex: 1 100%;
+    }
+
+    & .status-badge-url-copy-button {
+        align-self: flex-end;
+    }
+}
+
+label {
+    color: rgba(255, 255, 255, 0.8); /*var(--text-secondary-color, rgba(0, 0, 0, .55));*/
+}

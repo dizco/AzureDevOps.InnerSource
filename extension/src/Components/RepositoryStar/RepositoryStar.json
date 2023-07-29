@@ -1,0 +1,36 @@
+{
+  "contributions": [
+    {
+      "id": "repository-star",
+      "type": "ms.vss-web.action",
+      "description": "Custom button in the code view to star the current repository",
+      "targets": [
+        "ms.vss-code-web.source-item-menu"
+      ],
+      "properties": {
+        "text": "Star this repo",
+        "title": "ms.vss-code-web.source-item-menu",
+        "iconName": "FavoriteStar",
+        "group": "actions",
+        "uri": "dist/RepositoryStar/RepositoryStar.html",
+        "registeredObjectId": "repository-menu-star"
+      },
+      "constraints": [
+        {
+          "name": "Feature",
+          "group": 1,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
+          }
+        },
+        {
+          "name": "Feature",
+          "group": 2,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
+          }
+        }
+      ]
+    }
+  ]
+}

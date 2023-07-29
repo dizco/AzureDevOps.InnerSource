@@ -1,0 +1,35 @@
+{
+  "contributions": [
+    {
+      "id": "repository-badge",
+      "type": "ms.vss-web.action",
+      "description": "Custom button in the code view to open a status badge panel",
+      "targets": [
+        "ms.vss-code-web.source-item-menu"
+      ],
+      "properties": {
+        "text": "Status badge",
+        "title": "ms.vss-code-web.source-item-menu",
+        "group": "actions",
+        "uri": "dist/RepositoryStatusBadge/RepositoryStatusBadge.html",
+        "registeredObjectId": "repository-menu-badge"
+      },
+      "constraints": [
+        {
+          "name": "Feature",
+          "group": 1,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource.feature-innersource"
+          }
+        },
+        {
+          "name": "Feature",
+          "group": 2,
+          "properties": {
+            "featureId": "gabrielbourgault.azuredevops-innersource-dev.feature-innersource"
+          }
+        }
+      ]
+    }
+  ]
+}

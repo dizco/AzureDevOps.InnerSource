@@ -1,0 +1,60 @@
+trigger:
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - 'v*.*.*'
+
+pr: none
+
+schedules:
+- cron: '0 0 * * *'
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- name: ImageTag
+  value: latest
+
+jobs:
+- job: Deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  variables:
+  - group: innersource
+  steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(AzureSubscription)
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az containerapp secret set -n $(ContainerAppName) -g $(ResourceGroup) --secrets `
+          devopspat=$(DevOpsPersonalAccessToken) `
+          authkey=$(AuthenticationKey) `
+          extcert=$(AzureDevOpsExtensionCertificate) `
+          tableconnstring="$(TableStorageConnectionString)"
+
+        az containerapp update -n $(ContainerAppName) -g $(ResourceGroup) --set-env-vars `
+          Authentication__Key=secretref:authkey `
+          Authentication__AzureDevOpsKey=secretref:extcert `
+          DevOps__PersonalAccessToken=secretref:devopspat `
+          DevOps__Organization=$(DevOpsOrganization) `
+          Storage__Mode=TableStorage `
+          Storage__TableStorageConnectionString=secretref:tableconnstring `
+          ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+
+    displayName: set app secrets and environment variables
+  
+  - task: AzureContainerApps@1
+    inputs:
+      azureSubscription: $(AzureSubscription)
+      containerAppName: $(ContainerAppName)
+      resourceGroup: $(ResourceGroup)
+      imageToDeploy: 'ghcr.io/dizco/azuredevops.innersource:$(ImageTag)'
+    displayName: deploy azure container app

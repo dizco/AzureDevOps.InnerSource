@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzureDevOps.InnerSource;
 using AzureDevOps.InnerSource.ADO.Configuration;
 using AzureDevOps.InnerSource.ADO.Extensions;
@@ -56,10 +58,37 @@ void RunWebMvc()
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
-    builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); });
+    builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); })
+	    .AddJsonOptions(options =>
+	    {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+	    });
+    builder.Services.AddCors(options =>
+    {
+	    options.AddPolicy("AzureDevOpsExtension", policy =>
+	    {
+			// TODO: Could probably be a bit more restrictive
+			policy.AllowCredentials()
+				.WithOrigins("https://gabrielbourgault.gallerycdn.vsassets.io")
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+	    });
+    });
     builder.Services.ConfigureAuthentication(configuration);
     builder.Services.AddAzureDevOpsConnection(configuration);
-    builder.Services.AddApplicationServices(configuration);
+    builder.Services.AddRepositoryAggregation(options =>
+    {
+	    var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
+	    options.BadgeServerUrl = settings.BadgeServerUrl;
+	    options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
+		    x => new RepositoryAggregationOptions.RepositoryAggregationOverride
+		    {
+			    Description = x.Value.Description,
+			    Installation = x.Value.Installation
+		    }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
+    });
+	builder.Services.AddApplicationServices(configuration);
     builder.Services.AddRepositoryHealth();
     var app = builder.Build();
 
@@ -72,10 +101,11 @@ void RunWebMvc()
     }
 
     app.UseHttpsRedirection();
-    app.UseAuthentication();
     app.UseStaticFiles();
     app.UseRouting();
-    app.UseAuthorization();
+    app.UseCors();
+    app.UseAuthentication();
+	app.UseAuthorization();
 
     app.MapControllerRoute(
         "default",
