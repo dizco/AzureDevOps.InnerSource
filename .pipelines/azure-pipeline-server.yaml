@@ -41,9 +41,12 @@ jobs:
 
         az containerapp update -n $(ContainerAppName) -g $(ResourceGroup) --set-env-vars `
           Authentication__Key=secretref:authkey `
+          Authentication__Issuer=$(ServerUrl) `
+          Authentication__Audience=$(ServerUrl) `
           Authentication__AzureDevOpsKey=secretref:extcert `
           DevOps__PersonalAccessToken=secretref:devopspat `
           DevOps__Organization=$(DevOpsOrganization) `
+          RepositoryAggregation__BadgeServerUrl=$(ServerUrl) `
           Storage__Mode=TableStorage `
           Storage__TableStorageConnectionString=secretref:tableconnstring `
           ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
