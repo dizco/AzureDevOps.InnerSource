@@ -89,7 +89,6 @@ void RunWebMvc()
 		    }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
     });
 	builder.Services.AddApplicationServices(configuration);
-    builder.Services.AddRepositoryHealth();
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.

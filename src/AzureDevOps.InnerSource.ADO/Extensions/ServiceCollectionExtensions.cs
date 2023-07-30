@@ -14,10 +14,12 @@ public static class ServiceCollectionExtensions
 
 		services.AddTransient<RepositoryAggregator>();
 
+		services.AddRepositoryHealth();
+
 		return services;
 	}
 
-    public static IServiceCollection AddRepositoryHealth(this IServiceCollection services)
+    private static IServiceCollection AddRepositoryHealth(this IServiceCollection services)
     {
         services.AddTransient<RepositoryHealthService>();
 		return services;
