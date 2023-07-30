@@ -2,6 +2,7 @@
 using AzureDevOps.InnerSource.ADO.Configuration;
 using AzureDevOps.InnerSource.ADO.Models;
 using AzureDevOps.InnerSource.Common.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
@@ -16,16 +17,19 @@ public class RepositoryAggregator
     private readonly RepositoryHealthService _repositoryHealthService;
     private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
     private readonly IOptionsMonitor<RepositoryAggregationOptions> _options;
+    private readonly ILogger<RepositoryAggregator> _logger;
 
     public RepositoryAggregator(VssConnection connection,
         RepositoryHealthService repositoryHealthService,
 	    IOptionsMonitor<RepositoryAggregationOptions> options,
-	    IOptionsMonitor<DevOpsOptions> devOpsOptions)
+	    IOptionsMonitor<DevOpsOptions> devOpsOptions,
+        ILogger<RepositoryAggregator> logger)
     {
         _connection = connection;
         _repositoryHealthService = repositoryHealthService;
         _options = options;
         _devOpsOptions = devOpsOptions;
+        _logger = logger;
     }
 
     private DevOpsOptions DevOpsOptions => _devOpsOptions.CurrentValue;
@@ -33,6 +37,7 @@ public class RepositoryAggregator
 
     public async Task AggregateAsync(CancellationToken ct)
     {
+        _logger.LogInformation("Start repositories aggregation");
         var projects = await GetProjectsAsync(ct);
         var repositories = await GetRepositoriesAsync(projects, ct);
 
@@ -40,6 +45,7 @@ public class RepositoryAggregator
         Directory.CreateDirectory(Options.OutputFolder);
         var md = BuildMarkdown(repositories);
         await File.WriteAllTextAsync(filePath, md, ct);
+        _logger.LogInformation("Finished aggregating {count} repositories", repositories.Count);
     }
 
     private string BuildMarkdown(List<AdoRepository> repositories)

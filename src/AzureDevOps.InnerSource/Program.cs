@@ -11,6 +11,7 @@ using AzureDevOps.InnerSource.Exceptions;
 using AzureDevOps.InnerSource.Extensions;
 using CommandLine;
 using Microsoft.IdentityModel.Logging;
+using Serilog;
 
 IdentityModelEventSource.ShowPII = Debugger.IsAttached;
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
@@ -44,6 +45,14 @@ async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
                 Description = x.Value.Description,
                 Installation = x.Value.Installation
             }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
+    });
+    services.AddLogging(builder =>
+    {
+	    builder.ClearProviders();
+	    builder.AddSerilog(new LoggerConfiguration()
+		    .ReadFrom.Configuration(configuration)
+		    .Enrich.FromLogContext()
+		    .CreateLogger());
     });
 #pragma warning disable ASP0000
     await using var provider = services.BuildServiceProvider();
@@ -89,6 +98,11 @@ void RunWebMvc()
 		    }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
     });
 	builder.Services.AddApplicationServices(configuration);
+	builder.Logging.ClearProviders();
+	builder.Logging.AddSerilog(new LoggerConfiguration()
+		.ReadFrom.Configuration(builder.Configuration)
+		.Enrich.FromLogContext()
+		.CreateLogger());
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
