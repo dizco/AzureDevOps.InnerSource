@@ -2,6 +2,7 @@
 using System.Text;
 using Azure.Data.Tables;
 using AzureDevOps.InnerSource.Common.Configuration;
+using AzureDevOps.InnerSource.Common.Services;
 using AzureDevOps.InnerSource.Configuration;
 using AzureDevOps.InnerSource.Configuration.Settings;
 using AzureDevOps.InnerSource.Services;
@@ -53,6 +54,22 @@ public static class ServiceCollectionExtensions
 		return services;
 	}
 
+	public static IServiceCollection AddBadgeTokenService(this IServiceCollection services, IConfiguration configuration)
+	{
+		var authenticationSettings = configuration.GetRequiredSection(AuthenticationSettings.SectionName).Get<AuthenticationSettings>();
+		services.AddOptions<AuthenticationOptions>()
+			.Configure(o =>
+			{
+				o.Key = authenticationSettings.Key;
+				o.Issuer = authenticationSettings.Issuer;
+				o.Audience = authenticationSettings.Audience;
+			})
+			.ValidateDataAnnotations();
+
+		services.AddTransient<IBadgeTokenService, TokenService>();
+		return services;
+	}
+
 	private static IServiceCollection AddStars(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddTransient<IStarService, StarService>();
@@ -82,14 +99,6 @@ public static class ServiceCollectionExtensions
 		// Our workaround is to generate our own tokens that the frontend can use during API calls.
 
 		var authenticationSettings = configuration.GetRequiredSection(AuthenticationSettings.SectionName).Get<AuthenticationSettings>();
-		services.AddOptions<AuthenticationOptions>()
-			.Configure(o =>
-			{
-				o.Key = authenticationSettings.Key;
-				o.Issuer = authenticationSettings.Issuer;
-				o.Audience = authenticationSettings.Audience;
-			})
-			.ValidateDataAnnotations();
 
 		services.AddTransient<ITokenService, TokenService>();
 

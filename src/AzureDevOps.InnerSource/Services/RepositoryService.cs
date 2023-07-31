@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using AzureDevOps.InnerSource.ADO.Services;
 using AzureDevOps.InnerSource.Common;
+using AzureDevOps.InnerSource.Common.Services;
 using AzureDevOps.InnerSource.Models;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -18,19 +19,19 @@ public class RepositoryService
 
 	private readonly IStarService _starService;
 
-	private readonly ITokenService _tokenService;
+	private readonly IBadgeTokenService _badgeTokenService;
 
 	public RepositoryService(IMemoryCache cache,
 		RepositoryAggregator aggregator,
 		IStarService starService,
 		IPrincipalService principalService,
-		ITokenService tokenService)
+		IBadgeTokenService badgeTokenService)
 	{
 		_cache = cache;
 		_aggregator = aggregator;
 		_starService = starService;
 		_principalService = principalService;
-		_tokenService = tokenService;
+		_badgeTokenService = badgeTokenService;
 	}
 
 	public async Task<List<RepositoryDto>> GetRepositoriesAsync(string projectId, CancellationToken ct)
@@ -58,13 +59,7 @@ public class RepositoryService
 
 				var notBefore = DateTime.UtcNow;
 				var expires = DateTime.UtcNow.AddHours(1);
-				var jwtToken = _tokenService.GenerateJwt(new Claim[]
-				{
-					new("project", x.Project),
-					new("repositoryId", x.Id.ToString()),
-					// TODO: Claim for the organization?
-					new("scope", "badges.read")
-				}, notBefore, expires);
+				var jwtToken = _badgeTokenService.GenerateBadgeJwt(x.Project, x.Id.ToString(), notBefore, expires);
 
 				return new RepositoryDto
 				{
