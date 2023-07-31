@@ -65,7 +65,7 @@ public class RepositoryAggregator
 <p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/{{adoProject}}/repositories/{{repositoryId}}/badges/stars?access_token={{badgeJwt}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/{{adoProject}}/repositories/{{repositoryId}}/badges/last-commit?access_token={{badgeJwt}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
 <pre><code>{{installation}}</code></pre>
-<a href=""{{link}}"">Go to adoProject</a>
+<a href=""{{link}}"">Go to project</a>
 </td>
 ";
         /*```shell
