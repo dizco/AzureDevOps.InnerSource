@@ -50,10 +50,9 @@ async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
 					}) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
 			});
 		})
-		.UseSerilog(new LoggerConfiguration()
-			.ReadFrom.Configuration(configuration)
-			.Enrich.FromLogContext()
-			.CreateLogger(), true)
+		.UseSerilog((context, loggerConfiguration) => loggerConfiguration
+			.ReadFrom.Configuration(context.Configuration)
+			.Enrich.FromLogContext())
 		.Build();
 
 	var aggregator = ActivatorUtilities.CreateInstance<RepositoryAggregator>(host.Services);
@@ -99,10 +98,9 @@ void RunWebMvc()
 			services.AddApplicationServices(context.Configuration);
 		});
 
-	builder.Host.UseSerilog(new LoggerConfiguration()
-		.ReadFrom.Configuration(configuration)
-		.Enrich.FromLogContext()
-		.CreateLogger(), true);
+	builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
+		.ReadFrom.Configuration(context.Configuration)
+		.Enrich.FromLogContext());
 
 	var app = builder.Build();
 
@@ -116,7 +114,7 @@ void RunWebMvc()
 
 	app.UseHttpsRedirection();
 	app.UseStaticFiles();
-	app.UseSerilogRequestLogging(); // TODO: This doesnt work
+	app.UseSerilogRequestLogging();
 	app.UseRouting();
 	app.UseCors();
 	app.UseAuthentication();
