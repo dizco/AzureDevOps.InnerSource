@@ -1,3 +1,8 @@
+parameters:
+- name: imageTag
+  type: string
+  default: latest
+
 trigger:
   branches:
     include:
@@ -8,20 +13,13 @@ trigger:
 
 pr: none
 
-#schedules:
-#- cron: '0 0 * * *'
-#  displayName: Daily midnight build
-#  branches:
-#    include:
-#    - master
-
 pool:
   vmImage: ubuntu-latest
 
 variables:
 - group: innersource
 - name: ImageTag
-  value: latest
+  value: ${{ parameters.imageTag }}
 
 jobs:
 - job: Deploy
