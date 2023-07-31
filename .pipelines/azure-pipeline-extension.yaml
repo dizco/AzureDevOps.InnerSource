@@ -1,4 +1,7 @@
 parameters:
+- name: IsDev
+  type: boolean
+  default: false
 - name: IsProd
   type: boolean
   default: false
