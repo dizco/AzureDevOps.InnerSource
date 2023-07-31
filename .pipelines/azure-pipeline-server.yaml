@@ -34,7 +34,7 @@ jobs:
       scriptLocation: 'inlineScript'
       inlineScript: |
         az containerapp secret set -n $(ContainerAppName) -g $(ResourceGroup) --secrets `
-          appinsights=$(ApplicationInsightsConnectionString) `
+          appinsights="$(ApplicationInsightsConnectionString)" `
           devopspat=$(DevOpsPersonalAccessToken) `
           authkey=$(AuthenticationKey) `
           extcert=$(AzureDevOpsExtensionCertificate) `
