@@ -34,12 +34,14 @@ jobs:
       scriptLocation: 'inlineScript'
       inlineScript: |
         az containerapp secret set -n $(ContainerAppName) -g $(ResourceGroup) --secrets `
+          appinsights=$(ApplicationInsightsConnectionString) `
           devopspat=$(DevOpsPersonalAccessToken) `
           authkey=$(AuthenticationKey) `
           extcert=$(AzureDevOpsExtensionCertificate) `
           tableconnstring="$(TableStorageConnectionString)"
 
         az containerapp update -n $(ContainerAppName) -g $(ResourceGroup) --set-env-vars `
+          ApplicationInsights__ConnectionString=secretref:appinsights `
           Authentication__Key=secretref:authkey `
           Authentication__Issuer=$(ServerUrl) `
           Authentication__Audience=$(ServerUrl) `
