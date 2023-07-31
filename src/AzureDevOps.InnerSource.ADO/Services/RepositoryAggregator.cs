@@ -2,6 +2,7 @@
 using AzureDevOps.InnerSource.ADO.Configuration;
 using AzureDevOps.InnerSource.ADO.Models;
 using AzureDevOps.InnerSource.Common.Configuration;
+using AzureDevOps.InnerSource.Common.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.TeamFoundation.Core.WebApi;
@@ -17,18 +18,21 @@ public class RepositoryAggregator
     private readonly RepositoryHealthService _repositoryHealthService;
     private readonly IOptionsMonitor<DevOpsOptions> _devOpsOptions;
     private readonly IOptionsMonitor<RepositoryAggregationOptions> _options;
+    private readonly IBadgeTokenService _badgeTokenService;
     private readonly ILogger<RepositoryAggregator> _logger;
 
     public RepositoryAggregator(VssConnection connection,
         RepositoryHealthService repositoryHealthService,
 	    IOptionsMonitor<RepositoryAggregationOptions> options,
 	    IOptionsMonitor<DevOpsOptions> devOpsOptions,
+        IBadgeTokenService badgeTokenService,
         ILogger<RepositoryAggregator> logger)
     {
         _connection = connection;
         _repositoryHealthService = repositoryHealthService;
         _options = options;
         _devOpsOptions = devOpsOptions;
+        _badgeTokenService = badgeTokenService;
         _logger = logger;
     }
 
@@ -58,7 +62,7 @@ public class RepositoryAggregator
         const string repositoryTemplate = @"
 <td style=""width: 450px"">
 <h2 style=""margin: 0; margin-bottom: 5px;"">{{title}}</h2>
-<p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/stars/{{adoProject}}/{{repository}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/badges/last-commit/{{repositoryId}}"" alt=""Last commit""> {{language}}</p>
+<p style=""margin-bottom: 5px;""><img src=""{{badgeServerUrl}}/{{adoProject}}/repositories/{{repositoryId}}/badges/stars?access_token={{badgeJwt}}"" alt=""Stars""> <img src=""{{badgeServerUrl}}/{{adoProject}}/repositories/{{repositoryId}}/badges/last-commit?access_token={{badgeJwt}}"" alt=""Last commit""> {{language}}</p>
 <p style=""margin-bottom: 8px;"">{{description}}</p>
 <pre><code>{{installation}}</code></pre>
 <a href=""{{link}}"">Go to adoProject</a>
@@ -79,15 +83,20 @@ npm install --save package
 	            languageBadge = $"<img src=\"{languageBadge}\" alt=\"{repositories[i].Language!.Name}\">";
 
             }
-            repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
+
+            var notBefore = DateTime.UtcNow;
+            var expires = DateTime.UtcNow.AddDays(5);
+            var badgeJwt = _badgeTokenService.GenerateBadgeJwt(repositories[i].Project, repositories[i].Id.ToString(), notBefore, expires);
+
+			repositoriesMarkdown += repositoryTemplate.Replace("{{title}}", repositories[i].Name)
                 .Replace("{{repositoryId}}", repositories[i].Id.ToString())
-                .Replace("{{repository}}", repositories[i].Name)
                 .Replace("{{adoProject}}", repositories[i].Project)
                 .Replace("{{description}}", repositories[i].Description)
                 .Replace("{{installation}}", repositories[i].Installation)
                 .Replace("{{link}}", repositories[i].Metadata.Url)
                 .Replace("{{language}}",  languageBadge)
-                .Replace("{{badgeServerUrl}}", Options.BadgeServerUrl);
+                .Replace("{{badgeServerUrl}}", Options.BadgeServerUrl)
+                .Replace("{{badgeJwt}}", badgeJwt);
 
             if (i % 2 == 1) repositoriesMarkdown += "</tr>";
         }

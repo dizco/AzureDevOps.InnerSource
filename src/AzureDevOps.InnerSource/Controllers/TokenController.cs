@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using AzureDevOps.InnerSource.Services;
+﻿using AzureDevOps.InnerSource.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -57,12 +56,7 @@ public class TokenController : Controller
 	{
 		var notBefore = DateTime.UtcNow;
 		var expires = DateTime.UtcNow.AddDays(30); // TODO: Could probably extend this
-		var jwtToken = _tokenService.GenerateJwt(new Claim[]
-		{
-			new("project", projectName),
-			new("repositoryId", repositoryId),
-			// TODO: Claim for the organization?
-		}, notBefore, expires);
+		var jwtToken = _tokenService.GenerateBadgeJwt(projectName, repositoryId, notBefore, expires);
 		var expiresInSeconds = Math.Floor((expires - notBefore).TotalSeconds);
 
 		return Json(new

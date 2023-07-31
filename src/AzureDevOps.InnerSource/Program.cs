@@ -49,6 +49,7 @@ async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
 						Installation = x.Value.Installation
 					}) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
 			});
+			services.AddBadgeTokenService(context.Configuration);
 		})
 		.UseSerilog((context, loggerConfiguration) => loggerConfiguration
 			.ReadFrom.Configuration(context.Configuration)
@@ -95,6 +96,7 @@ void RunWebMvc()
 						Installation = x.Value.Installation
 					}) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
 			});
+			services.AddBadgeTokenService(context.Configuration);
 			services.AddApplicationServices(context.Configuration);
 		});
 

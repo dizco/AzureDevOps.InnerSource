@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AzureDevOps.InnerSource.Common.Configuration;
+using AzureDevOps.InnerSource.Common.Services;
 using AzureDevOps.InnerSource.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +13,7 @@ using Microsoft.VisualStudio.Services.WebApi;
 
 namespace AzureDevOps.InnerSource.Services;
 
-public interface ITokenService
+public interface ITokenService : IBadgeTokenService
 {
 	Task<AzureDevOpsAuthenticationResult> ParseAzureDevOpsTokensAsync(ClaimsPrincipal principal, string userAccessToken, CancellationToken ct);
 
@@ -122,6 +123,17 @@ public class TokenService : ITokenService
 		var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
 		return jwtToken;
+	}
+
+	public string GenerateBadgeJwt(string projectName, string repositoryId, DateTime notBefore, DateTime expires)
+	{
+		// TODO: Should we have a claim for the organization?
+		var claims = new Claim[]
+		{
+			new("project", projectName),
+			new("repositoryId", repositoryId)
+		};
+		return GenerateJwt(claims, notBefore, expires);
 	}
 
 	private async Task<VssConnection> ConnectToVssAsync(string userAccessToken, CancellationToken ct)
