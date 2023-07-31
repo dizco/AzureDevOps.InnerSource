@@ -7,7 +7,6 @@
     <RootNamespace>AzureDevOps.InnerSource</RootNamespace>
     <UserSecretsId>45537586-1974-4900-be93-d10c8fde6b12</UserSecretsId>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
