@@ -2,6 +2,9 @@ parameters:
 - name: imageTag
   type: string
   default: latest
+- name: IsProd
+  type: boolean
+  default: false
 
 trigger:
   branches:
@@ -20,10 +23,12 @@ variables:
 - group: innersource
 - name: ImageTag
   value: ${{ parameters.imageTag }}
+- name: IsProd
+  value: ${{ or(eq(parameters.IsProd, true), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}
 
 jobs:
 - job: Deploy
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
+  condition: and(succeeded(), eq(variables.IsProd, true))
   steps:
   - task: AzureCLI@2
     inputs:

@@ -1,3 +1,8 @@
+parameters:
+- name: IsProd
+  type: boolean
+  default: false
+
 name: '1.1$(rev:.r)'
 
 trigger:
@@ -17,6 +22,10 @@ pool:
 variables:
 - name: WorkingDirectory
   value: '$(Build.SourcesDirectory)/extension'
+- name: IsDev
+  value: ${{ or(eq(parameters.IsDev, true), ne(variables['Build.Reason'], 'PullRequest')) }}
+- name: IsProd
+  value: ${{ or(eq(parameters.IsProd, true), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}
 
 stages:
 - stage: Build
@@ -67,7 +76,7 @@ stages:
 
 - stage: PublishDev
   displayName: 'Publish privately'
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: and(succeeded(), eq(variables.IsDev, true))
   dependsOn: 'Build'
   jobs:
     - deployment: 
@@ -122,7 +131,7 @@ stages:
 
 - stage: PublishProd
   displayName: 'Publish publicly'
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')))
+  condition: and(succeeded(), eq(variables.IsProd, true))
   dependsOn: 'PublishDev'
   jobs:
     - deployment: 
