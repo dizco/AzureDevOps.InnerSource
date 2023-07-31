@@ -18,113 +18,115 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 var aspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 IConfiguration configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", true)
-    .AddUserSecrets<Program>()
-    .AddEnvironmentVariables()
-    .Build();
+	.AddJsonFile("appsettings.json")
+	.AddJsonFile($"appsettings.{aspNetCoreEnvironment}.json", true)
+	.AddUserSecrets<Program>()
+	.AddEnvironmentVariables()
+	.Build();
 
 var command = Parser.Default.ParseArguments<CommandLineOptions>(args);
 if (string.Equals(command.Value.Command, "aggregate", StringComparison.OrdinalIgnoreCase))
-    await RunAggregationAsync(command.Value);
+	await RunAggregationAsync(command.Value);
 else
-    RunWebMvc();
+	RunWebMvc();
 
 async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
 {
-    var services = new ServiceCollection();
-    services.AddAzureDevOpsConnection(configuration);
-    services.AddRepositoryAggregation(options =>
-    {
-        var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
-        options.OutputFolder = commandLineOptions.OutputFolder;
-        options.BadgeServerUrl = settings.BadgeServerUrl;
-        options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
-            x => new RepositoryAggregationOptions.RepositoryAggregationOverride
-            {
-                Description = x.Value.Description,
-                Installation = x.Value.Installation
-            }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
-    });
-    services.AddLogging(builder =>
-    {
-	    builder.ClearProviders();
-	    builder.AddSerilog(new LoggerConfiguration()
-		    .ReadFrom.Configuration(configuration)
-		    .Enrich.FromLogContext()
-		    .CreateLogger());
-    });
-#pragma warning disable ASP0000
-    await using var provider = services.BuildServiceProvider();
-#pragma warning restore ASP0000
+	var host = Host.CreateDefaultBuilder()
+		.ConfigureAppConfiguration(builder => builder.AddConfiguration(configuration))
+		.ConfigureServices((context, services) =>
+		{
+			services.AddAzureDevOpsConnection(context.Configuration);
+			services.AddRepositoryAggregation(options =>
+			{
+				var settings = context.Configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
+				options.OutputFolder = commandLineOptions.OutputFolder;
+				options.BadgeServerUrl = settings.BadgeServerUrl;
+				options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
+					x => new RepositoryAggregationOptions.RepositoryAggregationOverride
+					{
+						Description = x.Value.Description,
+						Installation = x.Value.Installation
+					}) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
+			});
+		})
+		.UseSerilog(new LoggerConfiguration()
+			.ReadFrom.Configuration(configuration)
+			.Enrich.FromLogContext()
+			.CreateLogger(), true)
+		.Build();
 
-    var aggregator = provider.GetRequiredService<RepositoryAggregator>();
-    await aggregator.AggregateAsync(CancellationToken.None);
+	var aggregator = ActivatorUtilities.CreateInstance<RepositoryAggregator>(host.Services);
+	await aggregator.AggregateAsync(CancellationToken.None);
 }
 
 void RunWebMvc()
 {
-    var builder = WebApplication.CreateBuilder(args);
+	var builder = WebApplication.CreateBuilder(args);
+	builder.WebHost.ConfigureKestrel(o => o.AddServerHeader = false)
+		.ConfigureAppConfiguration(c => c.AddConfiguration(configuration))
+		.ConfigureServices((context, services) =>
+		{
+			services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); })
+				.AddJsonOptions(options =>
+				{
+					options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+					options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+				});
+			services.AddCors(options =>
+			{
+				options.AddPolicy("AzureDevOpsExtension", policy =>
+				{
+					policy.AllowCredentials()
+						.WithOrigins("https://gabrielbourgault.gallerycdn.vsassets.io")
+						.AllowAnyHeader()
+						.AllowAnyMethod();
+				});
+			});
+			services.ConfigureAuthentication(context.Configuration);
+			services.AddAzureDevOpsConnection(context.Configuration);
+			services.AddRepositoryAggregation(options =>
+			{
+				var settings = context.Configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
+				options.BadgeServerUrl = settings.BadgeServerUrl;
+				options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
+					x => new RepositoryAggregationOptions.RepositoryAggregationOverride
+					{
+						Description = x.Value.Description,
+						Installation = x.Value.Installation
+					}) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
+			});
+			services.AddApplicationServices(context.Configuration);
+		});
 
-    // Add services to the container.
-    builder.Services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); })
-	    .AddJsonOptions(options =>
-	    {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-	    });
-    builder.Services.AddCors(options =>
-    {
-	    options.AddPolicy("AzureDevOpsExtension", policy =>
-	    {
-			// TODO: Could probably be a bit more restrictive
-			policy.AllowCredentials()
-				.WithOrigins("https://gabrielbourgault.gallerycdn.vsassets.io")
-				.AllowAnyHeader()
-				.AllowAnyMethod();
-	    });
-    });
-    builder.Services.ConfigureAuthentication(configuration);
-    builder.Services.AddAzureDevOpsConnection(configuration);
-    builder.Services.AddRepositoryAggregation(options =>
-    {
-	    var settings = configuration.GetSection(RepositoryAggregationSettings.SectionName).Get<RepositoryAggregationSettings>();
-	    options.BadgeServerUrl = settings.BadgeServerUrl;
-	    options.Overrides = settings.Overrides?.ToDictionary(x => x.Key,
-		    x => new RepositoryAggregationOptions.RepositoryAggregationOverride
-		    {
-			    Description = x.Value.Description,
-			    Installation = x.Value.Installation
-		    }) ?? new Dictionary<string, RepositoryAggregationOptions.RepositoryAggregationOverride>();
-    });
-	builder.Services.AddApplicationServices(configuration);
-	builder.Logging.ClearProviders();
-	builder.Logging.AddSerilog(new LoggerConfiguration()
-		.ReadFrom.Configuration(builder.Configuration)
+	builder.Host.UseSerilog(new LoggerConfiguration()
+		.ReadFrom.Configuration(configuration)
 		.Enrich.FromLogContext()
-		.CreateLogger());
-    var app = builder.Build();
+		.CreateLogger(), true);
 
-    // Configure the HTTP request pipeline.
-    if (!app.Environment.IsEnvironment("Local"))
-    {
-        app.UseExceptionHandler("/Home/Error");
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-        app.UseHsts();
-    }
+	var app = builder.Build();
 
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-    app.UseRouting();
-    app.UseCors();
-    app.UseAuthentication();
+	// Configure the HTTP request pipeline.
+	if (!app.Environment.IsEnvironment("Local"))
+	{
+		app.UseExceptionHandler("/Home/Error");
+		// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+		app.UseHsts();
+	}
+
+	app.UseHttpsRedirection();
+	app.UseStaticFiles();
+	app.UseSerilogRequestLogging(); // TODO: This doesnt work
+	app.UseRouting();
+	app.UseCors();
+	app.UseAuthentication();
 	app.UseAuthorization();
 
-    app.MapControllerRoute(
-        "default",
-        "{controller=Home}/{action=Index}/{id?}");
+	app.MapControllerRoute(
+		"default",
+		"{controller=Home}/{action=Index}/{id?}");
 
-    app.Run();
+	app.Run();
 }
 
 public partial class Program
