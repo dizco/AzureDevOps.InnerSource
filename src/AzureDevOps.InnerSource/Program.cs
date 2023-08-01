@@ -36,6 +36,7 @@ async Task RunAggregationAsync(CommandLineOptions commandLineOptions)
 		.ConfigureAppConfiguration(builder => builder.AddConfiguration(configuration))
 		.ConfigureServices((context, services) =>
 		{
+			services.AddApplicationInsightsTelemetry();
 			services.AddAzureDevOpsConnection(context.Configuration);
 			services.AddRepositoryAggregation(options =>
 			{
@@ -67,6 +68,7 @@ void RunWebMvc()
 		.ConfigureAppConfiguration(c => c.AddConfiguration(configuration))
 		.ConfigureServices((context, services) =>
 		{
+			services.AddApplicationInsightsTelemetry();
 			services.AddControllersWithViews(options => { options.Filters.Add<ExceptionFilter>(); })
 				.AddJsonOptions(options =>
 				{
