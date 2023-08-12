@@ -35,28 +35,6 @@ jobs:
       contents: read
       packages: write
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: GH Context
-      run: echo "$GITHUB_CONTEXT"
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-    - name: Dump job context
-      env:
-        JOB_CONTEXT: ${{ toJson(job) }}
-      run: echo "$JOB_CONTEXT"
-    - name: Dump steps context
-      env:
-        STEPS_CONTEXT: ${{ toJson(steps) }}
-      run: echo "$STEPS_CONTEXT"
-    - name: Dump runner context
-      env:
-        RUNNER_CONTEXT: ${{ toJson(runner) }}
-      run: echo "$RUNNER_CONTEXT"
-
     - name: Log in to the Container registry
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
       with:
@@ -81,7 +59,7 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v4.1.1
       with:
-        context: ./server
+        context: "{{defaultContext}}:server"
         file: ./Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
