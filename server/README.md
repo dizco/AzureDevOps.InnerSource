@@ -2,7 +2,35 @@
 
 [![Latest image tag](https://ghcr-badge.egpl.dev/dizco/azuredevops.innersource/latest_tag?trim=major&label=latest%20image&ignore=pr-*)](https://github.com/dizco/AzureDevOps.InnerSource/pkgs/container/azuredevops.innersource) [![Image size](https://ghcr-badge.egpl.dev/dizco/azuredevops.innersource/size?trim=major&label=image%20size&ignore=pr-*)](https://github.com/dizco/AzureDevOps.InnerSource/pkgs/container/azuredevops.innersource)
 
-# AzureDevOps.InnerSource :star2:
+# AzureDevOps.InnerSource :star2: - Server
 
-## Server
-TODO
+## Getting started
+1. [Install .NET 7 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0), if not already installed.
+1. Clone this repository
+   ```
+   git clone https://github.com/dizco/AzureDevOps.InnerSource.git
+   ```
+
+1. Create a new Azure Storage Account
+   1. Create a new Table `azuredevopsstars`
+
+1. With Visual Studio, open the `AzureDevOps.InnerSource.sln`
+1. Update the `appsettings.json` and `appsettings.Local.json` files according to your needs.
+1. Run with Visual Studio by pressing F5 or with command line with:
+   ```shell
+   dotnet run --project ./src/AzureDevOps.InnerSource/
+   ```
+
+### Repository aggregation
+1. Run aggregation
+   ```shell
+   dotnet run --project .\src\AzureDevOps.InnerSource\ aggregate --output-folder ./
+   ```
+
+## Deploying
+A working dockerfile is provided:
+```
+docker pull ghcr.io/dizco/azuredevops.innersource:latest
+```
+
+For further guidance on how to deploy this service, see [deployment guide](docs/deploy.md).
