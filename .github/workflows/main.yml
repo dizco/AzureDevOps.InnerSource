@@ -81,7 +81,7 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v4.1.1
       with:
-        context: ${{ defaults.run.working-directory }}
+        context: ./server
         file: ./Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
