@@ -1,4 +1,4 @@
-[![.github/workflows/main.yml](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml/badge.svg)](https://github.com/dizco/AzureDevOps.InnerSource/actions/workflows/main.yml) ![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.InnerSource) [![.NET](https://img.shields.io/badge/-7.0-512BD4?logo=.net)](https://dotnet.microsoft.com/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+[![Latest image tag](https://ghcr-badge.egpl.dev/dizco/azuredevops.innersource/latest_tag?trim=major&label=latest%20image&ignore=pr-*)](https://github.com/dizco/AzureDevOps.InnerSource/pkgs/container/azuredevops.innersource) ![GitHub last commit](https://img.shields.io/github/last-commit/dizco/AzureDevOps.InnerSource) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 
 # AzureDevOps.InnerSource :star2:
 
@@ -72,10 +72,9 @@ For further guidance on how to deploy this service, see [deployment guide](docs/
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
 
 ## Known issues
-- The code coverage is 0% right now
+- The code coverage is very low right now
 - There is a lot of boilerplate code for MVC that could be removed
-- Security has not been given a proper assessment
-   - Especially, there are risks of leaking private repositories existence and last commit date. This risk could potentially be mitigated by the use of unique api tokens per repository, which could be added in the link to the badge and validated by the server
+- Security has been given some consideration, but would require further assessments
 - Concurrent requests are not properly handled, the total star count could be wrong if 2 requests are made in parallel
 
 ## Contibuting

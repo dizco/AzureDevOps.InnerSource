@@ -2,7 +2,7 @@
 
 For any major change, please open an issue before submitting a PR. For smaller issues, you are very welcome to open a PR directly.
 
-The project is built on [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0).
+The project combines an Azure DevOps extension built in ReactJS with a [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) server.
 
 ## Install
 Follow the instructions in the README.
@@ -20,3 +20,9 @@ Extension manifest: https://learn.microsoft.com/en-us/azure/devops/extend/develo
 
 
 There is an issue with unit tests, that has the same symptoms as this: https://github.com/nrwl/nx/issues/812
+
+For further instructions, consult the [extension readme](./extension/README.md).
+
+## .NET Server
+
+For further instructions, consult the [server readme](./server/README.md).
