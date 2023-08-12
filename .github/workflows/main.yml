@@ -8,10 +8,11 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  SERVER_FOLDER: server
 
 defaults:
   run:
-    working-directory: ./server
+    working-directory: ./${{ env.SERVER_FOLDER }}
 
 jobs:
   build:
@@ -59,7 +60,7 @@ jobs:
     - name: Build and push Docker images
       uses: docker/build-push-action@v4.1.1
       with:
-        context: "{{defaultContext}}:server"
+        context: "{{defaultContext}}:${{ env.SERVER_FOLDER }}"
         file: ./Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
