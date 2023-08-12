@@ -8,9 +8,13 @@ This sample is also interesting for hot reloading: https://github.com/microsoft/
 
 Icon list: https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font & https://uifabricicons.azurewebsites.net/
 
+Azure DevOps design: https://developer.microsoft.com/en-us/azure-devops
+
 Extension manifest: https://learn.microsoft.com/en-us/azure/devops/extend/develop/manifest?view=azure-devops#scopes
 
 Extensibility points (partial): https://learn.microsoft.com/en-us/azure/devops/extend/reference/targets/overview?view=azure-devops
+
+Extension authentication: https://learn.microsoft.com/en-us/azure/devops/extend/develop/auth?view=azure-devops
 
 ## Known issues
 - There is an issue with unit tests, that has the same symptoms as this: https://github.com/nrwl/nx/issues/812

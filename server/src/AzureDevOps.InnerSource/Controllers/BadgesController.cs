@@ -25,6 +25,7 @@ public class BadgesController : Controller
     [Authorize(AuthenticationSchemes = $"{JwtBearerDefaults.AuthenticationScheme},AzureDevOpsBadge")]
     [HttpGet("{projectName}/repositories/{repositoryId}/badges/last-commit")]
     [EnableCors("AzureDevOpsExtension")]
+    [ResponseCache(Duration = 60 * 60, Location = ResponseCacheLocation.Any)]
 	public async Task<IActionResult> GetLastCommit(string projectName, string repositoryId, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(repositoryId))

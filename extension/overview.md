@@ -1,4 +1,4 @@
-# AzureDevOps.InnerSource :star2:
+# AzureDevOps.InnerSource 🌟
 
 Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to find and to assess how mature a repository is. This project provides the following features:
 - Aggregated view of all repositories within a project
