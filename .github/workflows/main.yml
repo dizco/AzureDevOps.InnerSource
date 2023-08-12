@@ -10,13 +10,12 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   SERVER_FOLDER: server
 
-defaults:
-  run:
-    working-directory: ./${{ env.SERVER_FOLDER }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./${{ env.SERVER_FOLDER }}
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
