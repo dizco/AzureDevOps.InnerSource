@@ -32,6 +32,13 @@ This works in 2 parts. First, an Azure DevOps Extension adds some features in th
    ```
 1. Go back to the "All repositories" hub to view the aggregated repositories
 
+### Extension
+
+View the [extension readme](./extension/README.md).
+
+### Server
+
+View the [server readme](./server/README.md).
 
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
