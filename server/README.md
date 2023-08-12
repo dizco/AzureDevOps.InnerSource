@@ -10,10 +10,6 @@
    ```
    git clone https://github.com/dizco/AzureDevOps.InnerSource.git
    ```
-
-1. Create a new Azure Storage Account
-   1. Create a new Table `azuredevopsstars`
-
 1. With Visual Studio, open the `AzureDevOps.InnerSource.sln`
 1. Update the `appsettings.json` and `appsettings.Local.json` files according to your needs.
 1. Run with Visual Studio by pressing F5 or with command line with:

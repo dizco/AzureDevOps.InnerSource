@@ -9,10 +9,11 @@ docker pull ghcr.io/dizco/azuredevops.innersource:latest
 ## Key properties
 The docker image listens on port 44400.
 
-## Create an Azure Container app
-Follow this guide to create a container app: https://learn.microsoft.com/en-us/azure/container-apps/quickstart-portal
-
-Make sure to allow ingress traffic from anywhere.
+## Create Azure resources
+1. Create a new Azure Storage Account
+   1. Create a new Table `azuredevopsstars`
+1. Create a new Azure Application Insights
+1. Create an Azure Container app by following [this guide](https://learn.microsoft.com/en-us/azure/container-apps/quickstart-portal). Make sure to allow ingress traffic from anywhere.
 
 ## Continuous deployment
 
