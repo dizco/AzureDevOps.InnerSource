@@ -14,6 +14,7 @@
 		"wrangler": "^3.0.0"
 	},
 	"dependencies": {
-		"@upstash/ratelimit": "^0.4.3"
+		"@upstash/ratelimit": "^0.4.3",
+		"@upstash/redis": "^1.22.0"
 	}
 }

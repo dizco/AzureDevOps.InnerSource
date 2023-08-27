@@ -1,5 +1,5 @@
 import { MultiRegionRatelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis/types/platforms/cloudflare';
+import { Redis } from '@upstash/redis/cloudflare';
 
 export interface RateLimitResult {
 		success: boolean;
@@ -23,7 +23,7 @@ export class RateLimiter {
 										token: this.options.redisToken,
 								}),
 						],
-						limiter: MultiRegionRatelimit.fixedWindow(5, "5 s"),
+						limiter: MultiRegionRatelimit.fixedWindow(1, "5 s"),
 						ephemeralCache: this.cache,
 				});
 
