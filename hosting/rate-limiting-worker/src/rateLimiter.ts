@@ -24,7 +24,7 @@ export class RateLimiter {
 										token: this.options.redisToken,
 								}),
 						],
-						limiter: MultiRegionRatelimit.fixedWindow(30, "60 s"),
+						limiter: MultiRegionRatelimit.fixedWindow(10, "60 s"),
 						ephemeralCache: this.cache,
 				});
 
