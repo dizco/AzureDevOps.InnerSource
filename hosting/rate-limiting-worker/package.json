@@ -12,5 +12,8 @@
 		"@cloudflare/workers-types": "^4.20230518.0 ",
 		"vitest": "^0.31.0",
 		"wrangler": "^3.0.0"
+	},
+	"dependencies": {
+		"@upstash/ratelimit": "^0.4.3"
 	}
 }
