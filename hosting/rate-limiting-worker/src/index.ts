@@ -1,4 +1,5 @@
 import { RateLimiter, RateLimiterOptions } from './rateLimiter';
+import { HeadersInit } from '@cloudflare/workers-types';
 
 export interface Env {
 		UPSTASH_REDIS_REST_TOKEN: string;
@@ -29,14 +30,19 @@ export default {
 							return fetch(url.toString(), request);
 					}
 					else {
+							console.log("Rate limiting the request", rateLimitResponse);
+
 							// show an error page for rate limited users
-							return new Response(
-									JSON.stringify({
-											message: "You are rate limited, try again later.",
-											rateLimitResponse,
-									}),
-									{ status: 200 }
-							);
+							const headers = new Headers();
+							headers.set("Retry-After", rateLimitResponse.retryAfterSeconds.toString());
+							const response: ResponseInit = {
+									status: 429,
+									headers
+							};
+							return Response.json({
+									message: "You are rate limited, try again later.",
+									rateLimitResponse,
+							}, response);
 					}
 			}
 			// Otherwise, process request as normal
