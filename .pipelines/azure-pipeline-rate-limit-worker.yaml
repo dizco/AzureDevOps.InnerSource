@@ -37,8 +37,13 @@ stages:
         pwd
         ls
       displayName: debug
-      workingDirectory: $(WorkingDirectory)
-      
+
+    - script: |
+        pwd
+        ls
+      displayName: debug
+      workingDirectory: '$(Build.SourcesDirectory)/hosting'
+
     - script: |
         npm install
       displayName: 'npm install'
