@@ -40,6 +40,10 @@ View the [extension readme](./extension/README.md).
 
 View the [server readme](./server/README.md).
 
+### Hosting
+
+View the [hosting readme](./hosting/README.md).
+
 ## Breaking changes
 At this time, there is no guarantee on the stability of this template. Breaking changes may occur at any time.
 

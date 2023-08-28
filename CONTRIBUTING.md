@@ -14,3 +14,7 @@ For further instructions, consult the [extension readme](./extension/README.md).
 ## .NET Server
 
 For further instructions, consult the [server readme](./server/README.md).
+
+## Hosting
+
+For further instructions, consult the [hosting readme](./hosting/README.md).
