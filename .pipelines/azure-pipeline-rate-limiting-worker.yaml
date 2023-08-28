@@ -19,7 +19,7 @@ pool:
 
 variables:
 - name: WorkingDirectory
-  value: '$(Build.SourcesDirectory)/hosting/rate-limit-worker'
+  value: '$(Build.SourcesDirectory)/hosting/rate-limiting-worker'
 - name: IsProd
   value: ${{ or(eq(parameters.IsProd, true), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}
 
