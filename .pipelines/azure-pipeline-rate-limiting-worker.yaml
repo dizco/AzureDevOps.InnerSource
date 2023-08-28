@@ -1,0 +1,87 @@
+parameters:
+- name: IsProd
+  type: boolean
+  default: false
+
+trigger:
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - 'v*.*.*'
+
+pr:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- name: WorkingDirectory
+  value: '$(Build.SourcesDirectory)/hosting/rate-limiting-worker'
+- name: IsProd
+  value: ${{ or(eq(parameters.IsProd, true), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: npm install
+      displayName: 'npm install'
+      workingDirectory: $(WorkingDirectory)
+
+    - script: npm run test
+      displayName: 'npm run test:ci'
+      workingDirectory: $(WorkingDirectory)
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
+      condition: succeededOrFailed()
+
+    - task: Npm@1
+      displayName: 'npm prune --omit=dev --json'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'prune --omit=dev'
+        
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: $(WorkingDirectory)
+        artifactName: build
+        storeAsTar: true
+
+- stage: Deploy
+  condition: and(succeeded(), eq(variables.IsProd, true))
+  dependsOn: Build
+  variables:
+  - group: innersource
+  jobs:
+  - job: Deploy
+    steps:
+    - checkout: none
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        artifactName: build
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: 'build/build.tar'
+        destinationFolder: $(System.DefaultWorkingDirectory)
+        cleanDestinationFolder: false
+
+    - script: npm run deploy
+      displayName: npm run deploy
+      env:
+        CLOUDFLARE_ACCOUNT_ID: $(CloudflareAccountId)
+        CLOUDFLARE_API_TOKEN: $(CloudflareWorkerApiToken)
