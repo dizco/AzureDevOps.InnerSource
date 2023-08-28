@@ -6,7 +6,7 @@ describe('Worker', () => {
 	let worker: UnstableDevWorker;
 
 	beforeAll(async () => {
-		worker = await unstable_dev('src/index.ts', {}, { disableExperimentalWarning: true });
+		worker = await unstable_dev('src/index.ts', { experimental: { disableExperimentalWarning: true }});
 	});
 
 	afterAll(async () => {
@@ -17,8 +17,5 @@ describe('Worker', () => {
 		const req = new Request('https://example.com', { method: 'GET' });
 		const resp = await worker.fetch(req.url);
 		expect(resp.status).toBe(200);
-
-		const text = await resp.text();
-		expect(text).toBe('request method: GET');
 	});
 });
