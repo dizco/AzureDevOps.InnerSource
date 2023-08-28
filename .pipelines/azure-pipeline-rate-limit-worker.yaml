@@ -80,6 +80,6 @@ stages:
 
     - script: npm run deploy
       displayName: npm run deploy
-        env:
-          CLOUDFLARE_ACCOUNT_ID: $(CloudflareAccountId)
-          CLOUDFLARE_API_TOKEN: $(CloudflareWorkerApiToken)
+      env:
+        CLOUDFLARE_ACCOUNT_ID: $(CloudflareAccountId)
+        CLOUDFLARE_API_TOKEN: $(CloudflareWorkerApiToken)
