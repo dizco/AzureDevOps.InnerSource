@@ -1,17 +1,15 @@
-# Template: worker-typescript
+[![Build Status](https://dev.azure.com/gabrielbourgault/Kiosoft/_apis/build/status%2FInnerSource%2Fdizco.AzureDevOps.InnerSource%20Rate%20Limiting%20Worker?branchName=rate-limit)](https://dev.azure.com/gabrielbourgault/Kiosoft/_build/latest?definitionId=26&branchName=master)
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/worker-typescript)
+# AzureDevOps.InnerSource :star2: - Hosting - Rate limiting worker
 
-A batteries included template for kick starting a TypeScript Cloudflare worker project.
+```shell
+npm install
+```
 
-## Setup
+```shell
+npm test
+```
 
-To create a `my-project` directory using this template, run:
-
-```sh
-$ npx wrangler generate my-project worker-typescript
-# or
-$ yarn wrangler generate my-project worker-typescript
-# or
-$ pnpm wrangler generate my-project worker-typescript
+```shell
+npm run deploy
 ```
