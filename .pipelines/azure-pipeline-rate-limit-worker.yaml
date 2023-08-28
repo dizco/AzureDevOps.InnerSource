@@ -34,6 +34,12 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
+        pwd
+        ls
+      displayName: debug
+      workingDirectory: $(WorkingDirectory)
+      
+    - script: |
         npm install
       displayName: 'npm install'
       workingDirectory: $(WorkingDirectory)
