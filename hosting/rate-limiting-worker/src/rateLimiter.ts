@@ -1,6 +1,5 @@
-import { MultiRegionRatelimit, Ratelimit } from '@upstash/ratelimit';
+import { MultiRegionRatelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis/cloudflare';
-import { Context } from 'vitest';
 
 export interface RateLimitResult {
   success: boolean;
@@ -15,38 +14,32 @@ export class RateLimiterOptions {
 }
 
 export class RateLimiter {
-  public constructor(private readonly cache: Map<any, any>, private readonly options: RateLimiterOptions) {}
+  private readonly ratelimit: {api: MultiRegionRatelimit, assets: MultiRegionRatelimit};
 
-  public async apply(request: Request): Promise<RateLimitResult> {
+  public constructor(cache: Map<any, any>, options: RateLimiterOptions) {
     const redis = new Redis({
-      url: this.options.redisUrl,
-      token: this.options.redisToken,
+      url: options.redisUrl,
+      token: options.redisToken,
     });
 
-    const ratelimit = {
+    this.ratelimit = {
       api: new MultiRegionRatelimit({
         redis: [redis],
         limiter: MultiRegionRatelimit.slidingWindow(20, "60 s"),
         prefix: "ratelimit:api",
-        ephemeralCache: this.cache,
+        ephemeralCache: cache,
       }),
       assets: new MultiRegionRatelimit({
         redis: [redis],
         limiter: MultiRegionRatelimit.slidingWindow(200, "60 s"),
         prefix: "ratelimit:assets",
-        ephemeralCache: this.cache,
+        ephemeralCache: cache,
       })
     };
+  }
 
-    let rateLimiter: MultiRegionRatelimit;
-    if (request.method === "POST" || request.method === "DELETE" || request.method === "PUT" || request.method === "PATCH"
-      || (request.method !== "OPTIONS" && new RegExp("^/([^/]*)/repositories").test(new URL(request.url).pathname))) {
-      rateLimiter = ratelimit.api;
-    }
-    else {
-      rateLimiter = ratelimit.assets;
-    }
-
+  public async apply(request: Request): Promise<RateLimitResult> {
+    const rateLimiter = this.selectRateLimiter(request);
     const userIP: string = request.headers.get("CF-Connecting-IP") || "none";
     const response = await rateLimiter.limit(userIP);
 
@@ -54,5 +47,13 @@ export class RateLimiter {
       ...response,
       retryAfterSeconds: Math.ceil((response.reset - new Date().getTime()) / 1000),
     }
+  }
+
+  private selectRateLimiter(request: Request): MultiRegionRatelimit {
+    if (request.method === "POST" || request.method === "DELETE" || request.method === "PUT" || request.method === "PATCH"
+      || (request.method !== "OPTIONS" && new RegExp("^/([^/]*)/repositories").test(new URL(request.url).pathname))) {
+      return this.ratelimit.api;
+    }
+    return this.ratelimit.assets;
   }
 }
