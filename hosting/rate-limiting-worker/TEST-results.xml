@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="1" failures="0" errors="0" time="3.714">
-    <testsuite name="src/index.test.ts" timestamp="2023-08-28T22:02:45.712Z" hostname="Gabriel-MSI" tests="1" failures="0" errors="0" skipped="0" time="0.381">
-        <testcase classname="src/index.test.ts" name="Worker &gt; should return 200 response" time="0.138">
-        </testcase>
-    </testsuite>
-</testsuites>
