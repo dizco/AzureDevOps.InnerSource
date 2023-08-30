@@ -5,3 +5,4 @@
 *.log
 .idea/
 /dist
+test-results.xml
