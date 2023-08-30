@@ -1,6 +1,15 @@
 import * as SDK from 'azure-devops-extension-sdk';
 import { CommonServiceIds, IExtensionDataService, IProjectPageService } from 'azure-devops-extension-api';
 import React from 'react';
+import axios, from 'axios';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, {
+    retryDelay: axiosRetry.exponentialDelay,
+    retryCondition: (error: axios.AxiosError) => {
+        return error.response.status === 429;
+    },
+} as axiosRetry.IAxiosRetryConfig);
 
 interface IConfiguration {
     serverUrl: string;
@@ -55,22 +64,20 @@ export class ConfigurationService {
         const appToken = await SDK.getAppToken();
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/token`, {
-            method: "POST",
-            headers: {
-                Authorization: 'Bearer ' + appToken,
-                'X-AzureDevOps-AccessToken': accessToken,
-            }
-        });
+        try {
+            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/token`, {
+                headers: {
+                    Authorization: 'Bearer ' + appToken,
+                    'X-AzureDevOps-AccessToken': accessToken,
+                }
+            });
 
-        if (response.ok) {
-            const json: {accessToken: string, expiresInSeconds: number} = await response.json();
-            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + json.accessToken + "; Max-age=" + json.expiresInSeconds + "; SameSite=None; Secure"; // Need to set it with SameSite=none otherwise the cookie is not readable within our iframe
+            document.cookie = ConfigurationService.AuthenticationCookieName + "=" + response.data.accessToken + "; Max-age=" + response.data.expiresInSeconds + "; SameSite=None; Secure"; // Need to set it with SameSite=none otherwise the cookie is not readable within our iframe
             console.log("Authentication success: ", response.status);
             this.isAuthenticated = true;
         }
-        else {
-            console.log("Authentication failed: ", response.status);
+        catch (e) {
+            console.log("Authentication failed: ", e.toJSON());
             this.isAuthenticated = false;
         }
     }
@@ -84,16 +91,16 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${project.id}/repositories`, {
-            headers: {
-                Authorization: 'Bearer ' + this.getJwtBearer(),
-            }
-        });
-        if (response.ok) {
-            return (await response.json()).repositories;
+        try {
+            const response = await axios.get<{repositories: IRepository[]}>(`${serverUrl}/${project.id}/repositories`, {
+                headers: {
+                    Authorization: 'Bearer ' + this.getJwtBearer(),
+                }
+            });
+            return response.data.repositories;
         }
-        else {
-            console.error("Could not get repositories", response.status);
+        catch (e) {
+            console.error("Could not get repositories", e.toJSON());
             return [];
         }
     }
@@ -107,49 +114,54 @@ export class ConfigurationService {
         }
 
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
-            method: 'POST',
-            headers: {
-                "Accept": "application/json",
-                Authorization: 'Bearer ' + this.getJwtBearer(),
-            }
-        });
+        try {
+            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
+                headers: {
+                    "Accept": "application/json",
+                    Authorization: 'Bearer ' + this.getJwtBearer(),
+                }
+            });
 
-        if (response.ok) {
-            const json: {accessToken: string, expiresInSeconds: number} = await response.json();
             return {
-                accessToken: json.accessToken,
-                expiresInSeconds: json.expiresInSeconds,
+                accessToken: response.data.accessToken,
+                expiresInSeconds: response.data.expiresInSeconds,
             }
         }
-        else {
-            console.log("Could not get badge jwt token", response.status);
+        catch (e) {
+            console.log("Could not get badge jwt token", e.toJSON());
             return undefined;
         }
     }
 
     public async starRepository(projectName: string, repositoryId: string): Promise<void> {
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
-            method: 'POST',
-            headers: {
-                "Accept": "application/json",
-                Authorization: 'Bearer ' + this.getJwtBearer(),
-            }
-        });
-        console.log('Star response', response.status);
+        try {
+            const response = await axios.post(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
+                headers: {
+                    "Accept": "application/json",
+                    Authorization: 'Bearer ' + this.getJwtBearer(),
+                }
+            });
+        }
+        catch (e) {
+            console.log("Could not star repository", e.toJSON());
+        }
+
     }
 
     public async unstarRepository(projectName: string, repositoryId: string): Promise<void> {
         const serverUrl = await this.getServerUrl();
-        const response = await fetch(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
-            method: 'DELETE',
-            headers: {
-                "Accept": "application/json",
-                Authorization: 'Bearer ' + this.getJwtBearer(),
-            }
-        });
-        console.log('Unstar response', response.status);
+        try {
+            const response = await axios.delete(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
+                headers: {
+                    "Accept": "application/json",
+                    Authorization: 'Bearer ' + this.getJwtBearer(),
+                }
+            });
+        }
+        catch (e) {
+            console.log("Could not unstar repository", e.toJSON());
+        }
     }
 
     public async isReady(): Promise<boolean> {
