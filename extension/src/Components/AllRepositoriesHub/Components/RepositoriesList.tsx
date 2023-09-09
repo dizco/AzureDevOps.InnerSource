@@ -145,6 +145,13 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
             );
         }
 
+        if (rows.length === 0) {
+            // TODO: Could probably find a way to add a button to create a new repo?
+            rows.push(
+                <div>There are no repositories yet.</div>
+            );
+        }
+
         return (
             <>
                 {this.state.isLoading &&

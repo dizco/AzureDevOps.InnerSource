@@ -5,9 +5,14 @@ import axios,  { AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
-    retryDelay: axiosRetry.exponentialDelay,
+    // https://github.com/softonic/axios-retry/blob/master/es/index.mjs
+    retryDelay: (retryCount, error) => axiosRetry.exponentialDelay(retryCount, error, 1000),
     retryCondition: (error: AxiosError) => {
-        return error.response?.status === 429;
+        const shouldRetry = error.response?.status === 429;
+        if (shouldRetry) {
+            console.log(error.message, "Retrying");
+        }
+        return shouldRetry;
     },
 } as axiosRetry.IAxiosRetryConfig);
 
