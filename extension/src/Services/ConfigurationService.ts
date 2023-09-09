@@ -65,7 +65,7 @@ export class ConfigurationService {
 
         const serverUrl = await this.getServerUrl();
         try {
-            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/token`, {
+            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/token`, {}, {
                 headers: {
                     Authorization: 'Bearer ' + appToken,
                     'X-AzureDevOps-AccessToken': accessToken,
@@ -123,7 +123,7 @@ export class ConfigurationService {
 
         const serverUrl = await this.getServerUrl();
         try {
-            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {
+            const response = await axios.post<{accessToken: string, expiresInSeconds: number}>(`${serverUrl}/${project.name}/repositories/${repositoryId}/badges/token`, {}, {
                 headers: {
                     "Accept": "application/json",
                     Authorization: 'Bearer ' + this.getJwtBearer(),
@@ -148,7 +148,7 @@ export class ConfigurationService {
     public async starRepository(projectName: string, repositoryId: string): Promise<void> {
         const serverUrl = await this.getServerUrl();
         try {
-            const response = await axios.post(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {
+            const response = await axios.post(`${serverUrl}/${projectName}/repositories/${repositoryId}/stars`, {}, {
                 headers: {
                     "Accept": "application/json",
                     Authorization: 'Bearer ' + this.getJwtBearer(),
