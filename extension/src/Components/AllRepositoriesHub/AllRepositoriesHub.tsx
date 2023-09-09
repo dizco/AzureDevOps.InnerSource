@@ -12,11 +12,11 @@ import { DropdownSelection } from 'azure-devops-ui/Utilities/DropdownSelection';
 import { RepositoriesSort } from './RepositoriesSort';
 import { IHeaderCommandBarItem } from 'azure-devops-ui/HeaderCommandBar';
 import { CommonServiceIds, IHostNavigationService } from 'azure-devops-extension-api';
-import { RefObject } from 'react';
 
 interface IAllRepositoriesHubContent {
     sort: RepositoriesSort;
     sortSelection: DropdownSelection;
+    repositoriesListKey: number; // Used to force a rerender when user clicks "refresh"
 }
 
 export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubContent> {
@@ -83,7 +83,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                             renderExpandable={props => <DropdownExpandableButton {...props} className="repository-sort" />}
                         />
                     </div>
-                    <RepositoriesList sort={this.state.sort} />
+                    <RepositoriesList sort={this.state.sort} key={this.state.repositoriesListKey} />
                 </div>
             </Page>
         );
@@ -91,6 +91,16 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
 
     private getCommandBarItems(): IHeaderCommandBarItem[] {
         return [
+            {
+                id: "refresh",
+                onActivate: () => {
+                    this.refresh();
+                },
+                iconProps: {
+                    iconName: 'Refresh'
+                },
+                subtle: true
+            },
             {
                 id: "settings",
                 text: "Settings",
@@ -105,6 +115,14 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
                 }
             },
         ];
+    }
+
+    private async refresh(): Promise<void> {
+        this.setState((previousState, previousProps) => {
+            return {
+                repositoriesListKey: previousState.repositoriesListKey + 1,
+            };
+        });
     }
 
     private async navigateToSettings(): Promise<void> {
