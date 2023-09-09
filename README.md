@@ -2,7 +2,7 @@
 
 # AzureDevOps.InnerSource :star2:
 
-Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to find and to assess how mature a repository is. This project provides the following features:
+Discoverability of [InnerSource](https://innersourcecommons.org/) repositories on Azure DevOps suffers from a few limitations compared to Github. For example, it is very difficult to find a repository and to assess how mature it is. This project provides the following features:
 - Aggregated view of all repositories within a project
 - Badge to display the last commit date in a repository
 - Badge to display the main programming language used in a repository
@@ -52,6 +52,7 @@ At this time, there is no guarantee on the stability of this template. Breaking 
 - There is a lot of boilerplate code for MVC that could be removed
 - Security has been given some consideration, but would require further assessments
 - Concurrent requests are not properly handled, the total star count could be wrong if 2 requests are made in parallel
+- Running an Azure Container App with scale down to 0 replicas means that the first request is quite slow as it needs to boot an instance
 
 ## Contibuting
 - Star this GitHub repo :star: (ironic, isn't it :wink:)

@@ -23,28 +23,36 @@ public class TokenController : Controller
 	public async Task<IActionResult> PostToken(CancellationToken ct)
 	{
 		var challengeResult = await HttpContext.AuthenticateAsync("AzureDevOpsExtension");
-		if (challengeResult.Succeeded && HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out var userAccessToken))
+		if (challengeResult.Succeeded)
 		{
-			var devOpsResult = await _tokenService.ParseAzureDevOpsTokensAsync(challengeResult.Principal, userAccessToken.ToString(), ct);
-			if (devOpsResult.IsAuthenticated)
+			if (HttpContext.Request.Headers.TryGetValue("X-AzureDevOps-AccessToken", out var userAccessToken))
 			{
-				var jwtToken = _tokenService.GenerateJwt(devOpsResult.Claims, devOpsResult.NotBefore, devOpsResult.Expires);
-				var expiresInSeconds = Math.Floor((devOpsResult.Expires - DateTime.UtcNow).TotalSeconds);
-				if (expiresInSeconds <= 0) throw new Exception("Expected the expiration of the token to be in the future, but it is already expired");
-
-				return Json(new
+				var devOpsResult = await _tokenService.ParseAzureDevOpsTokensAsync(challengeResult.Principal, userAccessToken.ToString(), ct);
+				if (devOpsResult.IsAuthenticated)
 				{
-					accessToken = jwtToken,
-					expiresInSeconds
-				});
-			}
+					var jwtToken = _tokenService.GenerateJwt(devOpsResult.Claims, devOpsResult.NotBefore, devOpsResult.Expires);
+					var expiresInSeconds = Math.Floor((devOpsResult.Expires - DateTime.UtcNow).TotalSeconds);
+					if (expiresInSeconds <= 0) throw new Exception("Expected the expiration of the token to be in the future, but it is already expired");
 
-			_logger.LogError("Could not parse Azure DevOps tokens");
+					return Json(new
+					{
+						accessToken = jwtToken,
+						expiresInSeconds
+					});
+				}
+
+				_logger.LogError("Could not parse Azure DevOps tokens");
+			}
+			else
+			{
+				_logger.LogError("User access token not found in request headers");
+			}
 		}
 		else
 		{
-			_logger.LogError("User access token not found in request headers");
+			_logger.LogError("Could not authenticate the Azure DevOps access token");
 		}
+		
 
 		return Unauthorized();
 	}
