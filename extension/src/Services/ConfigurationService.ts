@@ -5,9 +5,12 @@ import axios,  { AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
-    retryDelay: axiosRetry.exponentialDelay,
+    retryDelay: (retryCount, error) => axiosRetry.exponentialDelay(retryCount, error, 1000),
     retryCondition: (error: AxiosError) => {
         return error.response?.status === 429;
+    },
+    onRetry: () => {
+        console.log("On retry!");
     },
 } as axiosRetry.IAxiosRetryConfig);
 
