@@ -39,6 +39,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
         this.state = {
             sort: RepositoriesSort.Alphabetical,
             sortSelection,
+            repositoriesListKey: 1,
         };
     }
 
