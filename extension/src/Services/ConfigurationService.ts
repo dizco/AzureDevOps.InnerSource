@@ -1,13 +1,13 @@
 import * as SDK from 'azure-devops-extension-sdk';
 import { CommonServiceIds, IExtensionDataService, IProjectPageService } from 'azure-devops-extension-api';
 import React from 'react';
-import axios, from 'axios';
+import axios,  { AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
     retryDelay: axiosRetry.exponentialDelay,
-    retryCondition: (error: axios.AxiosError) => {
-        return error.response.status === 429;
+    retryCondition: (error: AxiosError) => {
+        return error.response?.status === 429;
     },
 } as axiosRetry.IAxiosRetryConfig);
 
@@ -77,7 +77,11 @@ export class ConfigurationService {
             this.isAuthenticated = true;
         }
         catch (e) {
-            console.log("Authentication failed: ", e.toJSON());
+            let data = {};
+            if (axios.isAxiosError(e)) {
+                data = (e as AxiosError).toJSON();
+            }
+            console.log("Authentication failed: ", data);
             this.isAuthenticated = false;
         }
     }
@@ -100,7 +104,11 @@ export class ConfigurationService {
             return response.data.repositories;
         }
         catch (e) {
-            console.error("Could not get repositories", e.toJSON());
+            let data = {};
+            if (axios.isAxiosError(e)) {
+                data = (e as AxiosError).toJSON();
+            }
+            console.error("Could not get repositories", data);
             return [];
         }
     }
@@ -128,7 +136,11 @@ export class ConfigurationService {
             }
         }
         catch (e) {
-            console.log("Could not get badge jwt token", e.toJSON());
+            let data = {};
+            if (axios.isAxiosError(e)) {
+                data = (e as AxiosError).toJSON();
+            }
+            console.log("Could not get badge jwt token", data);
             return undefined;
         }
     }
@@ -144,9 +156,12 @@ export class ConfigurationService {
             });
         }
         catch (e) {
-            console.log("Could not star repository", e.toJSON());
+            let data = {};
+            if (axios.isAxiosError(e)) {
+                data = (e as AxiosError).toJSON();
+            }
+            console.log("Could not star repository", data);
         }
-
     }
 
     public async unstarRepository(projectName: string, repositoryId: string): Promise<void> {
@@ -160,7 +175,11 @@ export class ConfigurationService {
             });
         }
         catch (e) {
-            console.log("Could not unstar repository", e.toJSON());
+            let data = {};
+            if (axios.isAxiosError(e)) {
+                data = (e as AxiosError).toJSON();
+            }
+            console.log("Could not unstar repository", data);
         }
     }
 
