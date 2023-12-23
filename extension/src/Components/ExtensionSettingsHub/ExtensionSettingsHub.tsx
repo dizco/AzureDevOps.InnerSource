@@ -43,7 +43,7 @@ export class ExtensionSettingsHub extends React.Component<{}, IExtensionSettings
         console.log("Feature state 3", featureState3);*/
     }
 
-    public render(): JSX.Element {
+    public render(): React.JSX.Element {
         return (
             /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">
