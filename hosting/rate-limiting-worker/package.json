@@ -10,12 +10,12 @@
 		"test:ci": "npm run test -- --run --reporter=junit --outputFile=TEST-results.xml"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20230518.0 ",
-		"vitest": "^0.31.0",
-		"wrangler": "^3.0.0"
+		"@cloudflare/workers-types": "^4.20231218.0",
+		"vitest": "^1.1.0",
+		"wrangler": "^3.22.1"
 	},
 	"dependencies": {
-		"@upstash/ratelimit": "^0.4.3",
-		"@upstash/redis": "^1.22.0"
+		"@upstash/ratelimit": "^1.0.0",
+		"@upstash/redis": "^1.27.1"
 	}
 }
