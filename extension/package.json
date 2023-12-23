@@ -26,8 +26,8 @@
     "azure-devops-extension-api": "^4.229.0",
     "azure-devops-extension-sdk": "^4.0.2",
     "azure-devops-ui": "^2.167.86",
-    "react": "~18.2.0",
-    "react-dom": "~18.2.0"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
