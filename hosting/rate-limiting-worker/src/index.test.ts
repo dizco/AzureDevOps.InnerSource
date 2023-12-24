@@ -14,8 +14,7 @@ describe('Worker', () => {
   });
 
   it('should return 200 response', async () => {
-    const req = new Request('https://example.com', {method: 'GET'});
-    const resp = await worker.fetch(req.url);
+    const resp = await worker.fetch();
     expect(resp.status).toBe(200);
   });
 });
