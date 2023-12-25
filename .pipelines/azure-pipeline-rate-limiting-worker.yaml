@@ -47,6 +47,13 @@ stages:
         testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
       condition: succeededOrFailed()
 
+    - task: PublishCodeCoverageResults@1
+      condition: succeededOrFailed()
+      displayName: Publish Coverage Results
+      inputs:
+        codeCoverageTool: cobertura
+        summaryFileLocation: coverage/cobertura-coverage.xml
+
     - task: Npm@1
       displayName: 'npm prune --omit=dev --json'
       inputs:
