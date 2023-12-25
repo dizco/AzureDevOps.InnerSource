@@ -13,3 +13,5 @@ npm test
 ```shell
 npm run deploy
 ```
+
+This repo is derived from the [worker-typescript template](https://github.com/cloudflare/workers-sdk/tree/main/templates/worker-typescript).

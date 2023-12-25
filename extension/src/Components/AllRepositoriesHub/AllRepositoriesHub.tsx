@@ -63,7 +63,7 @@ export class AllRepositoriesHub extends React.Component<{}, IAllRepositoriesHubC
         }
     }
 
-    public render(): JSX.Element {
+    public render(): React.JSX.Element {
         return (
             /*<ZeroData imageAltText={}/>*/
             <Page className="sample-hub flex-grow">

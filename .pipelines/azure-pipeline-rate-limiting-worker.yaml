@@ -37,22 +37,25 @@ stages:
       displayName: 'npm install'
       workingDirectory: $(WorkingDirectory)
 
-    - script: npm run test
+    - script: npm run test:ci
       displayName: 'npm run test:ci'
       workingDirectory: $(WorkingDirectory)
 
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
+        testResultsFiles: '$(WorkingDirectory)/**/TEST-results.xml'
       condition: succeededOrFailed()
 
-    - task: Npm@1
-      displayName: 'npm prune --omit=dev --json'
+    - task: PublishCodeCoverageResults@1
       inputs:
-        command: custom
-        verbose: false
-        customCommand: 'prune --omit=dev'
+        codeCoverageTool: cobertura
+        summaryFileLocation: '$(WorkingDirectory)/**/cobertura-coverage.xml'
+      condition: succeededOrFailed()
+
+    - script: npm prune --omit=dev --json
+      displayName: 'npm prune --omit=dev --json'
+      workingDirectory: $(WorkingDirectory)
         
     - task: PublishBuildArtifacts@1
       inputs:

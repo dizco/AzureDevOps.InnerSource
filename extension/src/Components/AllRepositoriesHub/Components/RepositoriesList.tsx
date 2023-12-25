@@ -116,7 +116,7 @@ export class RepositoriesList extends React.Component<IRepositoriesListProps, IR
         </div>
     )
 
-    public render(): JSX.Element {
+    public render(): React.JSX.Element {
         const repositories = [];
         for (let i = 0; i < this.state.repositories.length; i++) {
             const repo = this.state.repositories[i];

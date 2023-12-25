@@ -100,7 +100,7 @@ export class RepositoryStatusBadgePanel extends React.Component<{}, IPanelConten
         });
     }
 
-    public render(): JSX.Element {
+    public render(): React.JSX.Element {
         const { starBadgeSrc, starBadgeMarkdown, lastCommitBadgeSrc, lastCommitBadgeMarkdown } = this.state;
 
         return (

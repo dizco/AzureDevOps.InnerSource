@@ -41,7 +41,7 @@ public class StarTableRepository : IStarRepository
 	public async Task<int> GetStarCountAsync(Repository repository, CancellationToken ct)
 	{
 		var entity = await _table.GetEntityIfExistsAsync<StarCountEntity>(HashRepository(repository), CountRowKey, cancellationToken: ct);
-		return entity.HasValue ? entity.Value.StarCount : 0;
+		return entity.HasValue ? entity.Value!.StarCount : 0;
 	}
 
 	public async Task<bool> GetIsStarredAsync(Repository repository, Principal principal, CancellationToken ct)
@@ -74,7 +74,7 @@ public class StarTableRepository : IStarRepository
 		var entity = await _table.GetEntityIfExistsAsync<StarEntity>(HashRepository(repository), principal.Id, cancellationToken: ct);
 		if (!entity.HasValue) return;
 
-		await _table.DeleteEntityAsync(HashRepository(repository), principal.Id, entity.Value.ETag, ct);;
+		await _table.DeleteEntityAsync(HashRepository(repository), principal.Id, entity.Value!.ETag, ct);;
 
 		// TODO: This is not safe for concurrent requests. 2 requests coming in at the same time might not increment the count with the expected value.
 		var count = await GetStarCountAsync(repository, ct);
