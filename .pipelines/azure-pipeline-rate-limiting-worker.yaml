@@ -37,7 +37,7 @@ stages:
       displayName: 'npm install'
       workingDirectory: $(WorkingDirectory)
 
-    - script: npm run test
+    - script: npm run test:ci
       displayName: 'npm run test:ci'
       workingDirectory: $(WorkingDirectory)
 
@@ -53,12 +53,8 @@ stages:
         summaryFileLocation: '$(WorkingDirectory)/**/cobertura-coverage.xml'
       condition: succeededOrFailed()
 
-    - task: Npm@1
+    - script: npm prune --omit=dev --json
       displayName: 'npm prune --omit=dev --json'
-      inputs:
-        command: custom
-        verbose: false
-        customCommand: 'prune --omit=dev'
       workingDirectory: $(WorkingDirectory)
         
     - task: PublishBuildArtifacts@1
