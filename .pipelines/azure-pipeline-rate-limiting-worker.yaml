@@ -44,15 +44,14 @@ stages:
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: '$(WorkingDirectory)/**/test-results.xml'
+        testResultsFiles: '$(WorkingDirectory)/**/TEST-results.xml'
       condition: succeededOrFailed()
 
     - task: PublishCodeCoverageResults@1
-      condition: succeededOrFailed()
-      displayName: Publish Coverage Results
       inputs:
         codeCoverageTool: cobertura
-        summaryFileLocation: coverage/cobertura-coverage.xml
+        summaryFileLocation: '$(WorkingDirectory)/**/cobertura-coverage.xml'
+      condition: succeededOrFailed()
 
     - task: Npm@1
       displayName: 'npm prune --omit=dev --json'
@@ -60,6 +59,7 @@ stages:
         command: custom
         verbose: false
         customCommand: 'prune --omit=dev'
+      workingDirectory: $(WorkingDirectory)
         
     - task: PublishBuildArtifacts@1
       inputs:
