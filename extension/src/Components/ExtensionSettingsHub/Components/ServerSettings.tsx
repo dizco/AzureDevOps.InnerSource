@@ -27,7 +27,7 @@ export class ServerSettings extends React.Component<{}, IServerSettingsState> {
         });
     }
 
-    public render(): JSX.Element {
+    public render(): React.JSX.Element {
         return (
             <div>
                 <h3>Server URL</h3>
