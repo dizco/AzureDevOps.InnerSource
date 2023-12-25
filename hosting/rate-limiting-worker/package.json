@@ -12,11 +12,11 @@
 		"@cloudflare/workers-types": "^4.20231218.0",
 		"@vitest/coverage-istanbul": "^1.0.4",
 		"vitest": "^1.1.0",
-		"typescript": "^5.0.4",
-		"wrangler": "^3.22.1"
+		"typescript": "^5.0.4"
 	},
 	"dependencies": {
 		"@upstash/ratelimit": "^1.0.0",
-		"@upstash/redis": "^1.27.1"
+		"@upstash/redis": "^1.27.1",
+		"wrangler": "^3.22.1"
 	}
 }
